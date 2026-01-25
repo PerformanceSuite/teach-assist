@@ -1,7 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { sendChatMessage, type ChatResponse, type Citation } from '@/lib/api';
+import api from '@/lib/api';
+
+interface Citation {
+  chunk_id: string
+  source_id: string
+  filename: string
+  relevance_score: number
+  text: string
+}
 
 interface Message {
   role: 'user' | 'assistant';
@@ -17,7 +25,6 @@ export default function ChatPanel({ notebookId = 'default' }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [conversationId, setConversationId] = useState<string | undefined>();
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -28,21 +35,30 @@ export default function ChatPanel({ notebookId = 'default' }: ChatPanelProps) {
     setLoading(true);
 
     try {
-      const response: ChatResponse = await sendChatMessage({
-        notebook_id: notebookId,
-        message: userMessage,
-        conversation_id: conversationId,
-      });
+      const result = await api.chat.ask(userMessage);
 
-      setConversationId(response.conversation_id);
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: response.response,
-          citations: response.citations,
-        },
-      ]);
+      if (result.error) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: `Error: ${result.error}`,
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+
+      if (result.data) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: result.data!.answer,
+            citations: result.data!.sources,
+          },
+        ]);
+      }
     } catch (err) {
       setMessages(prev => [
         ...prev,
@@ -96,10 +112,10 @@ export default function ChatPanel({ notebookId = 'default' }: ChatPanelProps) {
                       key={cidx}
                       className="rounded border border-neutral-200 bg-neutral-50 p-2 text-xs"
                     >
-                      <div className="font-medium text-neutral-700">{cite.source_id}</div>
+                      <div className="font-medium text-neutral-700">{cite.filename}</div>
                       <div className="text-neutral-600 line-clamp-2">{cite.text}</div>
                       <div className="text-neutral-500 text-[10px] mt-1">
-                        Relevance: {(cite.relevance * 100).toFixed(0)}%
+                        Relevance: {(cite.relevance_score * 100).toFixed(0)}%
                       </div>
                     </div>
                   ))}
