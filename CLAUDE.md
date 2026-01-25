@@ -301,7 +301,7 @@ cors_origins = ["http://localhost:3000", ...]
 | Project | Path | Purpose |
 |---------|------|---------|
 | **CC4** | `/Users/danielconnolly/Projects/CC4` | Source of proven components |
-| **TeachAssist** | `/Users/danielconnolly/Projects/TeachAssist/TeachAssist-v0.1-bundle` | Teacher OS pilot |
+| **TeachAssist** | `/Users/danielconnolly/Projects/TeachAssist` | Teacher OS pilot |
 
 **Note:** Both are internal tools - reuse liberally!
 
