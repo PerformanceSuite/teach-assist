@@ -10,10 +10,10 @@ import {
   Search,
   ArrowLeft,
   Rocket,
-  FileText,
-  Users,
-  MessageSquare,
-  Shield,
+  Map,
+  Target,
+  Compass,
+  ListTodo,
   Keyboard,
   ChevronRight,
   BookOpen
@@ -30,10 +30,10 @@ import {
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Rocket,
-  FileText,
-  Users,
-  MessageSquare,
-  Shield,
+  Map,
+  Target,
+  Compass,
+  ListTodo,
   Keyboard,
 }
 
