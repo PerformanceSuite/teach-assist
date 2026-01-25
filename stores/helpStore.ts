@@ -62,7 +62,7 @@ export const useHelpStore = create<HelpState>()(
       goBack: () => set({ selectedArticleId: null }),
     }),
     {
-      name: 'cc4-help-store',
+      name: 'teachassist-help-store',
       partialize: (state) => ({
         viewedArticles: state.viewedArticles,
       }),

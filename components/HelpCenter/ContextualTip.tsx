@@ -2,51 +2,31 @@
  * ContextualTip - Floating contextual help tip based on current route
  */
 
-'use client'
-
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
+import { useLocation } from 'react-router-dom'
 import { Lightbulb, X, ArrowRight } from 'lucide-react'
+import { CONTEXTUAL_TIPS } from '../../data/contextualTips'
 import { useHelpStore } from '../../stores/helpStore'
 
-// Teacher-specific contextual tips
-const CONTEXTUAL_TIPS: Record<string, { title: string; description: string; learnMoreId?: string }> = {
-  '/sources': {
-    title: 'Organize your knowledge base',
-    description: 'Upload curriculum standards and lesson plans for grounded AI assistance',
-    learnMoreId: 'sources-organizing',
-  },
-  '/chat': {
-    title: 'All answers cite your sources',
-    description: 'TeachAssist never makes things up - every answer references your uploaded documents',
-    learnMoreId: 'chat-grounded-responses',
-  },
-  '/council': {
-    title: 'Choose the right advisor',
-    description: 'Each Inner Council member has specific expertise to help with different teaching challenges',
-    learnMoreId: 'council-choosing-advisor',
-  },
-}
-
 export function ContextualTip() {
-  const pathname = usePathname()
+  const location = useLocation()
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
   const [visible, setVisible] = useState(false)
   const { selectArticle, openHelp } = useHelpStore()
 
-  const tip = CONTEXTUAL_TIPS[pathname]
+  const tip = CONTEXTUAL_TIPS[location.pathname]
 
   // Show tip after a delay when route changes
   useEffect(() => {
-    if (tip && !dismissed.has(pathname)) {
+    if (tip && !dismissed.has(location.pathname)) {
       const timer = setTimeout(() => setVisible(true), 2000)
       return () => clearTimeout(timer)
     }
     setVisible(false)
-  }, [pathname, tip, dismissed])
+  }, [location.pathname, tip, dismissed])
 
   const handleDismiss = () => {
-    setDismissed(prev => new Set(prev).add(pathname))
+    setDismissed(prev => new Set(prev).add(location.pathname))
     setVisible(false)
   }
 

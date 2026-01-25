@@ -108,9 +108,9 @@ export function AIAssistantPanel() {
                       // Default navigation based on action label
                       const routeMap: Record<string, string> = {
                         'Upload Sources': '/sources',
-                        'Start Chat': '/chat',
+                        'Ask Questions': '/chat',
                         'Consult Council': '/council',
-                        'View Knowledge Base': '/sources',
+                        'View Sources': '/sources',
                       }
                       const route = routeMap[suggestion.actionLabel]
                       if (route) {
