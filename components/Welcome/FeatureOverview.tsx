@@ -1,17 +1,16 @@
 /**
- * FeatureOverview - Card-based overview of TeachAssist features (for new users)
+ * FeatureOverview - Card-based overview of main TeachAssist features (for new users)
+ * Adapted for TeachAssist from CC4
  */
-
-'use client'
 
 import { useRouter } from 'next/navigation'
 import {
   BookOpen,
   MessageSquare,
   Users,
-  Upload,
-  GraduationCap,
-  Sparkles
+  Brain,
+  Lightbulb,
+  Zap
 } from 'lucide-react'
 
 interface Feature {
@@ -20,57 +19,57 @@ interface Feature {
   description: string
   icon: React.ElementType
   color: string
-  href: string
+  route: string
 }
 
 const FEATURES: Feature[] = [
   {
-    id: 'notebook-mode',
-    title: 'Notebook Mode',
-    description: 'Upload curriculum sources and get grounded, citation-backed answers to your questions.',
-    icon: BookOpen,
-    color: 'from-emerald-500/20 to-emerald-600/10',
-    href: '/sources',
-  },
-  {
-    id: 'chat',
-    title: 'Grounded Chat',
-    description: 'Ask questions about your sources and get accurate answers with citations.',
-    icon: MessageSquare,
-    color: 'from-blue-500/20 to-blue-600/10',
-    href: '/chat',
-  },
-  {
-    id: 'council',
+    id: 'inner-council',
     title: 'Inner Council',
-    description: 'Consult specialized AI advisors for standards alignment, equity, and pedagogical guidance.',
+    description: 'Consult four AI advisors: Standards Guardian, Equity Advocate, Pedagogy Expert, and Time Protector.',
     icon: Users,
     color: 'from-purple-500/20 to-purple-600/10',
-    href: '/council',
+    route: '/council',
   },
   {
-    id: 'sources',
-    title: 'Knowledge Base',
-    description: 'Manage your uploaded documents, lesson plans, and teaching materials.',
-    icon: Upload,
-    color: 'from-orange-500/20 to-orange-600/10',
-    href: '/sources',
+    id: 'notebook-mode',
+    title: 'Notebook Mode',
+    description: 'Ask questions and get grounded answers backed by your uploaded curriculum sources.',
+    icon: MessageSquare,
+    color: 'from-blue-500/20 to-blue-600/10',
+    route: '/chat',
   },
   {
-    id: 'grading',
-    title: 'Grade Studio',
-    description: 'Batch grading with AI-generated feedback drafts while maintaining your voice (coming soon).',
-    icon: GraduationCap,
+    id: 'curriculum-sources',
+    title: 'Curriculum Sources',
+    description: 'Upload and organize standards, lesson plans, and teaching resources in one place.',
+    icon: BookOpen,
+    color: 'from-emerald-500/20 to-emerald-600/10',
+    route: '/sources',
+  },
+  {
+    id: 'ai-assistance',
+    title: 'AI-Powered Insights',
+    description: 'Get contextual suggestions and intelligent recommendations as you work.',
+    icon: Brain,
     color: 'from-indigo-500/20 to-indigo-600/10',
-    href: '#',
+    route: '/chat',
   },
   {
-    id: 'planning',
-    title: 'Sunday Rescue Mode',
-    description: 'Quick lesson planning assistance using UbD framework (coming soon).',
-    icon: Sparkles,
+    id: 'quick-reference',
+    title: 'Quick Reference',
+    description: 'Access keyboard shortcuts and searchable help documentation anytime.',
+    icon: Lightbulb,
+    color: 'from-yellow-500/20 to-yellow-600/10',
+    route: '/sources',
+  },
+  {
+    id: 'smart-search',
+    title: 'Semantic Search',
+    description: 'Find relevant information across all your sources using natural language.',
+    icon: Zap,
     color: 'from-pink-500/20 to-pink-600/10',
-    href: '#',
+    route: '/chat',
   },
 ]
 
@@ -87,9 +86,8 @@ export function FeatureOverview() {
         {FEATURES.map((feature) => (
           <button
             key={feature.id}
-            onClick={() => feature.href !== '#' && router.push(feature.href)}
-            className={`p-5 rounded-xl bg-gradient-to-br ${feature.color} border border-gray-700 hover:border-indigo-500/50 transition-all duration-200 text-left group ${feature.href === '#' ? 'cursor-not-allowed opacity-60' : ''}`}
-            disabled={feature.href === '#'}
+            onClick={() => router.push(feature.route)}
+            className={`p-5 rounded-xl bg-gradient-to-br ${feature.color} border border-gray-800 hover:border-indigo-500/50 transition-all duration-200 text-left group`}
           >
             <feature.icon className="w-8 h-8 text-white/80 mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-medium text-white mb-1">{feature.title}</h3>
