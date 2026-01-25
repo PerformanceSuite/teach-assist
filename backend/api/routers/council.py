@@ -4,7 +4,8 @@ Council Router
 Inner Council advisory personas.
 """
 
-from typing import List, Optional
+import re
+from typing import List, Optional, Tuple
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
@@ -15,6 +16,146 @@ from api.deps import get_anthropic_client, get_persona_store
 logger = structlog.get_logger(__name__)
 
 router = APIRouter()
+
+
+# --- Response Parsing ---
+
+
+def parse_structured_response(text: str) -> Tuple[List[str], List[str], List[str], List[str], str]:
+    """
+    Parse advisor response into structured sections.
+
+    Advisors output markdown with sections like:
+    ### Observations
+    - bullet point
+
+    ### Risks (or Alignment Risks, Learning Risks, Equity Risks, Time Risks)
+    - bullet point
+
+    ### Suggestions
+    - bullet point
+
+    ### Questions
+    - bullet point
+
+    Returns: (observations, risks, suggestions, questions, raw_text)
+    """
+    observations = []
+    risks = []
+    suggestions = []
+    questions = []
+
+    # Split into lines and process sequentially
+    lines = text.split('\n')
+    current_section = None
+    current_content = []
+
+    def save_section():
+        """Save accumulated content to the appropriate section."""
+        nonlocal current_content
+        if current_section and current_content:
+            content_text = '\n'.join(current_content)
+            bullets = extract_bullets(content_text)
+            if current_section == 'observations':
+                observations.extend(bullets)
+            elif current_section == 'risks':
+                risks.extend(bullets)
+            elif current_section == 'suggestions':
+                suggestions.extend(bullets)
+            elif current_section == 'questions':
+                questions.extend(bullets)
+        current_content = []
+
+    # Pattern to match section headers
+    # Matches: ### Observations, ## Alignment Risks, **Suggestions**, etc.
+    header_pattern = re.compile(
+        r'^(?:#{2,3}\s*|\*\*)?(Observations?|'
+        r'(?:Alignment\s+|Learning\s+|Equity\s+|Time\s+|Standards\s+)?Risks?|'
+        r'Suggestions?|'
+        r'Questions?)(?:\*\*)?:?\s*$',
+        re.IGNORECASE
+    )
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Check if this is a section header
+        match = header_pattern.match(stripped)
+        if match:
+            # Save previous section
+            save_section()
+
+            # Determine new section
+            header = match.group(1).lower()
+            if 'observation' in header:
+                current_section = 'observations'
+            elif 'risk' in header:
+                current_section = 'risks'
+            elif 'suggestion' in header:
+                current_section = 'suggestions'
+            elif 'question' in header:
+                current_section = 'questions'
+        elif current_section:
+            # Accumulate content for current section
+            current_content.append(line)
+
+    # Don't forget the last section
+    save_section()
+
+    return observations, risks, suggestions, questions, text
+
+
+def extract_bullets(text: str) -> List[str]:
+    """
+    Extract bullet points from a section of text.
+
+    Handles:
+    - Markdown bullets (-, *, •)
+    - Numbered lists (1., 2.)
+    - Bold prefixes (**Label:** content)
+    """
+    bullets = []
+    lines = text.strip().split('\n')
+
+    current_bullet = []
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Skip empty lines
+        if not stripped:
+            if current_bullet:
+                bullets.append(' '.join(current_bullet))
+                current_bullet = []
+            continue
+
+        # Check for bullet/list markers
+        bullet_match = re.match(r'^[-*•]\s+(.+)$', stripped)
+        numbered_match = re.match(r'^\d+[.)]\s+(.+)$', stripped)
+
+        if bullet_match:
+            # Save previous bullet
+            if current_bullet:
+                bullets.append(' '.join(current_bullet))
+            current_bullet = [bullet_match.group(1)]
+        elif numbered_match:
+            if current_bullet:
+                bullets.append(' '.join(current_bullet))
+            current_bullet = [numbered_match.group(1)]
+        elif current_bullet:
+            # Continuation of previous bullet (indented or wrapped)
+            current_bullet.append(stripped)
+        elif stripped and not stripped.startswith('#'):
+            # Non-bulleted content - treat as single item if meaningful
+            # Skip section headers and notes
+            if not stripped.lower().startswith('note:') and len(stripped) > 10:
+                current_bullet = [stripped]
+
+    # Don't forget the last bullet
+    if current_bullet:
+        bullets.append(' '.join(current_bullet))
+
+    return bullets
 
 
 # --- Schemas ---
@@ -61,6 +202,7 @@ class StructuredAdvice(BaseModel):
     risks: List[str] = []
     suggestions: List[str] = []
     questions: List[str] = []
+    raw_text: str = ""  # Original response for display/debugging
 
 
 class AdvisorResponse(BaseModel):
@@ -173,6 +315,7 @@ async def consult_advisors(request: ConsultRequest):
                         risks=[],
                         suggestions=["Configure ANTHROPIC_API_KEY in .env"],
                         questions=[],
+                        raw_text="API key not configured",
                     ),
                 )
             )
@@ -203,18 +346,28 @@ Please provide your advisory feedback following your output format guidelines.
             )
 
             # Parse structured response
-            # TODO: Better parsing of the structured output
             response_text = response.content[0].text
+            observations, risks, suggestions, questions, raw = parse_structured_response(response_text)
+
+            logger.info(
+                "advisor_response_parsed",
+                persona=persona_name,
+                observations_count=len(observations),
+                risks_count=len(risks),
+                suggestions_count=len(suggestions),
+                questions_count=len(questions),
+            )
 
             advice_list.append(
                 AdvisorResponse(
                     persona=persona.name,
                     display_name=persona.display_name,
                     response=StructuredAdvice(
-                        observations=[response_text],  # Simplified for now
-                        risks=[],
-                        suggestions=[],
-                        questions=[],
+                        observations=observations,
+                        risks=risks,
+                        suggestions=suggestions,
+                        questions=questions,
+                        raw_text=raw,
                     ),
                 )
             )
@@ -230,6 +383,7 @@ Please provide your advisory feedback following your output format guidelines.
                         risks=[],
                         suggestions=[],
                         questions=[],
+                        raw_text=f"Error: {str(e)}",
                     ),
                 )
             )
@@ -269,10 +423,27 @@ async def chat_with_advisor(request: CouncilChatRequest):
             messages=[{"role": "user", "content": request.message}],
         )
 
+        response_text = response.content[0].text
+
+        # Try to parse structured advice if present
+        observations, risks, suggestions, questions, raw = parse_structured_response(response_text)
+
+        # Only include structured_advice if we found structured content
+        structured = None
+        if observations or risks or suggestions or questions:
+            structured = StructuredAdvice(
+                observations=observations,
+                risks=risks,
+                suggestions=suggestions,
+                questions=questions,
+                raw_text=raw,
+            )
+
         return CouncilChatResponse(
             persona=persona.name,
-            response=response.content[0].text,
+            response=response_text,
             conversation_id=request.conversation_id or "conv_new",
+            structured_advice=structured,
         )
 
     except Exception as e:

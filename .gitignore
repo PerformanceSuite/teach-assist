@@ -4,3 +4,14 @@ node_modules
 .env.*.local
 .DS_Store
 .vercel
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+*.egg-info/
+
+# Backend
+backend/.env
+backend/data/
