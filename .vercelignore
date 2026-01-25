@@ -1,0 +1,28 @@
+# Backend files (deployed separately)
+backend/
+*.pyc
+__pycache__/
+.venv/
+venv/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Logs
+*.log
+*.pid
+
+# Local development
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# Testing
+INTEGRATION_TEST_RESULTS.md
+backend/TEST_RESULTS.md

@@ -2,31 +2,33 @@
  * ContextualTip - Floating contextual help tip based on current route
  */
 
+'use client'
+
 import { useState, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { usePathname } from 'next/navigation'
 import { Lightbulb, X, ArrowRight } from 'lucide-react'
 import { CONTEXTUAL_TIPS } from '../../data/contextualTips'
 import { useHelpStore } from '../../stores/helpStore'
 
 export function ContextualTip() {
-  const location = useLocation()
+  const pathname = usePathname()
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
   const [visible, setVisible] = useState(false)
   const { selectArticle, openHelp } = useHelpStore()
 
-  const tip = CONTEXTUAL_TIPS[location.pathname]
+  const tip = CONTEXTUAL_TIPS[pathname]
 
   // Show tip after a delay when route changes
   useEffect(() => {
-    if (tip && !dismissed.has(location.pathname)) {
+    if (tip && !dismissed.has(pathname)) {
       const timer = setTimeout(() => setVisible(true), 2000)
       return () => clearTimeout(timer)
     }
     setVisible(false)
-  }, [location.pathname, tip, dismissed])
+  }, [pathname, tip, dismissed])
 
   const handleDismiss = () => {
-    setDismissed(prev => new Set(prev).add(location.pathname))
+    setDismissed(prev => new Set(prev).add(pathname))
     setVisible(false)
   }
 
@@ -48,7 +50,7 @@ export function ContextualTip() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-white">{tip.title}</p>
-          <p className="text-xs text-gray-400 mt-1">{tip.description}</p>
+          <p className="text-xs text-gray-400 mt-1">{tip.message}</p>
           {tip.learnMoreId && (
             <button
               onClick={handleLearnMore}
