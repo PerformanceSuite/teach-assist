@@ -249,7 +249,9 @@ async def list_sources(
 
 
 @router.get("/{source_id}", response_model=SourceDetail)
-async def get_source(source_id: str):
+async def get_source(
+    source_id: str,
+):
     """
     Get source details and preview.
     """
@@ -291,7 +293,9 @@ async def get_source(source_id: str):
 
 
 @router.delete("/{source_id}")
-async def delete_source(source_id: str):
+async def delete_source(
+    source_id: str,
+):
     """
     Remove a source from the knowledge base.
     """

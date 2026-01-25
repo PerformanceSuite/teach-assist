@@ -100,7 +100,9 @@ uploaded sources" and offer to help in another way.
 
 
 @router.post("/message", response_model=ChatResponse)
-async def send_message(request: ChatMessage):
+async def send_message(
+    request: ChatMessage,
+):
     """
     Send a message and get a grounded response.
 

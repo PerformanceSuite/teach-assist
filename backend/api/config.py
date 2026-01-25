@@ -61,5 +61,12 @@ class Settings(BaseSettings):
         path.mkdir(parents=True, exist_ok=True)
         return path
 
+    @property
+    def data_path(self) -> Path:
+        """Get absolute path to data directory."""
+        data_dir = Path(__file__).parent.parent / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        return data_dir
+
 
 settings = Settings()
