@@ -126,7 +126,7 @@ async def send_message(
     if kb:
         try:
             # Query knowledge base for relevant chunks
-            results = kb.query(
+            results = await kb.search(
                 request.message,
                 mode="hybrid",
                 top_k=request.top_k,
@@ -249,7 +249,7 @@ async def transform_sources(request: TransformRequest):
         try:
             # If specific source IDs provided, we'd filter by them
             # For now, use general query to get all relevant content
-            results = kb.query("", mode="keyword", top_k=20)
+            results = await kb.search("", mode="keyword", top_k=20)
 
             for result in results or []:
                 if isinstance(result, tuple):
