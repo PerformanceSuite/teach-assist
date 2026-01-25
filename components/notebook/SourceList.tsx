@@ -1,7 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { listSources, deleteSource, type Source } from '@/lib/api';
+import api from '@/lib/api';
+
+interface Source {
+  id: string
+  title: string
+  filename: string
+  filetype: string
+  upload_date: string
+  size_bytes: number
+  chunk_count: number
+}
 
 interface SourceListProps {
   notebookId?: string;
@@ -18,8 +28,15 @@ export default function SourceList({ notebookId = 'default', refreshTrigger = 0 
     setError(null);
 
     try {
-      const result = await listSources(notebookId);
-      setSources(result.sources);
+      const result = await api.sources.list();
+
+      if (result.error) {
+        setError(result.error);
+        setLoading(false);
+        return;
+      }
+
+      setSources(result.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load sources');
     } finally {
@@ -31,8 +48,14 @@ export default function SourceList({ notebookId = 'default', refreshTrigger = 0 
     if (!confirm('Delete this source?')) return;
 
     try {
-      await deleteSource(sourceId);
-      setSources(sources.filter(s => s.source_id !== sourceId));
+      const result = await api.sources.delete(sourceId);
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      setSources(sources.filter(s => s.id !== sourceId));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete source');
     }
@@ -64,17 +87,17 @@ export default function SourceList({ notebookId = 'default', refreshTrigger = 0 
       <div className="space-y-2">
         {sources.map(source => (
           <div
-            key={source.source_id}
+            key={source.id}
             className="flex items-center justify-between rounded-lg border border-neutral-200 p-3"
           >
             <div className="flex-1">
               <div className="text-sm font-medium">{source.filename}</div>
               <div className="text-xs text-neutral-500">
-                {new Date(source.created_at).toLocaleDateString()} • {source.chunks} chunks
+                {new Date(source.upload_date).toLocaleDateString()} • {source.chunk_count} chunks
               </div>
             </div>
             <button
-              onClick={() => handleDelete(source.source_id)}
+              onClick={() => handleDelete(source.id)}
               className="text-sm text-red-600 hover:text-red-800"
             >
               Delete

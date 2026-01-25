@@ -5,13 +5,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { consultCouncil, getPersonas } from '@/lib/api'
+import api from '@/lib/api'
 
 interface Persona {
   id: string
   name: string
-  role: string
-  expertise: string[]
+  description: string
 }
 
 export default function CouncilPage() {
@@ -28,10 +27,18 @@ export default function CouncilPage() {
   useEffect(() => {
     const loadPersonas = async () => {
       try {
-        const result = await getPersonas()
-        setPersonas(result.personas)
-        if (result.personas.length > 0) {
-          setSelectedPersona(result.personas[0].id)
+        const result = await api.council.listPersonas()
+
+        if (result.error) {
+          setError(result.error)
+          setLoadingPersonas(false)
+          return
+        }
+
+        const personaList = result.data || []
+        setPersonas(personaList)
+        if (personaList.length > 0) {
+          setSelectedPersona(personaList[0].id)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load personas')
@@ -54,11 +61,16 @@ export default function CouncilPage() {
     setResponse(null)
 
     try {
-      const result = await consultCouncil(selectedPersona, context.trim(), question.trim())
-      // Extract the first advisor's response
-      if (result.advice && result.advice.length > 0) {
-        const advice = result.advice[0].response
-        setResponse(advice.raw_text || advice.observations.join('\n'))
+      const result = await api.council.consult(selectedPersona, context.trim(), question.trim())
+
+      if (result.error) {
+        setError(result.error)
+        setLoading(false)
+        return
+      }
+
+      if (result.data?.advice) {
+        setResponse(result.data.advice)
       } else {
         setError('No advice received from advisor')
       }
@@ -103,17 +115,7 @@ export default function CouncilPage() {
                   }`}
                 >
                   <div className="font-semibold text-neutral-900">{persona.name}</div>
-                  <div className="text-sm text-neutral-600 mt-1">{persona.role}</div>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {persona.expertise.slice(0, 3).map((exp, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs bg-neutral-100 text-neutral-700 px-2 py-1 rounded"
-                      >
-                        {exp}
-                      </span>
-                    ))}
-                  </div>
+                  <div className="text-sm text-neutral-600 mt-1">{persona.description}</div>
                 </button>
               ))}
             </div>
@@ -124,17 +126,10 @@ export default function CouncilPage() {
         {selectedPersonaDetails && (
           <div className="rounded-lg bg-neutral-50 border border-neutral-200 p-4">
             <div className="text-sm font-medium text-neutral-900 mb-2">
-              {selectedPersonaDetails.name} specializes in:
+              Selected Advisor:
             </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedPersonaDetails.expertise.map((exp, idx) => (
-                <span
-                  key={idx}
-                  className="text-xs bg-white border border-neutral-300 text-neutral-700 px-2 py-1 rounded"
-                >
-                  {exp}
-                </span>
-              ))}
+            <div className="text-sm text-neutral-700">
+              {selectedPersonaDetails.description}
             </div>
           </div>
         )}

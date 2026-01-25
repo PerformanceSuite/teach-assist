@@ -1,7 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { uploadDocument, type UploadResponse } from '@/lib/api';
+import api from '@/lib/api';
+
+interface UploadResponse {
+  id: string
+  title: string
+  filename: string
+  filetype: string
+  chunk_count: number
+  message: string
+}
 
 interface SourceUploaderProps {
   notebookId?: string;
@@ -20,8 +29,17 @@ export default function SourceUploader({ notebookId = 'default', onUploadComplet
     setError(null);
 
     try {
-      const result = await uploadDocument(file, notebookId);
-      onUploadComplete?.(result);
+      const result = await api.sources.upload(file);
+
+      if (result.error) {
+        setError(result.error);
+        setUploading(false);
+        return;
+      }
+
+      if (result.data) {
+        onUploadComplete?.(result.data);
+      }
 
       // Reset input
       e.target.value = '';
