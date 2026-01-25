@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     # Personas
     personas_dir: str = "../personas"
 
+    # Sources / Notebook Mode
+    sources_dir: str = "./data/sources"
+
     # Auth
     nextauth_secret: str = ""
 
@@ -49,7 +52,14 @@ class Settings(BaseSettings):
     @property
     def chroma_path(self) -> Path:
         """Get absolute path to ChromaDB directory."""
-        return Path(self.chroma_persist_dir).resolve()
+        return Path(__file__).parent.parent / self.chroma_persist_dir
+
+    @property
+    def sources_path(self) -> Path:
+        """Get absolute path to sources directory."""
+        path = Path(__file__).parent.parent / self.sources_dir
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
 
 settings = Settings()

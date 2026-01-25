@@ -4,6 +4,7 @@ TeachAssist Dependencies
 Dependency injection for FastAPI routes.
 """
 
+import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Generator
@@ -11,6 +12,11 @@ from typing import Generator
 import structlog
 
 from api.config import settings
+
+# Add KnowledgeBeast to path
+_kb_path = Path(__file__).parent.parent / "libs" / "knowledgebeast"
+if str(_kb_path) not in sys.path:
+    sys.path.insert(0, str(_kb_path))
 
 logger = structlog.get_logger(__name__)
 
@@ -33,19 +39,36 @@ def get_persona_store():
 
 
 def get_knowledge_engine():
-    """Get or create the KnowledgeBeast HybridQueryEngine singleton."""
+    """Get or create the KnowledgeBeast KnowledgeBase singleton."""
     global _knowledge_engine
 
     if _knowledge_engine is None:
-        # TODO: Initialize KnowledgeBeast when integrated
-        # from libs.knowledgebeast import HybridQueryEngine, DocumentRepository
-        # from libs.knowledgebeast.backends import ChromaDBBackend
-        #
-        # backend = ChromaDBBackend(persist_directory=str(settings.chroma_path))
-        # repo = DocumentRepository()
-        # _knowledge_engine = HybridQueryEngine(repo, backend=backend)
-        logger.warning("knowledge_engine_not_initialized", reason="KnowledgeBeast not yet integrated")
-        return None
+        try:
+            from knowledgebeast import KnowledgeBase, KnowledgeBeastConfig
+
+            # Configure KnowledgeBeast for TeachAssist
+            config = KnowledgeBeastConfig(
+                knowledge_dirs=[settings.sources_path],
+                cache_file=settings.sources_path / ".knowledge_cache.pkl",
+                max_cache_size=100,
+                use_vector_search=True,
+                embedding_model=settings.embedding_model,
+                chromadb_path=settings.chroma_path,
+                auto_warm=False,  # Don't warm on startup - warm on first query
+            )
+
+            _knowledge_engine = KnowledgeBase(config)
+            logger.info(
+                "knowledge_engine_initialized",
+                chroma_path=str(settings.chroma_path),
+                embedding_model=settings.embedding_model,
+            )
+        except ImportError as e:
+            logger.warning("knowledge_engine_import_failed", error=str(e))
+            return None
+        except Exception as e:
+            logger.error("knowledge_engine_init_failed", error=str(e))
+            return None
 
     return _knowledge_engine
 
