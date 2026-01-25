@@ -1,235 +1,310 @@
-# CLAUDE.md - TeachAssist Autonomous Execution
+# CLAUDE.md - TeachAssist Execution Guide
 
 > **This file guides autonomous execution via Claude Code CLI**
+> **Last Updated:** 2026-01-25
 
 ---
 
-## CURRENT MISSION
+## 🎯 CURRENT MISSION
 
-**Build TeachAssist: Teacher OS Pilot**
+**Build TeachAssist v0.1 Pilot** - Teacher OS with AI-powered Notebook Mode + Inner Council
 
-**Execution Method:** Claude Code CLI + Git Worktrees
-**Plan:** `docs/plans/MASTER_PLAN.md`
-**Current Batch:** A (Foundation & Backend Setup)
-**Current Phase:** 0 (Environment Setup)
+**Key Insight:** TeachAssist is a CC4 fork. Reuse proven components, adapt for teachers.
 
----
-
-## EXECUTION PROTOCOL
-
-### Starting a Session
-
-1. Read this file (CLAUDE.md)
-2. Read `docs/plans/MASTER_PLAN.md`
-3. Check current batch and phase below
-4. Execute the next incomplete task
-5. Update this file with progress
-
-### During Execution
-
-- Complete ONE task at a time
-- Run tests after code changes
-- Commit after each completed task
-- Update the "Current State" section below
-
-### Before Stopping
-
-- Commit all changes in worktrees
-- Push to feature branches
-- Update "Current State" below
-- Note any blockers or issues
+**Current Phase:** Frontend Integration (Backend 85% complete)
+**Next Task:** Copy Welcome Dashboard from CC4
+**Execution Plan:** `docs/FINAL_PLAN.md` (consolidated, reflects reality)
 
 ---
 
-## CURRENT STATE
+## 📊 PROGRESS SUMMARY
 
-```
-Batch: A (Foundation & Backend Setup)
-Phase: 0 (Environment Setup)
-Task:  0.1 (Initialize git repo)
-Status: READY TO START
-
-Last Updated: 2026-01-24
-Last Session: Initial setup
-```
-
-### Completed Tasks
-
-**Pre-work (this session):**
-- [x] Created MASTER_PLAN.md
-- [x] Created Inner Council personas (4 YAML files)
-- [x] Created API_SPEC.md
-- [x] Created backend scaffolding
-- [x] Created persona_store.py
-
-### In Progress
-- [ ] Initialize git repo and push to GitHub
-
-### Blockers
-None
+| Component | Status | Completion |
+|-----------|--------|------------|
+| Backend Foundation | ✅ Complete | 100% |
+| Knowledge Service | ✅ Working | 100% |
+| API Endpoints | ✅ Complete | 100% |
+| Personas | ✅ Created | 100% |
+| Frontend UX | 🔴 Not Started | 0% |
+| End-to-End Testing | 🟡 Partial | 50% |
+| **OVERALL** | **🟡 In Progress** | **35%** |
 
 ---
 
-## BATCH OVERVIEW
+## ✅ COMPLETED (This Session: 2026-01-25)
 
-| Batch | Name | Status | Description |
-|-------|------|--------|-------------|
-| A | Foundation & Backend Setup | **CURRENT** | Git, worktrees, KnowledgeBeast integration |
-| B | Inner Council Personas | PENDING | Test and refine advisory personas |
-| C | Frontend Integration | PENDING | Connect Next.js to Python backend |
-| D | Grade Studio & Workflows | PENDING | Batch grading implementation |
-| E | Plan Studio & Sunday Rescue | PENDING | Complete pilot feature set |
+### Backend Foundation - COMPLETE
+- [x] **Resolved ChromaDB Issue** - Replaced with CC4's InMemoryVectorStore
+- [x] **Knowledge Service** - Document ingestion + semantic search working
+- [x] **FastAPI Backend** - All endpoints operational
+- [x] **Dependencies Updated** - Removed chromadb, simplified requirements
+- [x] **Configuration** - Added kb_* settings for compatibility
+
+### Documentation - COMPLETE
+- [x] `docs/FINAL_PLAN.md` - Consolidated execution plan
+- [x] `docs/CC4_REUSE_GUIDE.md` - Component mapping from CC4
+- [x] `docs/STATUS.md` - Detailed progress tracking
+- [x] `backend/CHROMADB_COMPAT.md` - Solution documented
+
+**Key Discovery:** CC4 uses InMemoryVectorStore (numpy-based), not ChromaDB!
 
 ---
 
-## KEY PATHS
+## 🚀 NEXT STEPS (Priority Order)
+
+### Immediate (Next 30 minutes)
+1. **Commit current work**
+   ```bash
+   git add -A
+   git commit -m "fix: Replace ChromaDB with InMemoryVectorStore + docs"
+   git push origin main
+   ```
+
+2. **Test backend end-to-end** (see `docs/FINAL_PLAN.md` Phase 1.2)
+   - Upload a real PDF
+   - Search uploaded content
+   - Consult Inner Council persona
+
+### Short-term (Next 4-6 hours)
+3. **Copy Welcome Dashboard from CC4** (Phase 2.2.A)
+   - Copy `WelcomePage.tsx` → `app/page.tsx`
+   - Copy `components/Welcome/*`
+   - Adapt quick actions for teachers
+
+4. **Copy AI Assistant sidebar** (Phase 2.2.B)
+   - Copy `AIAssistant/*` components
+   - Create teacher-specific suggestions
+
+5. **Copy Help Center** (Phase 2.2.C)
+   - Copy `HelpCenter/*` components
+   - Write 15 teacher help articles
+
+6. **Connect frontend to backend** (Phase 2.3)
+   - Create `lib/api.ts` client
+   - Test upload + search + chat flow
+
+---
+
+## 📂 KEY FILES
 
 | Purpose | Path |
 |---------|------|
-| Main repo | `/Users/danielconnolly/Projects/TeachAssist/TeachAssist-v0.1-bundle` |
-| Backend worktree | `../TeachAssist-worktrees/wt-backend` |
-| Frontend worktree | `../TeachAssist-worktrees/wt-frontend` |
-| Execution plan | `docs/plans/MASTER_PLAN.md` |
-| Personas | `personas/*.yaml` |
-| Backend | `backend/` |
-| KnowledgeBeast source | `/Users/danielconnolly/Projects/CC4/backend/libs/knowledgebeast` |
+| **Final Plan** | `docs/FINAL_PLAN.md` ⭐ START HERE |
+| CC4 Reuse Guide | `docs/CC4_REUSE_GUIDE.md` |
+| Status Tracking | `docs/STATUS.md` |
+| API Spec | `docs/API_SPEC.md` |
+| Backend | `backend/api/main.py` |
+| Knowledge Service | `backend/libs/knowledge_service.py` |
+| Personas | `personas/*.yaml` (4 files) |
 
 ---
 
-## QUICK COMMANDS
+## 🎨 CC4 COMPONENTS TO COPY
 
-### Git Setup (First Time)
+### From CC4's Recent Commit (9302664)
 
+**Welcome Dashboard:**
 ```bash
-cd /Users/danielconnolly/Projects/TeachAssist/TeachAssist-v0.1-bundle
-git init
-git branch -M main
-git remote add origin https://github.com/PerformanceSuite/teach-assist.git
-git add -A
-git commit -m "TeachAssist v0.1 scaffold with backend + personas"
-git push -u origin main
+cp /Users/danielconnolly/Projects/CC4/frontend/src/pages/WelcomePage.tsx app/page.tsx
+cp -r /Users/danielconnolly/Projects/CC4/frontend/src/components/Welcome components/
 ```
 
-### Worktree Setup
-
+**AI Assistant:**
 ```bash
-# Create worktrees directory (sibling to main repo)
-mkdir -p /Users/danielconnolly/Projects/TeachAssist/TeachAssist-worktrees
-
-# Create worktrees
-git worktree add ../TeachAssist-worktrees/wt-backend -b feature/backend-setup
-git worktree add ../TeachAssist-worktrees/wt-frontend -b feature/frontend-integration
+cp -r /Users/danielconnolly/Projects/CC4/frontend/src/components/AIAssistant components/
+cp /Users/danielconnolly/Projects/CC4/frontend/src/stores/aiAssistantStore.ts stores/
+cp /Users/danielconnolly/Projects/CC4/frontend/src/services/suggestionEngine.ts services/
 ```
 
-### Backend Development
-
+**Help Center:**
 ```bash
-# Setup (first time)
+cp -r /Users/danielconnolly/Projects/CC4/frontend/src/components/HelpCenter components/
+cp /Users/danielconnolly/Projects/CC4/frontend/src/stores/helpStore.ts stores/
+```
+
+**Teacher Customizations Needed:**
+- QuickStart actions → Upload sources, Ask questions, Consult Council
+- AI suggestions → Route-specific teacher tips
+- Help articles → 15 teacher-specific guides
+
+---
+
+## 🏃 QUICK START COMMANDS
+
+### Backend
+```bash
 cd backend
-python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-
-# Run backend
 uvicorn api.main:app --reload --port 8002
 
-# Test health
+# Test
 curl http://localhost:8002/health
 ```
 
-### Frontend Development
-
+### Frontend
 ```bash
-# Run frontend
+# Install new dependencies
+npm install zustand lucide-react react-markdown date-fns clsx tailwind-merge
+
+# Run dev server
 npm run dev
-
-# Build
-npm run build
 ```
 
-### Copy KnowledgeBeast from CC4
-
+### Testing
 ```bash
-cp -r /Users/danielconnolly/Projects/CC4/backend/libs/knowledgebeast \
-      /Users/danielconnolly/Projects/TeachAssist/TeachAssist-v0.1-bundle/backend/libs/
+# Test document upload
+curl -X POST http://localhost:8002/api/v1/sources/upload \
+  -F "file=@test.pdf" -F "title=Test Doc"
+
+# Test search
+curl -X POST http://localhost:8002/api/v1/chat/ask \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What is the main topic?"}'
+
+# Test Inner Council
+curl -X POST http://localhost:8002/api/v1/council/consult \
+  -H "Content-Type: application/json" \
+  -d '{"persona": "standards-guardian", "context": "Forces lesson", "question": "Standards alignment?"}'
 ```
 
 ---
 
-## INTEGRATION NOTES
+## 🎯 SUCCESS CRITERIA (v0.1 Pilot)
 
-### From CC4
+**Goal:** Prove Notebook Mode + Inner Council concept works for teachers
 
-Components to copy/adapt:
-- `backend/libs/knowledgebeast/` - Full RAG system
-- `backend/libs/persona_store.py` - Already adapted (done)
-- Zustand patterns from frontend
+| Feature | Backend | Frontend | Status |
+|---------|---------|----------|--------|
+| Upload curriculum sources | ✅ | 🔴 | 50% |
+| Ask grounded questions | ✅ | 🔴 | 50% |
+| Inner Council consultation | ✅ | 🔴 | 50% |
+| Welcome Dashboard | N/A | 🔴 | 0% |
+| AI Assistant suggestions | N/A | 🔴 | 0% |
+| Help Center | N/A | 🔴 | 0% |
+| Keyboard shortcuts | N/A | 🔴 | 0% |
 
-### TeachAssist Constraints (Non-Negotiable)
-
-- No AI grading (drafts only, teacher approves)
-- No student surveillance
-- Teacher retains full authority
-- Minimal PII storage
-- Pseudonymous student identifiers
-
----
-
-## SESSION LOG
-
-### Session 0 (2026-01-24)
-- **Tasks:** Initial planning and scaffolding
-- **Created:**
-  - `docs/plans/MASTER_PLAN.md` - 5-batch execution plan
-  - `docs/API_SPEC.md` - Full API specification
-  - `personas/*.yaml` - 4 Inner Council advisors
-  - `backend/` - Complete FastAPI scaffolding
-  - `CLAUDE.md` - This file
-- **Status:** Ready for Batch A execution
-- **Next:** Initialize git, create worktrees, integrate KnowledgeBeast
+**Pilot Complete When:**
+- ✅ Teacher can upload sources and get grounded answers
+- ✅ Inner Council provides structured advisory feedback
+- ✅ Welcome Dashboard shows teacher-specific actions
+- ✅ AI Assistant shows contextual suggestions
+- ✅ Help Center has searchable documentation
 
 ---
 
-## TROUBLESHOOTING
+## 🚫 OUT OF SCOPE (v0.1)
+
+These are future features, NOT in pilot:
+- ❌ Batch grading (Grade Studio) → v0.2
+- ❌ Lesson planning (Plan Studio) → v0.2
+- ❌ Sunday Rescue Mode → v0.2
+- ❌ Multi-user authentication → v0.2
+- ❌ AI grading (always forbidden)
+
+---
+
+## 🔧 TROUBLESHOOTING
 
 ### Backend Won't Start
 ```bash
-# Check Python version (need 3.11+)
-python3 --version
-
-# Check virtual environment
-which python
-# Should show .venv/bin/python
-
-# Reinstall dependencies
+python3 --version  # Should be 3.11+
+cd backend && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Persona Loading Fails
+### ChromaDB Errors
+**Fixed!** We replaced ChromaDB with InMemoryVectorStore. If you see chromadb errors, check that:
+- `backend/requirements.txt` doesn't include chromadb
+- `backend/libs/knowledge_service.py` uses InMemoryVectorStore
+- `backend/api/deps.py` imports from `libs.knowledge_service`
+
+### Frontend Not Connecting to Backend
 ```bash
-# Check personas directory exists
-ls -la personas/
+# Check .env.local
+NEXT_PUBLIC_API_URL=http://localhost:8002
 
-# Check YAML syntax
-python -c "import yaml; yaml.safe_load(open('personas/standards-guardian.yaml'))"
-```
-
-### KnowledgeBeast Import Error
-```bash
-# Ensure it's in the right place
-ls -la backend/libs/knowledgebeast/
-
-# Check for missing dependencies
-pip install chromadb sentence-transformers
+# Check CORS in backend
+# backend/api/config.py should have:
+cors_origins = ["http://localhost:3000", ...]
 ```
 
 ---
 
-## SUCCESS CRITERIA
+## 📞 DECISION LOG
 
-Pilot is successful if:
-- [ ] Teacher can upload sources and get grounded answers
-- [ ] Inner Council provides structured advisory feedback
-- [ ] Batch grading produces human-feeling narrative comments
-- [ ] Sunday Rescue Mode saves multiple hours per weekend
-- [ ] Ethical guardrails remain intact
+### Why InMemoryVectorStore instead of ChromaDB?
+- **ChromaDB:** Pydantic v2 compatibility issues, complex dependency
+- **InMemoryVectorStore:** Simple, proven in CC4, no dependencies
+- **Decision:** Use InMemoryVectorStore for v0.1, migrate to pgvector in v0.2 if needed
+
+### Why copy CC4 components instead of building custom?
+- **Reason:** TeachAssist is a CC4 fork, proven UX patterns
+- **Benefits:** Faster, consistent, battle-tested
+- **Customization:** Adapt content/suggestions for teachers
+
+### Git worktrees or main branch?
+- **Decision:** Continue on `main` until frontend works
+- **Reason:** Simpler, fewer moving parts during rapid development
+- **Later:** Create feature branches for new features in v0.2
+
+---
+
+## 🎨 ARCHITECTURAL NOTES
+
+### Backend Stack
+- **Framework:** FastAPI
+- **Knowledge:** InMemoryVectorStore (numpy + sentence-transformers)
+- **Personas:** YAML files + PersonaStore
+- **Storage:** File system (no database in v0.1)
+
+### Frontend Stack
+- **Framework:** Next.js 14 (App Router)
+- **State:** Zustand (copied from CC4)
+- **UI:** Tailwind CSS + shadcn/ui components
+- **Icons:** lucide-react
+
+### CC4 → TeachAssist Mapping
+- CC4 React pages → Next.js `app/*/page.tsx`
+- CC4 components → `components/*` (copy directly)
+- CC4 Zustand stores → `stores/*` (copy directly)
+- CC4 hooks → `hooks/*` (copy directly)
+
+---
+
+## 📖 SESSION LOG
+
+### Session 1 (2026-01-25)
+**Duration:** ~3 hours
+**Focus:** ChromaDB resolution + CC4 investigation
+
+**Completed:**
+- Investigated ChromaDB Pydantic v2 incompatibility
+- Discovered CC4 uses InMemoryVectorStore
+- Copied `knowledge_service.py` from CC4
+- Removed ChromaDB dependency
+- Updated backend configuration
+- Tested document ingestion + search (working!)
+- Created consolidated documentation (FINAL_PLAN.md, CC4_REUSE_GUIDE.md)
+
+**Key Insight:** CC4 already solved this problem - don't use ChromaDB!
+
+**Next Session:**
+- Commit current work
+- Copy Welcome Dashboard from CC4
+- Copy AI Assistant sidebar
+- Start frontend integration
+
+---
+
+## 🔗 RELATED PROJECTS
+
+| Project | Path | Purpose |
+|---------|------|---------|
+| **CC4** | `/Users/danielconnolly/Projects/CC4` | Source of proven components |
+| **TeachAssist** | `/Users/danielconnolly/Projects/TeachAssist/TeachAssist-v0.1-bundle` | Teacher OS pilot |
+
+**Note:** Both are internal tools - reuse liberally!
+
+---
+
+**🚀 Ready to execute? Read `docs/FINAL_PLAN.md` for detailed next steps.**

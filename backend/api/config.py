@@ -25,8 +25,14 @@ class Settings(BaseSettings):
     chroma_persist_dir: str = "./data/chroma"
     chroma_collection_name: str = "teachassist_kb"
 
-    # Embedding
+    # Embedding (for knowledge service)
     embedding_model: str = "all-MiniLM-L6-v2"
+    kb_embedding_model: str = "all-MiniLM-L6-v2"  # Alias for compatibility with CC4's knowledge_service
+    kb_embedding_dimension: int = 384  # all-MiniLM-L6-v2 produces 384-dim embeddings
+    kb_persist_directory: str = "./data/knowledge"  # Directory for knowledge artifacts
+    kb_collection_prefix: str = "teachassist"  # Prefix for collections
+    kb_cache_size: int = 1000  # LRU cache size for queries
+    kb_search_alpha: float = 0.7  # Weight for vector search in hybrid mode (0-1)
 
     # CORS
     cors_origins: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
