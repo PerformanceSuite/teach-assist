@@ -6,8 +6,12 @@ node_modules
 .vercel
 
 # Python
-.venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*.so
+.venv/
 *.egg-info/
 
+# Backend
+backend/.env
+backend/data/
