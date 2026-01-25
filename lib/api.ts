@@ -166,15 +166,22 @@ export async function checkHealth(): Promise<{ status: string; version: string; 
  */
 export async function consultCouncil(
   persona: string,
-  context: string,
+  contextContent: string,
   question: string
-): Promise<{ response: string; persona: string; context: string }> {
+): Promise<{ advice: Array<{ persona: string; display_name: string; response: any }>; context_received: boolean }> {
   const response = await fetch(`${API_BASE_URL}/api/v1/council/consult`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ persona, context, question }),
+    body: JSON.stringify({
+      personas: [persona],
+      context: {
+        type: 'lesson_plan',
+        content: contextContent,
+      },
+      question,
+    }),
   });
 
   if (!response.ok) {
@@ -196,5 +203,15 @@ export async function getPersonas(): Promise<{
     throw new Error(`Failed to fetch personas: ${response.statusText}`);
   }
 
-  return response.json();
+  const data = await response.json();
+
+  // Transform backend schema to frontend schema
+  return {
+    personas: data.personas.map((p: any) => ({
+      id: p.name,
+      name: p.display_name,
+      role: p.description,
+      expertise: p.tags,
+    })),
+  };
 }

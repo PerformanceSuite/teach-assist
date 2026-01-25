@@ -2,14 +2,13 @@ import Link from "next/link";
 import { clsx } from "clsx";
 
 const navItems = [
-  { href: "/app", label: "Today" },
+  { href: "/", label: "Home" },
+  { href: "/sources", label: "Knowledge Base" },
+  { href: "/chat", label: "AI Chat" },
+  { href: "/council", label: "Inner Council" },
   { href: "/app/notebook", label: "Notebook" },
   { href: "/app/plan", label: "Plan Studio" },
   { href: "/app/grade", label: "Grade Studio" },
-  { href: "/app/relationships", label: "Relationships" },
-  { href: "/app/ideas", label: "Ideas & Hypotheses" },
-  { href: "/app/pro", label: "Professional" },
-  { href: "/app/principles", label: "Principles" },
 ];
 
 export function Shell({ children, userEmail }: { children: React.ReactNode; userEmail?: string }) {
