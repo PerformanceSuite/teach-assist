@@ -51,5 +51,12 @@ class Settings(BaseSettings):
         """Get absolute path to ChromaDB directory."""
         return Path(self.chroma_persist_dir).resolve()
 
+    @property
+    def data_path(self) -> Path:
+        """Get absolute path to data directory."""
+        data_dir = Path(__file__).parent.parent / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        return data_dir
+
 
 settings = Settings()

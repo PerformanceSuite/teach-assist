@@ -6,8 +6,11 @@ Document ingestion and management for Notebook Mode.
 
 from typing import List, Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends
 from pydantic import BaseModel
+
+from api.deps import get_knowledge_engine
+from libs.knowledge_service import TeachAssistKnowledgeService
 
 router = APIRouter()
 
@@ -63,24 +66,39 @@ async def upload_source(
     file: UploadFile = File(...),
     notebook_id: str = Form("default"),
     metadata: Optional[str] = Form(None),
+    kb_service: TeachAssistKnowledgeService = Depends(get_knowledge_engine),
 ):
     """
     Upload a document (PDF, DOCX, TXT, MD).
 
     The document will be chunked and indexed for semantic search.
     """
-    # TODO: Integrate with KnowledgeBeast
-    # 1. Read file content
-    # 2. Use appropriate converter (PDF, DOCX, etc.)
-    # 3. Chunk the content
-    # 4. Index in vector store
+    # Read file content
+    file_content = await file.read()
+
+    # Parse metadata if provided
+    meta_dict = {}
+    if metadata:
+        import json
+        try:
+            meta_dict = json.loads(metadata)
+        except json.JSONDecodeError:
+            pass
+
+    # Ingest the file
+    result = await kb_service.ingest_file(
+        file_content=file_content,
+        filename=file.filename or "unknown",
+        notebook_id=notebook_id,
+        metadata=meta_dict,
+    )
 
     return SourceResponse(
-        source_id="src_placeholder",
-        filename=file.filename or "unknown",
+        source_id=result["source_id"],
+        filename=result["filename"],
         pages=None,
-        chunks=0,
-        status="pending_implementation",
+        chunks=result["chunks"],
+        status=result["status"],
     )
 
 
@@ -108,32 +126,52 @@ async def ingest_url(request: UrlIngestRequest):
 async def list_sources(
     notebook_id: Optional[str] = None,
     tag: Optional[str] = None,
+    kb_service: TeachAssistKnowledgeService = Depends(get_knowledge_engine),
 ):
     """
     List all sources.
 
     Optionally filter by notebook or tag.
     """
-    # TODO: Query KnowledgeBeast for indexed sources
+    sources = kb_service.list_sources(notebook_id=notebook_id)
+
+    # Filter by tag if provided
+    if tag:
+        sources = [s for s in sources if tag in s.get("tags", [])]
+
     return {
-        "sources": [],
-        "total": 0,
+        "sources": sources,
+        "total": len(sources),
     }
 
 
 @router.get("/{source_id}", response_model=SourceDetail)
-async def get_source(source_id: str):
+async def get_source(
+    source_id: str,
+    kb_service: TeachAssistKnowledgeService = Depends(get_knowledge_engine),
+):
     """
     Get source details and preview.
     """
-    # TODO: Fetch from KnowledgeBeast
-    raise HTTPException(status_code=404, detail="Source not found")
+    source = kb_service.get_source(source_id)
+
+    if not source:
+        raise HTTPException(status_code=404, detail="Source not found")
+
+    return SourceDetail(**source)
 
 
 @router.delete("/{source_id}")
-async def delete_source(source_id: str):
+async def delete_source(
+    source_id: str,
+    kb_service: TeachAssistKnowledgeService = Depends(get_knowledge_engine),
+):
     """
     Remove a source from the knowledge base.
     """
-    # TODO: Delete from KnowledgeBeast
-    return {"deleted": False, "source_id": source_id, "reason": "pending_implementation"}
+    deleted = kb_service.delete_source(source_id)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Source not found")
+
+    return {"deleted": True, "source_id": source_id}

@@ -33,19 +33,14 @@ def get_persona_store():
 
 
 def get_knowledge_engine():
-    """Get or create the KnowledgeBeast HybridQueryEngine singleton."""
+    """Get or create the TeachAssist Knowledge Service singleton."""
     global _knowledge_engine
 
     if _knowledge_engine is None:
-        # TODO: Initialize KnowledgeBeast when integrated
-        # from libs.knowledgebeast import HybridQueryEngine, DocumentRepository
-        # from libs.knowledgebeast.backends import ChromaDBBackend
-        #
-        # backend = ChromaDBBackend(persist_directory=str(settings.chroma_path))
-        # repo = DocumentRepository()
-        # _knowledge_engine = HybridQueryEngine(repo, backend=backend)
-        logger.warning("knowledge_engine_not_initialized", reason="KnowledgeBeast not yet integrated")
-        return None
+        from libs.knowledge_service import TeachAssistKnowledgeService
+
+        _knowledge_engine = TeachAssistKnowledgeService(data_dir=settings.data_path)
+        logger.info("knowledge_service_initialized", data_dir=str(settings.data_path))
 
     return _knowledge_engine
 

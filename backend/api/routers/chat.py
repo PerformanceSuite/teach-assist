@@ -6,8 +6,11 @@ Grounded RAG conversations over teacher's sources.
 
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+
+from api.deps import get_knowledge_engine, get_anthropic_client
+from libs.knowledge_service import TeachAssistKnowledgeService
 
 router = APIRouter()
 
@@ -68,24 +71,92 @@ class ConversationListItem(BaseModel):
 
 
 @router.post("/message", response_model=ChatResponse)
-async def send_message(request: ChatMessage):
+async def send_message(
+    request: ChatMessage,
+    kb_service: TeachAssistKnowledgeService = Depends(get_knowledge_engine),
+    anthropic_client = Depends(get_anthropic_client),
+):
     """
     Send a message and get a grounded response.
 
     The response will be grounded in the teacher's uploaded sources,
     with citations to specific passages.
     """
-    # TODO: Integrate with KnowledgeBeast
-    # 1. Query vector store for relevant chunks
-    # 2. Construct prompt with retrieved context
-    # 3. Call LLM with grounding instructions
-    # 4. Extract citations from response
+    # Query the knowledge base for relevant context
+    citations_data = await kb_service.query(
+        query=request.message,
+        notebook_id=request.notebook_id,
+        top_k=5,
+    )
+
+    # Build context from citations
+    context_parts = []
+    for i, cite in enumerate(citations_data):
+        context_parts.append(f"[{i+1}] {cite['text']}\nSource: {cite['source']}")
+
+    context = "\n\n".join(context_parts)
+
+    # Generate conversation ID if not provided
+    conversation_id = request.conversation_id or f"conv_{__import__('uuid').uuid4().hex[:12]}"
+
+    # If no Anthropic client, return just the citations
+    if not anthropic_client:
+        return ChatResponse(
+            response="(AI responses require Anthropic API key configuration)\n\nRelevant context found:\n" + context,
+            citations=[
+                Citation(
+                    source_id=cite.get("source", "unknown"),
+                    chunk_id=cite.get("chunk_id", ""),
+                    text=cite["text"],
+                    page=cite.get("page"),
+                    relevance=cite["relevance"],
+                )
+                for cite in citations_data
+            ],
+            conversation_id=conversation_id,
+            grounded=bool(citations_data),
+        )
+
+    # Construct grounded prompt
+    grounded_prompt = f"""You are a helpful teaching assistant. Answer the teacher's question using ONLY the provided source material. If the sources don't contain enough information to answer the question, say so clearly.
+
+Source Material:
+{context}
+
+Teacher's Question: {request.message}
+
+Provide a clear, helpful answer grounded in the sources above. Reference sources using [1], [2], etc."""
+
+    # Call LLM
+    try:
+        message = anthropic_client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": grounded_prompt}]
+        )
+
+        response_text = message.content[0].text
+
+    except Exception as e:
+        response_text = f"Error generating response: {str(e)}\n\nRelevant context:\n{context}"
+
+    # Convert citations to response format
+    citations_list = [
+        Citation(
+            source_id=cite.get("source", "unknown"),
+            chunk_id=cite.get("chunk_id", ""),
+            text=cite["text"],
+            page=cite.get("page"),
+            relevance=cite["relevance"],
+        )
+        for cite in citations_data
+    ]
 
     return ChatResponse(
-        response="This feature is pending KnowledgeBeast integration. Your question was: " + request.message,
-        citations=[],
-        conversation_id=request.conversation_id or "conv_placeholder",
-        grounded=False,
+        response=response_text,
+        citations=citations_list,
+        conversation_id=conversation_id,
+        grounded=bool(citations_data),
     )
 
 

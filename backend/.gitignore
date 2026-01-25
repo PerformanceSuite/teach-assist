@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# KnowledgeBeast data
+data/
+chroma/
+.knowledge_cache.pkl
+*.pkl
+
+# Environment
+.env
+.env.local
