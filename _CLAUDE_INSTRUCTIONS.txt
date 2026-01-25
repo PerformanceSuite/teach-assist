@@ -1,0 +1,61 @@
+# TeachAssist Bundle Application Instructions (Claude Code)
+
+Follow these instructions **exactly**.
+
+## 0) Preconditions
+- You are in a clean local folder intended to become the TeachAssist repo.
+- The user will remove any existing PRD so the folder is clean.
+
+## 1) Apply the bundle
+1. Unzip the provided bundle into the target folder (repo root).
+2. Ensure these files exist at repo root:
+   - PRD.md
+   - package.json
+   - app/ (Next.js App Router)
+   - docs/
+
+## 2) Initialize git + set remote
+From repo root:
+```bash
+git init
+git branch -M main
+git remote add origin https://github.com/PerformanceSuite/teach-assist.git
+```
+
+## 3) Install + basic verification
+```bash
+npm install
+cp .env.example .env.local
+```
+
+- Do NOT commit secrets.
+- Populate `.env.local` with placeholder values (leave empty if you cannot access secrets).
+
+Run:
+```bash
+npm run build
+```
+
+If build passes, proceed. If build fails, fix issues and re-run.
+
+## 4) Commit + push
+```bash
+git add -A
+git commit -m "TeachAssist v0.1 scaffold: PRD + Next.js app + Google OAuth (NextAuth)"
+git push -u origin main
+```
+
+## 5) Vercel notes (do not perform unless asked)
+- Connect the GitHub repo to Vercel.
+- Set env vars in Vercel: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, NEXTAUTH_SECRET, TEACHASSIST_ALLOWED_EMAILS.
+- Configure Google OAuth redirect: https://<vercel-domain>/api/auth/callback/google
+
+## 6) Cleanup (important)
+After applying, **delete the zip file from the Downloads folder** (or wherever it was downloaded).
+
+## 7) Report back
+Reply with:
+- `[BUNDLE APPLIED]`
+- whether `npm run build` succeeded
+- the git commit hash
+- confirmation the zip was deleted from Downloads
