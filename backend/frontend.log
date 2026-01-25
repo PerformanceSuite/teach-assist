@@ -1,0 +1,18 @@
+
+> teach-assist@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+   ▲ Next.js 15.5.9
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.240.184:3001
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1319ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1045ms (660 modules)
+(node:12500) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ GET / 200 in 1325ms
+ GET / 200 in 37ms

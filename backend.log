@@ -1,0 +1,23 @@
+INFO:     Will watch for changes in these directories: ['/Users/danielconnolly/Projects/TeachAssist/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8002 (Press CTRL+C to quit)
+INFO:     Started reloader process [11933] using WatchFiles
+INFO:     Started server process [11936]
+INFO:     Waiting for application startup.
+2026-01-25 13:37:32 [info     ] teachassist_starting           version=0.1.0
+INFO:     Application startup complete.
+2026-01-25 13:37:36 [info     ] persona_store_initialized      path=/Users/danielconnolly/Projects/TeachAssist/personas
+2026-01-25 13:37:39 [info     ] knowledge_engine_initialized   embedding_dimension=384 embedding_model=all-MiniLM-L6-v2 engine=InMemoryVectorStore
+INFO:     127.0.0.1:52056 - "GET /health HTTP/1.1" 200 OK
+2026-01-25 13:38:12 [info     ] source_uploaded                filename=test_curriculum.txt notebook_id=default size=500 source_id=src_8a0c68bb51dc
+2026-01-25 13:38:12 [info     ] source_indexed                 chunks=1 source_id=src_8a0c68bb51dc
+INFO:     127.0.0.1:58242 - "POST /api/v1/sources/upload HTTP/1.1" 200 OK
+2026-01-25 13:38:42 [info     ] rag_query_complete             query_length=28 results_found=1
+2026-01-25 13:38:47 [info     ] grounded_response_generated    citations_count=0 response_length=1006
+INFO:     127.0.0.1:63427 - "POST /api/v1/chat/message HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50869 - "POST /api/v1/council/consult HTTP/1.1" 422 Unprocessable Content
+INFO:     127.0.0.1:51952 - "POST /api/v1/council/consult HTTP/1.1" 422 Unprocessable Content
+2026-01-25 13:39:43 [info     ] advisor_response_parsed        observations_count=3 persona=standards-guardian questions_count=6 risks_count=4 suggestions_count=5
+INFO:     127.0.0.1:55666 - "POST /api/v1/council/consult HTTP/1.1" 200 OK
+2026-01-25 13:40:01 [info     ] advisor_response_parsed        observations_count=4 persona=standards-guardian questions_count=6 risks_count=3 suggestions_count=6
+INFO:     127.0.0.1:58497 - "POST /api/v1/council/consult HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61953 - "GET /api/v1/sources HTTP/1.1" 200 OK
