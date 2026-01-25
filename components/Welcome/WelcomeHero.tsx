@@ -1,8 +1,8 @@
 /**
- * WelcomeHero - Hero section for the welcome dashboard
+ * WelcomeHero - Hero section for the teacher welcome dashboard
  */
 
-import { Sparkles } from 'lucide-react'
+import { BookOpen } from 'lucide-react'
 
 interface WelcomeHeroProps {
   userName?: string
@@ -15,15 +15,15 @@ export function WelcomeHero({ userName }: WelcomeHeroProps) {
     <div className="mb-8">
       <div className="flex items-center gap-3 mb-2">
         <div className="p-2 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl">
-          <Sparkles className="w-6 h-6 text-indigo-400" />
+          <BookOpen className="w-6 h-6 text-indigo-400" />
         </div>
         <h1 className="text-2xl font-semibold text-white">
           {greeting}{userName ? `, ${userName}` : ''}
         </h1>
       </div>
       <p className="text-gray-400 text-lg max-w-2xl">
-        TeachAssist is your teaching intelligence system. Upload curriculum sources,
-        get grounded answers, consult your Inner Council, and maintain your teaching voice.
+        Your AI-powered teaching assistant. Upload curriculum sources, get grounded answers,
+        and consult your Inner Council of expert advisors.
       </p>
     </div>
   )

@@ -1,217 +1,241 @@
 /**
- * TeachAssist API Client
- *
- * Client-side functions for calling the Python backend API.
+ * API Client for TeachAssist Backend
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'
 
-// Types
-export interface Source {
-  source_id: string;
-  filename: string;
-  created_at: string;
-  chunks: number;
-  tags: string[];
+interface ApiResponse<T> {
+  data?: T
+  error?: string
 }
 
-export interface SourceDetail extends Source {
-  preview: string;
-  metadata: Record<string, any>;
+// Source Types
+interface Source {
+  id: string
+  title: string
+  filename: string
+  filetype: string
+  upload_date: string
+  size_bytes: number
+  chunk_count: number
 }
 
-export interface Citation {
-  source_id: string;
-  chunk_id: string;
-  text: string;
-  page?: number;
-  relevance: number;
+interface UploadResponse {
+  id: string
+  title: string
+  filename: string
+  filetype: string
+  chunk_count: number
+  message: string
 }
 
-export interface ChatMessage {
-  notebook_id?: string;
-  message: string;
-  conversation_id?: string;
-  include_citations?: boolean;
+// Chat Types
+interface ChatRequest {
+  query: string
+  use_hybrid?: boolean
+  top_k?: number
+  rerank?: boolean
 }
 
-export interface ChatResponse {
-  response: string;
-  citations: Citation[];
-  conversation_id: string;
-  grounded: boolean;
+interface ChatResponse {
+  query: string
+  answer: string
+  sources: Array<{
+    chunk_id: string
+    source_id: string
+    filename: string
+    relevance_score: number
+    text: string
+  }>
+  chunk_count: number
 }
 
-export interface UploadResponse {
-  source_id: string;
-  filename: string;
-  pages?: number;
-  chunks: number;
-  status: string;
-}
-
-// API Functions
-
-/**
- * Upload a document to the knowledge base
- */
-export async function uploadDocument(
-  file: File,
-  notebookId: string = 'default',
-  metadata?: Record<string, any>
-): Promise<UploadResponse> {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('notebook_id', notebookId);
-
-  if (metadata) {
-    formData.append('metadata', JSON.stringify(metadata));
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/v1/sources/upload`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Upload failed: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-/**
- * List all sources
- */
-export async function listSources(
-  notebookId?: string,
-  tag?: string
-): Promise<{ sources: Source[]; total: number }> {
-  const params = new URLSearchParams();
-  if (notebookId) params.append('notebook_id', notebookId);
-  if (tag) params.append('tag', tag);
-
-  const url = `${API_BASE_URL}/api/v1/sources${params.toString() ? `?${params}` : ''}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Failed to list sources: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Get source details
- */
-export async function getSource(sourceId: string): Promise<SourceDetail> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/sources/${sourceId}`);
-
-  if (!response.ok) {
-    throw new Error(`Failed to get source: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Delete a source
- */
-export async function deleteSource(sourceId: string): Promise<{ deleted: boolean; source_id: string }> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/sources/${sourceId}`, {
-    method: 'DELETE',
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete source: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Send a chat message and get grounded response
- */
-export async function sendChatMessage(message: ChatMessage): Promise<ChatResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/chat/message`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Chat request failed: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Check backend health
- */
-export async function checkHealth(): Promise<{ status: string; version: string; services: Record<string, string> }> {
-  const response = await fetch(`${API_BASE_URL}/health`);
-
-  if (!response.ok) {
-    throw new Error(`Health check failed: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Inner Council - Consult a persona
- */
-export async function consultCouncil(
-  persona: string,
-  contextContent: string,
+// Council Types
+interface CouncilRequest {
+  persona: string
+  context: string
   question: string
-): Promise<{ advice: Array<{ persona: string; display_name: string; response: any }>; context_received: boolean }> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/council/consult`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+}
+
+interface CouncilResponse {
+  persona: string
+  persona_name: string
+  context: string
+  question: string
+  advice: string
+  timestamp: string
+}
+
+// Stats Types
+interface StatsResponse {
+  total_documents: number
+  total_chunks: number
+  embedding_model: string
+}
+
+export const api = {
+  // Source Management
+  sources: {
+    async upload(file: File, title?: string): Promise<ApiResponse<UploadResponse>> {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        if (title) {
+          formData.append('title', title)
+        }
+
+        const response = await fetch(`${API_BASE}/api/v1/sources/upload`, {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Upload failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Upload failed' }
+      }
     },
-    body: JSON.stringify({
-      personas: [persona],
-      context: {
-        type: 'lesson_plan',
-        content: contextContent,
-      },
-      question,
-    }),
-  });
 
-  if (!response.ok) {
-    throw new Error(`Council consultation failed: ${response.statusText}`);
-  }
+    async list(): Promise<ApiResponse<Source[]>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/sources/list`)
 
-  return response.json();
+        if (!response.ok) {
+          return { error: 'Failed to fetch sources' }
+        }
+
+        const data = await response.json()
+        return { data: data.sources || [] }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch sources' }
+      }
+    },
+
+    async delete(sourceId: string): Promise<ApiResponse<{ message: string }>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/sources/${sourceId}`, {
+          method: 'DELETE',
+        })
+
+        if (!response.ok) {
+          return { error: 'Failed to delete source' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to delete source' }
+      }
+    },
+
+    async stats(): Promise<ApiResponse<StatsResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/sources/stats`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch stats' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch stats' }
+      }
+    },
+  },
+
+  // Chat
+  chat: {
+    async ask(query: string, options?: Omit<ChatRequest, 'query'>): Promise<ApiResponse<ChatResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/chat/ask`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query,
+            ...options,
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Query failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Query failed' }
+      }
+    },
+  },
+
+  // Inner Council
+  council: {
+    async consult(persona: string, context: string, question: string): Promise<ApiResponse<CouncilResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/council/consult`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            persona,
+            context,
+            question,
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Consultation failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Consultation failed' }
+      }
+    },
+
+    async listPersonas(): Promise<ApiResponse<Array<{ id: string; name: string; description: string }>>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/council/personas`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch personas' }
+        }
+
+        const data = await response.json()
+        return { data: data.personas || [] }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch personas' }
+      }
+    },
+  },
+
+  // Health Check
+  async health(): Promise<ApiResponse<{ status: string; version: string }>> {
+    try {
+      const response = await fetch(`${API_BASE}/health`)
+
+      if (!response.ok) {
+        return { error: 'Health check failed' }
+      }
+
+      const data = await response.json()
+      return { data }
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : 'Health check failed' }
+    }
+  },
 }
 
-/**
- * Get list of available council personas
- */
-export async function getPersonas(): Promise<{
-  personas: Array<{ id: string; name: string; role: string; expertise: string[] }>
-}> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/council/personas`);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch personas: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-
-  // Transform backend schema to frontend schema
-  return {
-    personas: data.personas.map((p: any) => ({
-      id: p.name,
-      name: p.display_name,
-      role: p.description,
-      expertise: p.tags,
-    })),
-  };
-}
+export default api

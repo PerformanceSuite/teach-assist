@@ -1,16 +1,16 @@
 /**
- * FeatureOverview - Card-based overview of main TeachAssist features (for new users)
+ * FeatureOverview - Card-based overview of TeachAssist features (for new users)
  */
 
 'use client'
 
 import { useRouter } from 'next/navigation'
 import {
-  FileText,
+  BookOpen,
   MessageSquare,
   Users,
-  BookOpen,
-  Shield,
+  Upload,
+  GraduationCap,
   Sparkles
 } from 'lucide-react'
 
@@ -20,57 +20,57 @@ interface Feature {
   description: string
   icon: React.ElementType
   color: string
-  route: string
+  href: string
 }
 
 const FEATURES: Feature[] = [
   {
-    id: 'sources',
+    id: 'notebook-mode',
     title: 'Notebook Mode',
-    description: 'Upload curriculum standards, lesson plans, and teaching materials for grounded AI assistance.',
-    icon: FileText,
+    description: 'Upload curriculum sources and get grounded, citation-backed answers to your questions.',
+    icon: BookOpen,
     color: 'from-emerald-500/20 to-emerald-600/10',
-    route: '/sources',
+    href: '/sources',
   },
   {
     id: 'chat',
     title: 'Grounded Chat',
-    description: 'Ask questions about your uploaded sources and get accurate, citation-backed answers.',
+    description: 'Ask questions about your sources and get accurate answers with citations.',
     icon: MessageSquare,
     color: 'from-blue-500/20 to-blue-600/10',
-    route: '/chat',
+    href: '/chat',
   },
   {
     id: 'council',
     title: 'Inner Council',
-    description: 'Consult specialized AI advisors for standards alignment, differentiation, and teaching strategies.',
+    description: 'Consult specialized AI advisors for standards alignment, equity, and pedagogical guidance.',
     icon: Users,
-    color: 'from-indigo-500/20 to-indigo-600/10',
-    route: '/council',
-  },
-  {
-    id: 'knowledge',
-    title: 'Knowledge Base',
-    description: 'Organize and search across all your teaching materials in one place.',
-    icon: BookOpen,
     color: 'from-purple-500/20 to-purple-600/10',
-    route: '/sources',
+    href: '/council',
   },
   {
-    id: 'privacy',
-    title: 'Privacy First',
-    description: 'Your student data stays private. TeachAssist never grades assignments or makes decisions.',
-    icon: Shield,
-    color: 'from-gray-500/20 to-gray-600/10',
-    route: '/privacy',
+    id: 'sources',
+    title: 'Knowledge Base',
+    description: 'Manage your uploaded documents, lesson plans, and teaching materials.',
+    icon: Upload,
+    color: 'from-orange-500/20 to-orange-600/10',
+    href: '/sources',
   },
   {
-    id: 'assistant',
-    title: 'AI Assistant',
-    description: 'Get contextual suggestions and shortcuts to speed up your teaching workflow.',
+    id: 'grading',
+    title: 'Grade Studio',
+    description: 'Batch grading with AI-generated feedback drafts while maintaining your voice (coming soon).',
+    icon: GraduationCap,
+    color: 'from-indigo-500/20 to-indigo-600/10',
+    href: '#',
+  },
+  {
+    id: 'planning',
+    title: 'Sunday Rescue Mode',
+    description: 'Quick lesson planning assistance using UbD framework (coming soon).',
     icon: Sparkles,
     color: 'from-pink-500/20 to-pink-600/10',
-    route: '/',
+    href: '#',
   },
 ]
 
@@ -87,8 +87,9 @@ export function FeatureOverview() {
         {FEATURES.map((feature) => (
           <button
             key={feature.id}
-            onClick={() => router.push(feature.route)}
-            className={`p-5 rounded-xl bg-gradient-to-br ${feature.color} border border-cc-border hover:border-cc-accent/50 transition-all duration-200 text-left group`}
+            onClick={() => feature.href !== '#' && router.push(feature.href)}
+            className={`p-5 rounded-xl bg-gradient-to-br ${feature.color} border border-gray-700 hover:border-indigo-500/50 transition-all duration-200 text-left group ${feature.href === '#' ? 'cursor-not-allowed opacity-60' : ''}`}
+            disabled={feature.href === '#'}
           >
             <feature.icon className="w-8 h-8 text-white/80 mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-medium text-white mb-1">{feature.title}</h3>

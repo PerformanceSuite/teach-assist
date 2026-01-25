@@ -1,5 +1,5 @@
 /**
- * WelcomePage - Default landing page with teacher dashboard
+ * Welcome Page - Default landing page with teacher dashboard
  */
 
 'use client'
@@ -8,31 +8,30 @@ import { WelcomeHero } from '../components/Welcome/WelcomeHero'
 import { QuickStartSection } from '../components/Welcome/QuickStartSection'
 import { RecentActivitySection } from '../components/Welcome/RecentActivitySection'
 import { FeatureOverview } from '../components/Welcome/FeatureOverview'
-import { useRecentActivity } from '../hooks/useRecentActivity'
-import { useOnboardingStore } from '../stores/onboardingStore'
-import { useCouncilStore } from '../stores/councilStore'
+import { useState, useEffect } from 'react'
 
-export default function Home() {
-  const { activities, loading } = useRecentActivity(8)
-  const { hasCompletedOnboarding } = useOnboardingStore()
-  const { setFeedOpen } = useCouncilStore()
+export default function WelcomePage() {
+  const [activities, setActivities] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // TODO: Fetch recent activity from backend
+    // For now, show empty state
+    setLoading(false)
+    setActivities([])
+  }, [])
 
   // Check if this is a new user (no activity)
-  const isNewUser = !hasCompletedOnboarding || activities.length === 0
+  const isNewUser = activities.length === 0
 
   return (
-    <div
-      className="h-full overflow-auto p-6 bg-[#0a0b0d]"
-      data-onboarding="welcome-page"
-    >
+    <div className="h-full overflow-auto p-6 bg-gray-950">
       <div className="max-w-5xl mx-auto">
         {/* Hero */}
         <WelcomeHero />
 
         {/* Quick Start Actions */}
-        <QuickStartSection
-          onOpenCouncil={() => setFeedOpen(true)}
-        />
+        <QuickStartSection />
 
         {/* Recent Activity */}
         <RecentActivitySection activities={activities} loading={loading} />
