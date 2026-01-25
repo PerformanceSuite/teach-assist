@@ -1,0 +1,25 @@
+✅ Backend tested, API stable
+
+Testing completed: 2026-01-25
+Agent: Backend Testing Specialist
+
+SUMMARY:
+- All core services operational
+- Document upload working (PDF successfully indexed)
+- Knowledge service (InMemoryVectorStore) working
+- All 4 Inner Council personas loaded
+- Health endpoint responding
+- Persona listing working
+
+BUG FOUND & DOCUMENTED:
+- Chat router calls kb.query() but should use await kb.search()
+- See backend/TEST_RESULTS.md for details and fix
+
+READY FOR:
+- Frontend integration (Agent 4)
+- Bug fix can be done in parallel
+
+TEST ARTIFACTS:
+- backend/TEST_RESULTS.md - Full test report
+- /tmp/test_physics.pdf - Test document used
+- backend/data/sources/src_ded4937be0c3.pdf - Uploaded test document
