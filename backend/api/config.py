@@ -40,9 +40,12 @@ class Settings(BaseSettings):
     # Auth
     nextauth_secret: str = ""
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "env_prefix": "TA_",  # All env vars prefixed with TA_ to avoid chromadb conflicts
+        "extra": "ignore",  # Ignore extra environment variables (like chromadb's own vars)
+    }
 
     @property
     def personas_path(self) -> Path:

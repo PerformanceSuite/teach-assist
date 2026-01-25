@@ -20,11 +20,12 @@ PyYAML>=6.0
 python-dotenv>=1.0.0
 
 # KnowledgeBeast Dependencies
-chromadb>=0.4.22
+chromadb>=0.3.23,<1.0.0  # Using 0.3.x with pydantic v2 monkey-patch
 sentence-transformers>=2.2.2
 pypdf>=3.17.0
 python-docx>=1.1.0
 tiktoken>=0.5.2
+pydantic-settings>=2.1.0  # Required for chromadb compatibility with pydantic v2
 
 # AI/LLM
 anthropic>=0.18.0
