@@ -18,3 +18,5 @@ chroma/
 # Environment
 .env
 .env.local
+*.log
+*.pid
