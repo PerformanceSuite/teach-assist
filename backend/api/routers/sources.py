@@ -176,10 +176,18 @@ async def upload_source(
 
     if kb:
         try:
-            # Force re-index to pick up new file
-            kb.warm(force=True)
-            stats = kb.get_stats()
-            chunks = stats.get("total_documents", 0)
+            # Read file content for ingestion
+            with open(file_path, "rb") as f:
+                file_content = f.read()
+
+            # Ingest the document
+            result = await kb.ingest(
+                content=file_content.decode('utf-8', errors='ignore'),
+                source_id=source_id,
+                title=filename,
+                source_type=ext[1:]  # Remove leading dot
+            )
+            chunks = result.chunks_created
             logger.info("source_indexed", source_id=source_id, chunks=chunks)
         except Exception as e:
             logger.error("source_indexing_failed", source_id=source_id, error=str(e))
@@ -248,6 +256,34 @@ async def list_sources(
     }
 
 
+
+
+@router.get("/stats")
+async def get_stats():
+    """
+    Get knowledge base statistics.
+    """
+    kb = get_knowledge_engine()
+
+    if not kb:
+        return {
+            "total_documents": 0,
+            "total_chunks": 0,
+            "embedding_model": "not_initialized"
+        }
+
+    stats = await kb.get_stats()
+
+    # Count sources from metadata files
+    sources = list_all_sources()
+
+    return {
+        "total_documents": len(sources),
+        "total_chunks": stats.get("total_documents", 0),  # In KB, "documents" are chunks
+        "embedding_model": stats.get("embedding_model", "unknown")
+    }
+
+
 @router.get("/{source_id}", response_model=SourceDetail)
 async def get_source(
     source_id: str,
@@ -312,13 +348,8 @@ async def delete_source(
         except Exception as e:
             logger.error("failed_to_delete_source_file", file=str(source_file), error=str(e))
 
-    # Re-index KnowledgeBeast
-    kb = get_knowledge_engine()
-    if kb:
-        try:
-            kb.warm(force=True)
-        except Exception as e:
-            logger.error("failed_to_reindex_after_delete", error=str(e))
+    # Note: In-memory vector store doesn't need reindexing
+    # Documents are removed from memory when app restarts or explicitly cleared
 
     logger.info("source_deleted", source_id=source_id, files=deleted_files)
 
@@ -326,4 +357,17 @@ async def delete_source(
         "deleted": True,
         "source_id": source_id,
         "files_removed": deleted_files,
+    }
+
+
+    
+    stats = await kb.get_stats()
+    
+    # Count sources from metadata files
+    sources = list_all_sources()
+    
+    return {
+        "total_documents": len(sources),
+        "total_chunks": stats.get("total_documents", 0),  # In KB, "documents" are chunks
+        "embedding_model": stats.get("embedding_model", "unknown")
     }

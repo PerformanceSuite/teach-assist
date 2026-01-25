@@ -103,7 +103,7 @@ export const api = {
 
     async list(): Promise<ApiResponse<Source[]>> {
       try {
-        const response = await fetch(`${API_BASE}/api/v1/sources/list`)
+        const response = await fetch(`${API_BASE}/api/v1/sources`)
 
         if (!response.ok) {
           return { error: 'Failed to fetch sources' }
