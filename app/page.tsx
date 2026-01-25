@@ -1,5 +1,6 @@
 /**
  * Welcome Page - Default landing page with teacher dashboard
+ * Adapted from CC4 WelcomePage
  */
 
 'use client'
@@ -8,18 +9,12 @@ import { WelcomeHero } from '../components/Welcome/WelcomeHero'
 import { QuickStartSection } from '../components/Welcome/QuickStartSection'
 import { RecentActivitySection } from '../components/Welcome/RecentActivitySection'
 import { FeatureOverview } from '../components/Welcome/FeatureOverview'
-import { useState, useEffect } from 'react'
+import { useRecentActivity } from '../hooks/useRecentActivity'
+import { useState } from 'react'
 
 export default function WelcomePage() {
-  const [activities, setActivities] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    // TODO: Fetch recent activity from backend
-    // For now, show empty state
-    setLoading(false)
-    setActivities([])
-  }, [])
+  const { activities, loading } = useRecentActivity(8)
+  const [helpOpen, setHelpOpen] = useState(false)
 
   // Check if this is a new user (no activity)
   const isNewUser = activities.length === 0
@@ -31,7 +26,7 @@ export default function WelcomePage() {
         <WelcomeHero />
 
         {/* Quick Start Actions */}
-        <QuickStartSection />
+        <QuickStartSection onOpenHelp={() => setHelpOpen(true)} />
 
         {/* Recent Activity */}
         <RecentActivitySection activities={activities} loading={loading} />

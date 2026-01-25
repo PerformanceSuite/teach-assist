@@ -1,12 +1,13 @@
 /**
  * Hook to fetch recent activity across all entity types
+ * Adapted for TeachAssist from CC4
  */
 
 import { useState, useEffect } from 'react'
 
 export interface ActivityItem {
   id: string
-  type: 'chat' | 'source' | 'council' | 'upload'
+  type: 'document' | 'chat' | 'council'
   title: string
   description?: string
   status?: string
@@ -25,32 +26,43 @@ export function useRecentActivity(limit = 10) {
       setError(null)
 
       try {
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'
-
-        // Fetch from TeachAssist backend endpoints
-        const [sourcesRes] = await Promise.allSettled([
-          fetch(`${API_BASE}/api/v1/sources/list`).then(r => r.json()),
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'
+        
+        // Fetch from multiple endpoints in parallel
+        const [documentsRes, chatsRes] = await Promise.allSettled([
+          fetch(`${apiUrl}/api/v1/sources/list`).then(r => r.json()),
+          fetch(`${apiUrl}/api/v1/chat/history`).then(r => r.json()),
         ])
 
         const items: ActivityItem[] = []
 
-        // Process uploaded sources
-        if (sourcesRes.status === 'fulfilled' && Array.isArray(sourcesRes.value.sources)) {
-          sourcesRes.value.sources.forEach((source: any) => {
+        // Process documents
+        if (documentsRes.status === 'fulfilled' && Array.isArray(documentsRes.value)) {
+          documentsRes.value.forEach((doc: any) => {
             items.push({
-              id: source.id,
-              type: 'source',
-              title: source.title || source.filename,
-              description: source.description || `${source.type} document`,
-              status: 'uploaded',
-              createdAt: new Date(source.created_at || source.uploadedAt),
-              updatedAt: source.updated_at ? new Date(source.updated_at) : undefined,
+              id: doc.id,
+              type: 'document',
+              title: doc.title || doc.name || 'Untitled Document',
+              description: doc.description || `Uploaded document`,
+              createdAt: new Date(doc.created_at || doc.createdAt || Date.now()),
+              updatedAt: doc.updated_at ? new Date(doc.updated_at) : undefined,
             })
           })
         }
 
-        // TODO: Add chat history when endpoint is ready
-        // TODO: Add council consultations when endpoint is ready
+        // Process chats
+        if (chatsRes.status === 'fulfilled' && Array.isArray(chatsRes.value)) {
+          chatsRes.value.forEach((chat: any) => {
+            items.push({
+              id: chat.id,
+              type: 'chat',
+              title: chat.query || chat.question || 'Chat Query',
+              description: chat.answer ? chat.answer.substring(0, 100) + '...' : undefined,
+              createdAt: new Date(chat.created_at || chat.createdAt || Date.now()),
+              updatedAt: chat.updated_at ? new Date(chat.updated_at) : undefined,
+            })
+          })
+        }
 
         // Sort by most recent (updated or created)
         items.sort((a, b) => {
@@ -64,6 +76,8 @@ export function useRecentActivity(limit = 10) {
       } catch (err) {
         setError('Failed to fetch recent activity')
         console.error('Error fetching activity:', err)
+        // For development, set empty array instead of failing
+        setActivities([])
       } finally {
         setLoading(false)
       }
