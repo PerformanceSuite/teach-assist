@@ -160,3 +160,41 @@ export async function checkHealth(): Promise<{ status: string; version: string; 
 
   return response.json();
 }
+
+/**
+ * Inner Council - Consult a persona
+ */
+export async function consultCouncil(
+  persona: string,
+  context: string,
+  question: string
+): Promise<{ response: string; persona: string; context: string }> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/council/consult`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ persona, context, question }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Council consultation failed: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get list of available council personas
+ */
+export async function getPersonas(): Promise<{
+  personas: Array<{ id: string; name: string; role: string; expertise: string[] }>
+}> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/council/personas`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch personas: ${response.statusText}`);
+  }
+
+  return response.json();
+}
