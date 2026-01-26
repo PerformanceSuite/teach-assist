@@ -24,7 +24,7 @@ The Welcome Dashboard serves as the landing page for TeachAssist, providing teac
 **Changes Made:**
 - Changed icon from `Sparkles` to `GraduationCap` (teacher-themed)
 - Updated description from CommandCenter to TeachAssist
-- Emphasized "Notebook Mode" and "Inner Council" features
+- Emphasized "Knowledge Base" and "Inner Council" features
 - Kept time-based greeting logic unchanged
 
 **Original:**
@@ -36,7 +36,7 @@ manage ventures, and make better decisions with AI-powered insights.
 **Adapted:**
 ```tsx
 TeachAssist is your intelligent teaching companion. Upload curriculum sources,
-ask grounded questions with Notebook Mode, and consult your Inner Council of AI advisors
+ask grounded questions with Knowledge Base, and consult your Inner Council of AI advisors
 for expert feedback.
 ```
 
@@ -106,7 +106,7 @@ for expert feedback.
 | Feature | Icon | Description |
 |---------|------|-------------|
 | Inner Council | Users | Four AI advisors: Standards Guardian, Equity Advocate, Pedagogy Expert, Time Protector |
-| Notebook Mode | MessageSquare | Ask questions, get grounded answers from uploaded sources |
+| Knowledge Base | MessageSquare | Ask questions, get grounded answers from uploaded sources |
 | Curriculum Sources | BookOpen | Upload/organize standards, lesson plans, resources |
 | AI-Powered Insights | Brain | Contextual suggestions and recommendations |
 | Quick Reference | Lightbulb | Keyboard shortcuts and searchable help |
@@ -191,7 +191,7 @@ Replaced CC4's custom color variables with Tailwind defaults:
 ### 3. **Teacher-Centric Language**
 - "Upload curriculum sources" instead of "Create a goal"
 - "Consult Inner Council" instead of "Review Intelligence"
-- "Notebook Mode" instead of "Strategic Canvas"
+- "Knowledge Base" instead of "Strategic Canvas"
 - Emphasized teaching workflows over generic productivity
 
 ### 4. **Error Handling**
@@ -216,7 +216,7 @@ Replaced CC4's custom color variables with Tailwind defaults:
 - **Expected behavior:** Opens source upload page
 
 ### 2. **Ask a Question**
-- **Purpose:** Query uploaded sources with Notebook Mode
+- **Purpose:** Query uploaded sources with Knowledge Base
 - **Route:** `/chat`
 - **Backend:** `POST /api/v1/chat/ask`
 - **Expected behavior:** Opens chat interface

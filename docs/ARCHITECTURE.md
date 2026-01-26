@@ -13,10 +13,13 @@
 - Local storage (JSON) for v0; optional DB later
 
 ## App Areas
-- `/` Landing
-- `/app` Authenticated portal shell (Today, Notebook, Plan, Grade, Relationships, Ideas, Professional)
+- `/` Landing/Welcome Dashboard
+- `/app` Authenticated portal shell (Today, Sources, Plan, Grade, Relationships, Ideas, Professional)
+- `/sources` Knowledge Base / document management
+- `/chat` Grounded Q&A
+- `/council` Inner Council advisors
 - `/api/auth/*` NextAuth routes
-- `/api/*` App APIs (later)
+- `/api/*` App APIs
 
 ## Data Model (v0, minimal)
 - Teacher profile (self-authored)

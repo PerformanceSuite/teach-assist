@@ -35,7 +35,7 @@ Introduction to TeachAssist core features and workflows.
 
 ---
 
-### 2. Notebook Mode (3 articles)
+### 2. Knowledge Base (3 articles)
 Managing curriculum sources and knowledge base.
 
 | Article ID | Title | Tags | Description |
@@ -174,7 +174,7 @@ Quick navigation and productivity shortcuts.
 
 ---
 
-### Notebook Mode Articles
+### Knowledge Base Articles
 
 #### 4. What Documents Should I Upload?
 **File:** `data/helpContent.ts` (id: `nb-what-to-upload`)

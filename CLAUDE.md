@@ -1,19 +1,18 @@
 # CLAUDE.md - TeachAssist Execution Guide
 
 > **This file guides autonomous execution via Claude Code CLI**
-> **Last Updated:** 2026-01-25
+> **Last Updated:** 2026-01-26
 
 ---
 
 ## 🎯 CURRENT MISSION
 
-**Build TeachAssist v0.1 Pilot** - Teacher OS with AI-powered Notebook Mode + Inner Council
+**Build TeachAssist v0.1 Pilot** - Teacher OS with Knowledge Base + Inner Council
 
 **Key Insight:** TeachAssist is a CC4 fork. Reuse proven components, adapt for teachers.
 
-**Current Phase:** Frontend Integration (Backend 85% complete)
-**Next Task:** Copy Welcome Dashboard from CC4
-**Execution Plan:** `docs/FINAL_PLAN.md` (consolidated, reflects reality)
+**Current Phase:** Frontend Integration (Backend ~85% complete)
+**Status:** `docs/STATUS.md`
 
 ---
 
@@ -40,11 +39,9 @@
 - [x] **Dependencies Updated** - Removed chromadb, simplified requirements
 - [x] **Configuration** - Added kb_* settings for compatibility
 
-### Documentation - COMPLETE
-- [x] `docs/FINAL_PLAN.md` - Consolidated execution plan
+### Documentation
 - [x] `docs/CC4_REUSE_GUIDE.md` - Component mapping from CC4
 - [x] `docs/STATUS.md` - Detailed progress tracking
-- [x] `backend/CHROMADB_COMPAT.md` - Solution documented
 
 **Key Discovery:** CC4 uses InMemoryVectorStore (numpy-based), not ChromaDB!
 
@@ -89,11 +86,10 @@
 
 | Purpose | Path |
 |---------|------|
-| **Final Plan** | `docs/FINAL_PLAN.md` ⭐ START HERE |
-| CC4 Reuse Guide | `docs/CC4_REUSE_GUIDE.md` |
-| Status Tracking | `docs/STATUS.md` |
+| **Status** | `docs/STATUS.md` ⭐ |
+| PRD | `PRD.md` |
 | API Spec | `docs/API_SPEC.md` |
-| Backend | `backend/api/main.py` |
+| Backend Entry | `backend/api/main.py` |
 | Knowledge Service | `backend/libs/knowledge_service.py` |
 | Personas | `personas/*.yaml` (4 files) |
 
@@ -171,23 +167,20 @@ curl -X POST http://localhost:8002/api/v1/council/consult \
 
 ## 🎯 SUCCESS CRITERIA (v0.1 Pilot)
 
-**Goal:** Prove Notebook Mode + Inner Council concept works for teachers
+**Goal:** Prove Knowledge Base + Inner Council concept works for teachers
 
 | Feature | Backend | Frontend | Status |
 |---------|---------|----------|--------|
 | Upload curriculum sources | ✅ | 🔴 | 50% |
 | Ask grounded questions | ✅ | 🔴 | 50% |
 | Inner Council consultation | ✅ | 🔴 | 50% |
-| Welcome Dashboard | N/A | 🔴 | 0% |
-| AI Assistant suggestions | N/A | 🔴 | 0% |
-| Help Center | N/A | 🔴 | 0% |
-| Keyboard shortcuts | N/A | 🔴 | 0% |
+| Welcome Dashboard | N/A | 🟡 | 30% |
+| Help Center | N/A | 🟡 | 30% |
 
 **Pilot Complete When:**
 - ✅ Teacher can upload sources and get grounded answers
 - ✅ Inner Council provides structured advisory feedback
 - ✅ Welcome Dashboard shows teacher-specific actions
-- ✅ AI Assistant shows contextual suggestions
 - ✅ Help Center has searchable documentation
 
 ---

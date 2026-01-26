@@ -19,12 +19,12 @@ TeachAssist is **not** an “AI teacher.” It is a **human-centered co-pilot**:
 - AI drafts; teachers approve.
 - AI is transparent, constrained, and grounded.
 
-The pilot is designed to deliver immediate value for an overwhelmed 6th–7th grade Math/Science teacher in Washington State:
-- **Sunday Rescue Mode:** batch narrative comments + “plan Tuesday (or the full week)” in minutes.
-- **Notebook Mode:** grounded chat over uploaded sources (NotebookLM-like workflow) embedded in planning & grading.
+The pilot is designed to deliver immediate value for an overwhelmed 6th–7th grade IB Science teacher:
+- **Knowledge Base:** upload curriculum sources (PDFs, rubrics, standards docs) and ask grounded questions with citations.
+- **Inner Council:** AI advisory personas (Standards Guardian, Pedagogy Coach, Equity Advocate, Time Optimizer) that review work and ask reflective questions.
+- **Narrative Comment Synthesis:** help teachers transform scattered semester data (grades, formatives, check-ins) into coherent student narratives.
 - **Relationships Hub:** teacher-parent/student/staff messaging assistance with tone controls and thread summaries.
-- **Ideas & Hypothesis Center:** structured “teaching R&D” to learn what works over time.
-- **Professional Portal:** credentials + interactive resume; optional “AI Interview Mode” (consent-based) grounded in teacher artifacts.
+- **Professional Portal:** credentials + interactive resume; optional "AI Interview Mode" (consent-based) grounded in teacher artifacts.
 
 ---
 
@@ -117,10 +117,10 @@ TeachAssist encodes a repeatable design flow:
 TeachAssist is organized as a calm, professional portal with the following primary rooms:
 
 1. **Today Dashboard**
-   - What’s due next (grading queue, tomorrow’s plan, drafts needing approval)
-   - “Sunday Rescue Mode” entry point
-2. **Notebook**
-   - Sources + grounded chat + transforms
+   - What's due next (grading queue, tomorrow's plan, drafts needing approval)
+   - Quick access to key workflows
+2. **Sources & Knowledge Base**
+   - Upload curriculum documents + grounded chat + transforms
 3. **Plan Studio**
    - UbD-guided unit/lesson builder
    - Weekly planner
@@ -148,18 +148,18 @@ TeachAssist is organized as a calm, professional portal with the following prima
 - Insights (misconceptions, patterns)
 - Instant Capture quick entry
 
-### 5.2 Notebook Mode (NotebookLM-Compatible)
+### 5.2 Knowledge Base (Sources + Grounded Chat)
 
-Notebook Mode provides a grounded knowledge workspace for teachers.
+The Knowledge Base provides a grounded workspace where teachers upload curriculum materials and ask questions that are answered with citations.
 
 **Source types**
 - PDFs, docs, links
-- Rubrics, exemplars
-- Teacher notes
-- Imported NotebookLM outputs (notes, tables, summaries)
+- Rubrics, exemplars, standards documents
+- Teacher notes, assessment data
+- IB criteria documentation
 
 **Grounded chat rules**
-- Must ground answers in sources
+- Must ground answers in uploaded sources
 - Cite passages when applicable
 - If insufficient evidence: say so (no invention)
 
@@ -170,9 +170,10 @@ Notebook Mode provides a grounded knowledge workspace for teachers.
 - Week plan generation
 - Rubric drafting
 
-**Interop**
-- Export a “source pack” to upload into NotebookLM
-- Import NotebookLM artifacts as TeachAssist notes
+**Privacy-first design**
+- Teachers control what gets uploaded
+- Student identifiers should be pseudonymous (e.g., initials) for FERPA/COPPA compliance
+- No automatic data collection
 
 ### 5.3 Plan Studio (UbD Flow)
 

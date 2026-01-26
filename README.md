@@ -7,8 +7,8 @@
 **Teacher-first AI assistant with grounded Q&A and advisory personas.**
 
 TeachAssist helps teachers work with curriculum materials through:
-- **Notebook Mode:** Upload and query curriculum documents with semantic search
-- **Grounded Chat:** Ask questions and get answers grounded in your sources
+- **Knowledge Base:** Upload curriculum documents and get answers grounded in your sources
+- **Grounded Chat:** Ask questions with semantic search and citations
 - **Inner Council:** Four specialized AI advisors for teaching decisions
 - **Keyboard-first:** Navigate efficiently with shortcuts
 
@@ -92,11 +92,11 @@ npm run dev
 
 ## 📚 Features
 
-### Notebook Mode (Sources)
+### Knowledge Base (Sources)
 - Upload curriculum documents (PDF, DOCX, TXT)
 - Semantic search with InMemoryVectorStore
 - Document management (list, view, delete)
-- 15 sources indexed during testing
+- Privacy-first: teachers control what gets uploaded
 
 ### Grounded Chat
 - Ask questions about uploaded sources
@@ -172,7 +172,7 @@ TeachAssist/
 │   ├── Welcome/                 # Dashboard components
 │   ├── AIAssistant/             # AI Assistant sidebar
 │   ├── HelpCenter/              # Help documentation
-│   └── notebook/                # Source/chat components
+│   └── Sources/                 # Source/chat components
 ├── backend/
 │   ├── api/                     # FastAPI application
 │   │   ├── routers/            # API endpoints
@@ -233,13 +233,13 @@ See [`INTEGRATION_TEST_RESULTS.md`](./INTEGRATION_TEST_RESULTS.md) for detailed 
 
 ## 🎯 Roadmap
 
-### v0.1 Pilot (✅ Complete)
-- ✅ Notebook Mode with document upload
+### v0.1 Pilot (In Progress)
+- ✅ Knowledge Base with document upload
 - ✅ Grounded Q&A with RAG
 - ✅ Inner Council (4 advisors)
-- ✅ Welcome Dashboard
-- ✅ AI Assistant & Help Center
-- ✅ Keyboard shortcuts
+- 🟡 Welcome Dashboard (partial)
+- 🟡 Help Center (partial)
+- 🟡 Frontend-backend integration (in progress)
 
 ### v0.2 (Planned)
 - Grade Studio (batch grading with AI feedback drafts)
@@ -370,7 +370,7 @@ TeachAssist is designed for educational use with ethical commitments to teacher 
 ---
 
 **Version:** v0.1 Pilot
-**Last Updated:** 2026-01-25
-**Status:** Ready for teacher pilot testing ✅
+**Last Updated:** 2026-01-26
+**Status:** In development - backend complete, frontend integration in progress
 
 🎉 **Welcome to TeachAssist!**

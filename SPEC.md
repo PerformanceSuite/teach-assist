@@ -53,8 +53,8 @@ Existing tools either:
 │                        TeachAssist                               │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
-│  │   Notebook  │  │   Inner     │  │   Welcome   │             │
-│  │    Mode     │  │   Council   │  │  Dashboard  │             │
+│  │  Knowledge  │  │   Inner     │  │   Welcome   │             │
+│  │    Base     │  │   Council   │  │  Dashboard  │             │
 │  │ (RAG Chat)  │  │ (Advisors)  │  │             │             │
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                                                                  │
@@ -74,7 +74,7 @@ Existing tools either:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Notebook Mode (RAG)
+### 2.2 Knowledge Base (RAG)
 
 **Purpose:** Ask questions about uploaded curriculum and get grounded, cited answers.
 
@@ -210,7 +210,7 @@ Teacher                                                  Claude API
 
 | Version | Status | Focus |
 |---------|--------|-------|
-| **v0.1** | ✅ Complete | Notebook Mode + Inner Council + Dashboard |
+| **v0.1** | 🟡 In Progress | Knowledge Base + Inner Council + Dashboard |
 | **v0.2** | 🔜 Planned | Grade Studio + Plan Studio + Auth |
 | **v0.3** | 📋 Backlog | Sunday Rescue + Relationships Hub |
 | **v1.0** | 🎯 Target | Production-ready with mobile support |
@@ -389,7 +389,7 @@ Teacher                                                  Claude API
 |------|------------|
 | **Grounded Response** | AI answer based only on uploaded sources |
 | **Inner Council** | Four AI advisory personas |
-| **Notebook Mode** | RAG-based Q&A over documents |
+| **Knowledge Base** | Teacher's uploaded curriculum sources for RAG-based Q&A |
 | **RAG** | Retrieval-Augmented Generation |
 | **Persona** | AI character with specific focus and constraints |
 | **UbD** | Understanding by Design (backward design) |
@@ -430,5 +430,5 @@ ChromaDB has Pydantic v2 compatibility issues. InMemoryVectorStore (from CC4) is
 
 **This is a living document. Update it as the product evolves.**
 
-*Last updated: 2026-01-25*
+*Last updated: 2026-01-26*
 *Maintainer: TeachAssist Development Team*

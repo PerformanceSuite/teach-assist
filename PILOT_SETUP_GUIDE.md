@@ -407,7 +407,7 @@ After upload, you should see:
 
 **Categories:**
 - Getting Started (4 articles)
-- Notebook Mode / Sources (3 articles)
+- Knowledge Base / Sources (3 articles)
 - Inner Council (3 articles)
 - Grading (3 articles - future features)
 - Privacy & Ethics (3 articles)
