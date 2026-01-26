@@ -16,3 +16,13 @@
 (Use `node --trace-warnings ...` to show where the warning was created)
  GET / 200 in 1325ms
  GET / 200 in 37ms
+ ✓ Compiled in 85ms (289 modules)
+ ⚠ Found a change in next.config.mjs. Restarting the server to apply the changes...
+   ▲ Next.js 15.5.9
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.240.184:3001
+   - Environments: .env.local
+
+ ✓ Starting...
+ ○ (pwa) PWA support is disabled.
+ ✓ Ready in 1295ms

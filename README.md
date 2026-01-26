@@ -1,4 +1,8 @@
-# 🎓 TeachAssist v0.1 Pilot
+# TeachAssist
+
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/PerformanceSuite/teach-assist)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+[![Status](https://img.shields.io/badge/status-pilot-orange.svg)](./MASTER_PLAN.md)
 
 **Teacher-first AI assistant with grounded Q&A and advisory personas.**
 
@@ -207,22 +211,23 @@ See [`INTEGRATION_TEST_RESULTS.md`](./INTEGRATION_TEST_RESULTS.md) for detailed 
 
 ---
 
-## 📖 Documentation
+## Documentation
 
-### Setup & Usage
-- **[PILOT_SETUP_GUIDE.md](./PILOT_SETUP_GUIDE.md)** - Comprehensive teacher setup guide (START HERE)
-- **[MISSION_COMPLETE.md](./MISSION_COMPLETE.md)** - v0.1 completion summary
+### Core Documents
+| Document | Purpose |
+|----------|---------|
+| **[SPEC.md](./SPEC.md)** | Vision, architecture, and northstar |
+| **[MASTER_PLAN.md](./MASTER_PLAN.md)** | Execution plan and deployment |
+| **[CONTRIBUTING.md](./CONTRIBUTING.md)** | How to contribute |
+| **[PILOT_SETUP_GUIDE.md](./PILOT_SETUP_GUIDE.md)** | Teacher setup guide |
 
-### Technical Documentation
-- **[docs/API_CLIENT.md](./docs/API_CLIENT.md)** - API integration guide
-- **[docs/WELCOME_DASHBOARD.md](./docs/WELCOME_DASHBOARD.md)** - Dashboard components
-- **[docs/HELP_ARTICLES.md](./docs/HELP_ARTICLES.md)** - Help Center content
-- **[backend/TEST_RESULTS.md](./backend/TEST_RESULTS.md)** - Backend testing
-
-### Planning & Architecture
-- **[CLAUDE.md](./CLAUDE.md)** - Project instructions for AI agents
-- **[PRD.md](./PRD.md)** - Product requirements
-- **[docs/FINAL_PLAN.md](./docs/FINAL_PLAN.md)** - Implementation plan
+### Technical Reference
+| Document | Purpose |
+|----------|---------|
+| **[docs/API_SPEC.md](./docs/API_SPEC.md)** | API endpoint details |
+| **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** | Technical architecture |
+| **[PRD.md](./PRD.md)** | Original product requirements |
+| **[CLAUDE.md](./CLAUDE.md)** | AI agent instructions |
 
 ---
 
@@ -334,9 +339,11 @@ Your feedback shapes TeachAssist! Please share:
 
 ---
 
-## 📄 License
+## License
 
-[Add license information]
+MIT License - See [LICENSE](./LICENSE) for details.
+
+TeachAssist is designed for educational use with ethical commitments to teacher authority, student privacy, and transparency. See [SPEC.md](./SPEC.md) for our full ethical framework.
 
 ---
 
