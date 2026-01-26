@@ -1,5 +1,5 @@
 """TeachAssist API Routers."""
 
-from api.routers import chat, council, grading, health, planning, sources
+from api.routers import chat, council, grading, health, narratives, planning, sources
 
-__all__ = ["health", "sources", "chat", "council", "grading", "planning"]
+__all__ = ["health", "sources", "chat", "council", "grading", "planning", "narratives"]
