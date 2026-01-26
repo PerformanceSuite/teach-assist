@@ -17,6 +17,7 @@ The TeachAssist backend provides these API groups:
 | **Council** | Inner Council advisors | 4 |
 | **Grading** | Batch feedback workflows | 6 |
 | **Planning** | UbD lesson planning | 4 |
+| **Narratives** | Semester narrative comment synthesis | 6 |
 
 ---
 
@@ -639,6 +640,349 @@ List saved units.
 ### `GET /planning/units/{unit_id}`
 
 Get full unit details.
+
+---
+
+## Narratives API
+
+Semester narrative comment synthesis for student evaluations.
+
+### `POST /narratives/synthesize`
+
+Generate narrative comments for one or more students.
+
+**Request:**
+```json
+{
+  "class_name": "Science 6",
+  "semester": "Fall 2025",
+  "rubric_source_id": "src_ib_criteria",
+  "students": [
+    {
+      "initials": "JK",
+      "criteria_scores": {
+        "A_knowing": 6,
+        "B_inquiring": 5,
+        "C_processing": 7,
+        "D_reflecting": 5
+      },
+      "units_completed": ["Plate Tectonics", "Forces & Motion", "Ecosystems", "Matter"],
+      "observations": [
+        "Strong lab partner, helps others understand procedures",
+        "Science Fair project on soil erosion was thorough",
+        "Struggles with written explanations in lab reports",
+        "Improved significantly on Unit 4 summative"
+      ],
+      "formative_trend": "improving",
+      "notable_work": "Science Fair: Soil Erosion Investigation"
+    },
+    {
+      "initials": "MB",
+      "criteria_scores": {
+        "A_knowing": 7,
+        "B_inquiring": 7,
+        "C_processing": 6,
+        "D_reflecting": 4
+      },
+      "units_completed": ["Plate Tectonics", "Forces & Motion", "Ecosystems", "Matter"],
+      "observations": [
+        "Excellent conceptual understanding",
+        "Rushes through reflection sections",
+        "Strong quantitative analysis skills"
+      ],
+      "formative_trend": "consistent",
+      "notable_work": "Forces lab: pulley system design"
+    }
+  ],
+  "options": {
+    "tone": "encouraging",
+    "include_growth_area": true,
+    "council_review": ["equity-advocate"]
+  }
+}
+```
+
+**Request Fields:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `class_name` | string | yes | Class identifier (e.g., "Science 6", "Math 7") |
+| `semester` | string | yes | Semester identifier for context |
+| `rubric_source_id` | string | no | Source ID of uploaded rubric/criteria doc |
+| `students` | array | yes | Array of student data objects |
+| `students[].initials` | string | yes | Student identifier (FERPA-safe) |
+| `students[].criteria_scores` | object | yes | IB criteria scores (1-8 scale) or rubric scores |
+| `students[].units_completed` | array | no | List of units covered this semester |
+| `students[].observations` | array | yes | Teacher notes, observations, evidence |
+| `students[].formative_trend` | string | no | "improving", "consistent", "declining" |
+| `students[].notable_work` | string | no | Specific project/assignment to highlight |
+| `options.tone` | string | no | "encouraging" (default), "neutral", "direct" |
+| `options.include_growth_area` | bool | no | Include growth sentence (default: true) |
+| `options.council_review` | array | no | Personas to review drafts before returning |
+
+**Response:**
+```json
+{
+  "batch_id": "narr_abc123",
+  "class_name": "Science 6",
+  "semester": "Fall 2025",
+  "narratives": [
+    {
+      "initials": "JK",
+      "draft": "JK demonstrated consistent growth in scientific inquiry this semester, particularly in collaborative lab work where they supported peers in understanding experimental procedures. Their Science Fair investigation on soil erosion showcased strong research design and data collection skills aligned with IB Criterion B (Inquiring and Designing). To continue developing, JK should focus on strengthening written explanations in lab reports, particularly in the 'Evaluate' phase where conclusions connect back to hypotheses. With continued attention to scientific communication, JK is well-positioned for success in the spring semester.",
+      "structure": {
+        "achievement": "JK demonstrated consistent growth in scientific inquiry this semester, particularly in collaborative lab work where they supported peers in understanding experimental procedures.",
+        "evidence": "Their Science Fair investigation on soil erosion showcased strong research design and data collection skills aligned with IB Criterion B (Inquiring and Designing).",
+        "growth": "To continue developing, JK should focus on strengthening written explanations in lab reports, particularly in the 'Evaluate' phase where conclusions connect back to hypotheses.",
+        "outlook": "With continued attention to scientific communication, JK is well-positioned for success in the spring semester."
+      },
+      "criteria_summary": {
+        "strongest": "B_inquiring",
+        "growth_area": "D_reflecting"
+      },
+      "council_review": {
+        "equity-advocate": {
+          "approved": true,
+          "notes": "Language is growth-oriented and specific. No deficit framing detected."
+        }
+      },
+      "word_count": 89,
+      "status": "ready_for_review"
+    },
+    {
+      "initials": "MB",
+      "draft": "MB has shown excellent conceptual mastery across all units this semester, consistently demonstrating strong analytical thinking in both quantitative and qualitative work. Their Forces lab pulley system design exemplified sophisticated application of physics concepts aligned with IB Criterion A (Knowing and Understanding). An area for continued growth is the reflection process—taking time to thoroughly evaluate experimental outcomes and connect findings to broader scientific principles. MB's strong foundation positions them well for more independent inquiry work next semester.",
+      "structure": {
+        "achievement": "MB has shown excellent conceptual mastery across all units this semester, consistently demonstrating strong analytical thinking in both quantitative and qualitative work.",
+        "evidence": "Their Forces lab pulley system design exemplified sophisticated application of physics concepts aligned with IB Criterion A (Knowing and Understanding).",
+        "growth": "An area for continued growth is the reflection process—taking time to thoroughly evaluate experimental outcomes and connect findings to broader scientific principles.",
+        "outlook": "MB's strong foundation positions them well for more independent inquiry work next semester."
+      },
+      "criteria_summary": {
+        "strongest": "A_knowing",
+        "growth_area": "D_reflecting"
+      },
+      "council_review": {
+        "equity-advocate": {
+          "approved": true,
+          "notes": "Specific and balanced. Growth area framed constructively."
+        }
+      },
+      "word_count": 92,
+      "status": "ready_for_review"
+    }
+  ],
+  "patterns_detected": [
+    {
+      "pattern": "reflection_growth",
+      "description": "Multiple students show growth area in Criterion D (Reflecting)",
+      "affected_students": ["JK", "MB"],
+      "suggestion": "Consider adding explicit reflection scaffolds in spring semester"
+    }
+  ],
+  "processing_time_ms": 2340
+}
+```
+
+**Response Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `batch_id` | string | Unique identifier for this synthesis batch |
+| `narratives` | array | Generated narrative for each student |
+| `narratives[].draft` | string | Complete narrative comment (3-5 sentences) |
+| `narratives[].structure` | object | Breakdown by sentence purpose |
+| `narratives[].criteria_summary` | object | Strongest criterion and growth area |
+| `narratives[].council_review` | object | Advisory feedback if requested |
+| `narratives[].status` | string | "ready_for_review", "needs_attention" |
+| `patterns_detected` | array | Cross-student patterns for teacher insight |
+
+---
+
+### `POST /narratives/batch`
+
+Submit a larger batch (10+ students) for async processing.
+
+**Request:**
+```json
+{
+  "class_name": "Science 6",
+  "semester": "Fall 2025",
+  "rubric_source_id": "src_ib_criteria",
+  "students": [...],
+  "options": {
+    "cluster_similar": true,
+    "council_review": ["equity-advocate", "pedagogy-coach"]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "batch_id": "narr_batch_xyz789",
+  "student_count": 25,
+  "status": "processing",
+  "estimated_time_seconds": 60,
+  "webhook_url": null
+}
+```
+
+---
+
+### `GET /narratives/batch/{batch_id}`
+
+Check batch status and retrieve results.
+
+**Response (processing):**
+```json
+{
+  "batch_id": "narr_batch_xyz789",
+  "status": "processing",
+  "progress": {
+    "completed": 15,
+    "total": 25
+  }
+}
+```
+
+**Response (complete):**
+```json
+{
+  "batch_id": "narr_batch_xyz789",
+  "status": "complete",
+  "class_name": "Science 6",
+  "semester": "Fall 2025",
+  "narratives": [...],
+  "clusters": [
+    {
+      "cluster_id": "cluster_reflection",
+      "pattern": "Strong inquiry, needs reflection development",
+      "student_initials": ["JK", "MB", "TR", "SL"],
+      "shared_growth_area": "D_reflecting"
+    },
+    {
+      "cluster_id": "cluster_communication",
+      "pattern": "Strong concepts, needs written communication support",
+      "student_initials": ["AW", "KP", "RD"],
+      "shared_growth_area": "C_processing"
+    }
+  ],
+  "patterns_detected": [...],
+  "council_summary": {
+    "equity-advocate": "All narratives reviewed. 2 flagged for revision (deficit language).",
+    "pedagogy-coach": "Growth areas are specific and actionable across all drafts."
+  }
+}
+```
+
+---
+
+### `PUT /narratives/batch/{batch_id}/edit`
+
+Update a narrative draft after teacher review.
+
+**Request:**
+```json
+{
+  "initials": "JK",
+  "edited_draft": "JK showed strong growth in scientific inquiry this semester...",
+  "status": "approved"
+}
+```
+
+**Response:**
+```json
+{
+  "initials": "JK",
+  "status": "approved",
+  "updated_at": "2026-01-26T14:30:00Z"
+}
+```
+
+---
+
+### `GET /narratives/batch/{batch_id}/export`
+
+Export narratives for ISAMS or other systems.
+
+**Query Params:**
+- `format`: "csv" (default), "json", "txt"
+- `include_approved_only`: true/false (default: false)
+
+**Response (CSV):**
+```csv
+initials,narrative,status,word_count
+JK,"JK demonstrated consistent growth in scientific inquiry...",approved,89
+MB,"MB has shown excellent conceptual mastery...",approved,92
+```
+
+**Response (TXT - for paste into ISAMS):**
+```
+=== Science 6 - Fall 2025 Narrative Comments ===
+
+[JK]
+JK demonstrated consistent growth in scientific inquiry this semester...
+
+[MB]
+MB has shown excellent conceptual mastery across all units...
+```
+
+---
+
+### `POST /narratives/rubric/ib-science`
+
+Load standard IB MYP Science criteria into context.
+
+**Request:**
+```json
+{
+  "grade_band": "MYP3",
+  "include_descriptors": true
+}
+```
+
+**Response:**
+```json
+{
+  "rubric_id": "ib_myp3_science",
+  "criteria": [
+    {
+      "id": "A_knowing",
+      "name": "Knowing and Understanding",
+      "strand_i": "Describe scientific knowledge",
+      "strand_ii": "Apply scientific knowledge to solve problems",
+      "strand_iii": "Analyze and evaluate information",
+      "max_score": 8
+    },
+    {
+      "id": "B_inquiring",
+      "name": "Inquiring and Designing",
+      "strand_i": "Describe a problem or question",
+      "strand_ii": "Formulate a testable hypothesis",
+      "strand_iii": "Design scientific investigations",
+      "max_score": 8
+    },
+    {
+      "id": "C_processing",
+      "name": "Processing and Evaluating",
+      "strand_i": "Present collected and transformed data",
+      "strand_ii": "Interpret data and explain results",
+      "strand_iii": "Evaluate validity of hypothesis and method",
+      "max_score": 8
+    },
+    {
+      "id": "D_reflecting",
+      "name": "Reflecting on the Impacts of Science",
+      "strand_i": "Summarize the ways science is applied",
+      "strand_ii": "Describe and summarize implications",
+      "strand_iii": "Apply communication modes effectively",
+      "max_score": 8
+    }
+  ],
+  "loaded": true
+}
+```
 
 ---
 
