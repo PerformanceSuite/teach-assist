@@ -15,7 +15,7 @@ TeachAssist is a teacher-first professional operating system. The v0.1 pilot foc
 
 ## What's Built
 
-### Backend (FastAPI) - ~85% Complete
+### Backend (FastAPI) - ~95% Complete
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -23,6 +23,7 @@ TeachAssist is a teacher-first professional operating system. The v0.1 pilot foc
 | Sources API | ✅ Working | Upload, list, delete, search |
 | Chat API | ✅ Working | Grounded Q&A with citations |
 | Council API | ✅ Working | Persona consultation |
+| **Narratives API** | ✅ Working | Semester comment synthesis, IB criteria, batch processing |
 | Knowledge Service | ✅ Working | InMemoryVectorStore (numpy-based) |
 | Personas | ✅ Created | 4 YAML files in `personas/` |
 | Planning API | 🟡 Partial | Endpoints exist, not fully tested |
@@ -33,6 +34,7 @@ TeachAssist is a teacher-first professional operating system. The v0.1 pilot foc
 - `backend/api/routers/sources.py`
 - `backend/api/routers/chat.py`
 - `backend/api/routers/council.py`
+- `backend/api/routers/narratives.py` ⭐ NEW
 - `backend/api/routers/planning.py`
 - `backend/api/routers/grading.py`
 
@@ -141,9 +143,33 @@ npm run dev
 
 ---
 
+## Narratives API (NEW - 2026-01-26)
+
+The Narratives API is the core feature for the pilot user's workflow.
+
+**Endpoints:**
+- `POST /api/v1/narratives/synthesize` - Generate 1-10 student narratives (sync)
+- `POST /api/v1/narratives/batch` - Batch processing for 10+ students (async)
+- `GET /api/v1/narratives/batch/{id}` - Check status / retrieve results
+- `PUT /api/v1/narratives/batch/{id}/edit` - Teacher edits drafts
+- `GET /api/v1/narratives/batch/{id}/export` - Export CSV/TXT/JSON for ISAMS
+- `POST /api/v1/narratives/rubric/ib-science` - Load IB MYP criteria
+
+**Features:**
+- 4-sentence structure (achievement, evidence, growth, outlook)
+- IB MYP Science criteria built-in (Criteria A-D, 1-8 scale)
+- Student clustering by growth area
+- Cross-student pattern detection
+- Optional Inner Council review before teacher sees drafts
+- FERPA-safe by design (initials only)
+
+**Tested:** Rubric loading ✅, narrative synthesis ✅, TXT export ✅
+
+---
+
 ## Next Steps
 
-1. **Connect frontend to backend** - Wire up the existing UI components to the working API
-2. **Test end-to-end workflow** - Upload source, ask question, get grounded answer
-3. **Polish Welcome Dashboard** - Teacher-specific quick actions
+1. **Build Narratives UI** - Form to input students, display/edit narratives, export
+2. **Consider Google integration** - Sheets add-on or Drive integration for pilot user's existing workflow
+3. **Connect other frontend components** - Wire Sources, Chat, Council UI to backend
 4. **User testing** - Get pilot user feedback on the actual tool

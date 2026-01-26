@@ -184,9 +184,34 @@ Guided workflow:
 - Formative checks + exit tickets
 - Differentiation suggestions (IEP/504 aware *only if provided manually; no PII required*)
 
-### 5.4 Grade Studio (Grading Support)
+### 5.4 Narrative Comment Synthesis (✅ IMPLEMENTED)
 
-**Goal:** Make “~50 narrative comments” feasible without losing humanity.
+**Goal:** Transform scattered semester data into coherent student narratives.
+
+**Status:** Backend API complete and tested (2026-01-26)
+
+Capabilities:
+- Input: student initials, IB criteria scores (1-8), teacher observations, notable work
+- **4-sentence structure:** Achievement → Evidence → Growth → Outlook
+- IB MYP Science criteria built-in (Criteria A-D)
+- Batch processing with student clustering by growth area
+- Cross-student pattern detection
+- Optional Inner Council review (Equity Advocate checks for deficit framing)
+- Export to CSV/TXT for ISAMS integration
+
+Hard constraints:
+- FERPA-safe: initials only, no full names
+- No finalization without teacher review/edit
+- Teacher always has final authority
+
+**API Endpoints:**
+- `POST /api/v1/narratives/synthesize` - Generate narratives
+- `POST /api/v1/narratives/batch` - Batch processing
+- `GET /api/v1/narratives/batch/{id}/export` - Export for ISAMS
+
+### 5.5 Grade Studio (Future - v0.2)
+
+**Goal:** Make "~50 narrative comments" feasible without losing humanity.
 
 Capabilities:
 - Rubric creation/import
@@ -200,7 +225,7 @@ Hard constraints:
 - No AI scoring
 - No finalization without teacher action
 
-### 5.5 Relationships Hub (Communications)
+### 5.6 Relationships Hub (Communications)
 
 Thread types:
 - Parent/guardian
@@ -217,7 +242,7 @@ Hard constraints:
 - No automatic sending
 - No storing sensitive student data beyond what teacher provides intentionally
 
-### 5.6 Ideas & Hypothesis Center
+### 5.7 Ideas & Hypothesis Center
 
 Structured thinking environment for instructional iteration.
 
@@ -234,7 +259,7 @@ Linkages:
 - Assessments/rubrics
 - Outcomes and evidence
 
-### 5.7 Inner Council (Advisory)
+### 5.8 Inner Council (Advisory)
 
 Roles (toggleable):
 - Standards Guardian
@@ -268,7 +293,7 @@ All roles share:
 **Time Optimizer**
 - Focus: simplify steps, reduce prep, preserve learning target
 
-### 5.8 Instant Capture
+### 5.9 Instant Capture
 
 One-click capture of:
 - Instructional insights
@@ -281,7 +306,7 @@ Properties:
 - context-linked (lesson/rubric/thread/idea)
 - teacher-owned and exportable
 
-### 5.9 Professional Portal
+### 5.10 Professional Portal
 
 - Credentials
 - Artifacts (lesson exemplars, anonymized samples, reflections)

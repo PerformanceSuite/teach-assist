@@ -23,10 +23,11 @@
 | Backend Foundation | ✅ Complete | 100% |
 | Knowledge Service | ✅ Working | 100% |
 | API Endpoints | ✅ Complete | 100% |
+| **Narratives API** | ✅ Complete | 100% |
 | Personas | ✅ Created | 100% |
-| Frontend UX | 🔴 Not Started | 0% |
-| End-to-End Testing | 🟡 Partial | 50% |
-| **OVERALL** | **🟡 In Progress** | **35%** |
+| Frontend UX | 🟡 Partial | 30% |
+| End-to-End Testing | 🟡 Partial | 60% |
+| **OVERALL** | **🟡 In Progress** | **65%** |
 
 ---
 
