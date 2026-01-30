@@ -2,7 +2,7 @@
 
 > **Single source of truth for project execution**
 >
-> Version: 2.0 | Last Updated: 2026-01-25 | Status: Ready for Deployment
+> Version: 2.1 | Last Updated: 2026-01-30 | Status: Ready for Pilot
 
 ---
 
@@ -12,14 +12,28 @@
 |-----------|--------|------------|
 | Backend API | ✅ Complete | 100% |
 | Knowledge Service | ✅ Complete | 100% |
+| **URL Ingestion** | ✅ Complete | 100% |
+| **Source Transforms** | ✅ Complete | 100% |
 | Inner Council (4 personas) | ✅ Complete | 100% |
-| Frontend UI | ✅ Complete | 100% |
+| Frontend UI | ✅ Complete | 95% |
 | Welcome Dashboard | ✅ Complete | 100% |
-| AI Assistant | ✅ Complete | 100% |
-| Help Center (16 articles) | ✅ Complete | 100% |
+| **AI Assistant** | ✅ Complete | 100% |
+| **Help Center** (15+ articles) | ✅ Complete | 100% |
 | Keyboard Shortcuts | ✅ Complete | 100% |
 | Documentation | ✅ Complete | 100% |
-| **Overall v0.1** | **✅ Complete** | **100%** |
+| **Overall v0.1** | **✅ Complete** | **98%** |
+
+### Recent Updates (2026-01-30)
+
+**Feature Branch Merge Complete:**
+- Merged `feature/url-ingestion` - Web page scraping (+744 lines)
+- Merged `feature/source-transforms` - Summarize, extract, map standards (+594 lines)
+- Merged `feature/ai-assistant` - FAB with animations and suggestions (+222 lines)
+
+**Repository Cleanup:**
+- Deleted 9 local + 2 remote feature branches
+- Removed 4 worktrees
+- Moved documentation to `docs/` per repo hygiene standards
 
 ---
 
@@ -226,39 +240,27 @@ All critical features complete. Ready to deploy.
 
 ## Documentation Structure
 
-### Root Level Files
+### Root Level Files (per repo hygiene)
 
 | File | Purpose | Status |
 |------|---------|--------|
 | README.md | Quick start guide | ✅ Complete |
-| SPEC.md | Vision & northstar | ✅ Complete |
-| MASTER_PLAN.md | This file | ✅ Complete |
-| CONTRIBUTING.md | How to contribute | 🔲 Create |
-| LICENSE | Open source license | 🔲 Create |
-| PRD.md | Original product requirements | ✅ Keep |
-| CLAUDE.md | AI agent instructions | ✅ Keep |
-| PILOT_SETUP_GUIDE.md | Teacher setup | ✅ Keep |
+| CLAUDE.md | AI agent instructions | ✅ Complete |
 
 ### docs/ Directory
 
 | File | Purpose | Status |
 |------|---------|--------|
-| API_SPEC.md | API endpoint reference | ✅ Keep |
-| ARCHITECTURE.md | Technical architecture | ✅ Keep |
-| DEPLOYMENT.md | OAuth deployment | ✅ Keep |
-
-### Archive (Move to docs/archive/)
-
-| File | Reason |
-|------|--------|
-| MISSION_COMPLETE.md | Historical - v0.1 completion |
-| COMPLETION_REPORT.md | Historical - Agent 2 report |
-| PARALLEL_PLAN.md | Historical - Execution strategy |
-| AGENT3_SUMMARY.md | Historical - Agent 3 report |
-| docs/AGENT2_SUMMARY.md | Historical - Agent 2 report |
-| docs/FINAL_PLAN.md | Superseded by MASTER_PLAN.md |
-| docs/STATUS.md | Superseded by MASTER_PLAN.md |
-| docs/plans/MASTER_PLAN.md | Old version |
+| STATUS.md | Current progress | ✅ Complete |
+| PRD.md | Product requirements | ✅ Complete |
+| MASTER_PLAN.md | This file | ✅ Complete |
+| SPEC.md | Vision & northstar | ✅ Complete |
+| API_SPEC.md | API endpoint reference | ✅ Complete |
+| ARCHITECTURE.md | Technical architecture | ✅ Complete |
+| DEPLOYMENT.md | OAuth deployment | ✅ Complete |
+| PILOT_SETUP_GUIDE.md | Teacher setup | ✅ Complete |
+| DEPLOYMENT_QUICK_START.md | Quick deploy guide | ✅ Complete |
+| VERCEL_DEPLOYMENT.md | Vercel-specific setup | ✅ Complete |
 
 ---
 
@@ -343,11 +345,11 @@ npm run dev
 
 ### For Developers
 - Spec: [SPEC.md](./SPEC.md)
-- Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md)
-- API docs: [docs/API_SPEC.md](./docs/API_SPEC.md)
+- PRD: [PRD.md](./PRD.md)
+- API docs: [API_SPEC.md](./API_SPEC.md)
 
 ---
 
 **This is the single source of truth for TeachAssist execution.**
 
-*Last updated: 2026-01-25*
+*Last updated: 2026-01-30*

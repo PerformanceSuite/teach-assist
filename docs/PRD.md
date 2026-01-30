@@ -17,19 +17,31 @@
 | Feature | Backend | Frontend | Status |
 |---------|---------|----------|--------|
 | Sources / Knowledge Base | ✅ Complete | ✅ Complete | **Ready** |
+| **URL Ingestion** | ✅ Complete | ✅ Complete | **Ready** |
 | Grounded Chat (RAG) | ✅ Complete | ✅ Complete | **Ready** |
+| **Source Transforms** | ✅ Complete | ✅ Complete | **Ready** |
 | Inner Council Advisors | ✅ Complete | ✅ Complete | **Ready** |
 | Narrative Synthesis | ✅ Complete | ✅ Complete | **Ready** |
 | Welcome Dashboard | N/A | ✅ Complete | **Ready** |
-| Help Center | N/A | 🟡 Components only | **Needs content** |
+| **Help Center** | N/A | ✅ Complete | **Ready** |
 | Accommodations Toggle | N/A | ✅ Complete | **Ready** |
-| Source Transforms | ✅ Complete | ❌ Not started | **Needs UI** |
-| URL Ingestion | 🟡 Scaffolded | ❌ Not started | **Needs impl** |
-| AI Assistant Sidebar | N/A | 🟡 Components only | **Needs integration** |
+| **AI Assistant** | N/A | ✅ Complete | **Ready** |
 | Grade Studio | 🟡 Scaffolds | 🟡 Placeholder | v0.2 |
 | Plan Studio | 🟡 Scaffolds | 🟡 Placeholder | v0.2 |
 | Sunday Rescue Mode | ❌ Not started | ❌ Not started | v0.2 |
-| **Overall** | **~95%** | **~70%** | |
+| **Overall** | **100%** | **95%** | **Ready for Pilot** |
+
+### Recent Updates (2026-01-30)
+
+**Feature Branch Merge Complete:**
+- **URL Ingestion** - Web page scraping into knowledge base (BeautifulSoup + httpx)
+- **Source Transforms** - Summarize, extract misconceptions, map standards, generate questions
+- **AI Assistant** - Floating action button with animations, quick actions, context-aware suggestions
+- **Help Center** - 15+ teacher help articles with search functionality
+
+**Repository Cleanup:**
+- Merged 3 feature branches, deleted 9 local + 2 remote branches
+- Moved documentation to `docs/` per repository hygiene standards
 
 ---
 

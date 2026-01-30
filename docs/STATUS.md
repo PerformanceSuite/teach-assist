@@ -1,52 +1,55 @@
 # TeachAssist Status
 
 > **Last Updated:** 2026-01-30
+> **Current Phase:** Feature Complete - Ready for Pilot
 
 ---
 
 ## Overview
 
 TeachAssist is a teacher-first professional operating system. The v0.1 pilot focuses on:
-1. **Knowledge Base** - Upload curriculum sources, ask grounded questions with citations
+1. **Knowledge Base** - Upload curriculum sources (files + URLs), ask grounded questions with citations
 2. **Inner Council** - AI advisory personas that review work and ask reflective questions
-3. **Narrative Comment Synthesis** - Help teachers transform semester data into student narratives
+3. **Source Transforms** - Summarize, extract misconceptions, map standards, generate questions
+4. **Narrative Comment Synthesis** - Help teachers transform semester data into student narratives
 
 ---
 
 ## What's Built
 
-### Backend (FastAPI) - ~95% Complete
+### Backend (FastAPI) - 100% Complete
 
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Health endpoint | ✅ Working | `/health`, `/health/ready`, `/health/live` |
 | Sources API | ✅ Working | Upload, list, delete, stats |
+| **URL Ingestion** | ✅ Working | Web page scraping with BeautifulSoup |
 | Chat API | ✅ Working | Grounded Q&A with citations |
-| Chat Transforms | ✅ Working | Summarize, extract, map standards (needs frontend) |
+| **Chat Transforms** | ✅ Working | Summarize, extract, map standards, generate questions |
 | Council API | ✅ Working | Persona consultation |
 | Narratives API | ✅ Working | Synthesis, batch, edit, export |
 | Knowledge Service | ✅ Working | InMemoryVectorStore + OpenAI embeddings |
-| Personas | ✅ Created | 4 YAML files in `personas/` |
-| URL Ingestion | 🟡 Scaffolded | Endpoint exists, returns "not implemented" |
-| Planning API | 🟡 Scaffolded | Endpoints exist, not implemented |
-| Grading API | 🟡 Scaffolded | Endpoints exist, not implemented |
+| Personas | ✅ Working | 4 YAML files in `personas/` |
+| Planning API | 🟡 Scaffolded | Endpoints exist, not implemented (v0.2) |
+| Grading API | 🟡 Scaffolded | Endpoints exist, not implemented (v0.2) |
 
-### Frontend (Next.js) - ~70% Complete
+### Frontend (Next.js) - 95% Complete
 
 | Component | Status | Notes |
 |-----------|--------|-------|
 | App shell | ✅ Working | GlobalLayout, theme, providers |
 | Welcome page | ✅ Working | Hero, quick start, activity, compliance |
-| Sources UI | ✅ Working | Upload, list, delete, stats |
+| Sources UI | ✅ Working | Upload files, list, delete, stats |
+| **URL Uploader** | ✅ Working | Tab-based file/URL upload switching |
+| **Transform Panel** | ✅ Working | Modal with transform options per source |
 | Chat UI | ✅ Working | RAG with citations display |
 | Council UI | ✅ Working | Persona selection, consultation |
 | Narratives UI | ✅ Working | Full wizard (8 components) |
 | Notebook mode | ✅ Working | Two-column sources + chat |
 | Theme toggle | ✅ Working | Dark/light mode |
 | Accommodations | ✅ Working | IEP/504 toggle |
-| Source Transforms | ❌ Not started | Backend ready, needs UI |
-| Help Center | 🟡 Components only | Needs 15 teacher articles |
-| AI Assistant | 🟡 Components only | Needs layout integration |
+| **AI Assistant** | ✅ Working | FAB with animations, quick actions, suggestions |
+| **Help Center** | ✅ Working | 15+ teacher help articles, searchable |
 
 **Frontend Routes:**
 - `app/page.tsx` - Landing/welcome
@@ -165,9 +168,25 @@ The Narratives API is the core feature for the pilot user's workflow.
 
 ---
 
+## Recent Updates (2026-01-30)
+
+### Feature Branch Merge Complete
+- **URL Ingestion** - Web page scraping into knowledge base (+744 lines)
+- **Source Transforms** - Summarize, extract misconceptions, map standards (+594 lines)
+- **AI Assistant** - Floating action button with animations and suggestions (+222 lines)
+
+### Repository Cleanup
+- Merged 3 feature branches to main
+- Deleted 9 local feature branches
+- Deleted 2 remote feature branches
+- Removed 4 worktrees
+- Moved documentation to `docs/` per repo hygiene standards
+
+---
+
 ## Next Steps
 
-1. **Build Narratives UI** - Form to input students, display/edit narratives, export
-2. **Consider Google integration** - Sheets add-on or Drive integration for pilot user's existing workflow
-3. **Connect other frontend components** - Wire Sources, Chat, Council UI to backend
-4. **User testing** - Get pilot user feedback on the actual tool
+1. **Deploy to Production** - See `docs/MASTER_PLAN.md` for deployment steps
+2. **Pilot Testing** - Test with 3-5 pilot teachers
+3. **Collect Feedback** - Usage patterns and feature requests
+4. **v0.2 Planning** - Grade Studio, Plan Studio, Google OAuth

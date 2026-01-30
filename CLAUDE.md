@@ -1,132 +1,70 @@
 # CLAUDE.md - TeachAssist Execution Guide
 
 > **This file guides autonomous execution via Claude Code CLI**
-> **Last Updated:** 2026-01-26
+> **Last Updated:** 2026-01-30
 
 ---
 
-## 🎯 CURRENT MISSION
+## CURRENT MISSION
 
 **Build TeachAssist v0.1 Pilot** - Teacher OS with Knowledge Base + Inner Council
 
-**Key Insight:** TeachAssist is a CC4 fork. Reuse proven components, adapt for teachers.
-
-**Current Phase:** Frontend Integration (Backend ~85% complete)
+**Current Phase:** Feature Complete - Ready for Pilot
 **Status:** `docs/STATUS.md`
 
 ---
 
-## 📊 PROGRESS SUMMARY
+## PROGRESS SUMMARY
 
 | Component | Status | Completion |
 |-----------|--------|------------|
 | Backend Foundation | ✅ Complete | 100% |
-| Knowledge Service | ✅ Working | 100% |
+| Knowledge Service | ✅ Complete | 100% |
 | API Endpoints | ✅ Complete | 100% |
-| **Narratives API** | ✅ Complete | 100% |
-| Personas | ✅ Created | 100% |
-| Frontend UX | 🟡 Partial | 30% |
-| End-to-End Testing | 🟡 Partial | 60% |
-| **OVERALL** | **🟡 In Progress** | **65%** |
+| Narratives API | ✅ Complete | 100% |
+| URL Ingestion | ✅ Complete | 100% |
+| Source Transforms | ✅ Complete | 100% |
+| Personas | ✅ Complete | 100% |
+| Frontend UX | ✅ Complete | 95% |
+| AI Assistant | ✅ Complete | 100% |
+| Help Center | ✅ Complete | 100% |
+| **OVERALL** | **✅ Ready for Pilot** | **98%** |
 
 ---
 
-## ✅ COMPLETED (This Session: 2026-01-25)
+## COMPLETED (Session: 2026-01-30)
 
-### Backend Foundation - COMPLETE
-- [x] **Resolved ChromaDB Issue** - Replaced with CC4's InMemoryVectorStore
-- [x] **Knowledge Service** - Document ingestion + semantic search working
-- [x] **FastAPI Backend** - All endpoints operational
-- [x] **Dependencies Updated** - Removed chromadb, simplified requirements
-- [x] **Configuration** - Added kb_* settings for compatibility
+### Feature Branch Merge - COMPLETE
+- [x] **URL Ingestion** - Web page scraping into knowledge base
+- [x] **Source Transforms** - Summarize, extract misconceptions, map standards
+- [x] **AI Assistant** - FAB with animations, quick actions, suggestions
+- [x] **Help Center** - 15+ teacher help articles
+- [x] **Repo Hygiene** - Moved docs to proper locations
 
-### Documentation
-- [x] `docs/CC4_REUSE_GUIDE.md` - Component mapping from CC4
-- [x] `docs/STATUS.md` - Detailed progress tracking
-
-**Key Discovery:** CC4 uses InMemoryVectorStore (numpy-based), not ChromaDB!
-
----
-
-## 🚀 NEXT STEPS (Priority Order)
-
-### Immediate (Next 30 minutes)
-1. **Commit current work**
-   ```bash
-   git add -A
-   git commit -m "fix: Replace ChromaDB with InMemoryVectorStore + docs"
-   git push origin main
-   ```
-
-2. **Test backend end-to-end** (see `docs/FINAL_PLAN.md` Phase 1.2)
-   - Upload a real PDF
-   - Search uploaded content
-   - Consult Inner Council persona
-
-### Short-term (Next 4-6 hours)
-3. **Copy Welcome Dashboard from CC4** (Phase 2.2.A)
-   - Copy `WelcomePage.tsx` → `app/page.tsx`
-   - Copy `components/Welcome/*`
-   - Adapt quick actions for teachers
-
-4. **Copy AI Assistant sidebar** (Phase 2.2.B)
-   - Copy `AIAssistant/*` components
-   - Create teacher-specific suggestions
-
-5. **Copy Help Center** (Phase 2.2.C)
-   - Copy `HelpCenter/*` components
-   - Write 15 teacher help articles
-
-6. **Connect frontend to backend** (Phase 2.3)
-   - Create `lib/api.ts` client
-   - Test upload + search + chat flow
+### Branch Cleanup - COMPLETE
+- [x] Merged 3 feature branches to main
+- [x] Deleted 9 local feature branches
+- [x] Deleted 2 remote feature branches
+- [x] Removed 4 worktrees
 
 ---
 
-## 📂 KEY FILES
+## KEY FILES
 
 | Purpose | Path |
 |---------|------|
-| **Status** | `docs/STATUS.md` ⭐ |
-| PRD | `PRD.md` |
+| **Status** | `docs/STATUS.md` |
+| **PRD** | `docs/PRD.md` |
+| **Master Plan** | `docs/MASTER_PLAN.md` |
 | API Spec | `docs/API_SPEC.md` |
 | Backend Entry | `backend/api/main.py` |
 | Knowledge Service | `backend/libs/knowledge_service.py` |
+| Web Ingester | `backend/libs/web_ingester.py` |
 | Personas | `personas/*.yaml` (4 files) |
 
 ---
 
-## 🎨 CC4 COMPONENTS TO COPY
-
-### From CC4's Recent Commit (9302664)
-
-**Welcome Dashboard:**
-```bash
-cp /Users/danielconnolly/Projects/CC4/frontend/src/pages/WelcomePage.tsx app/page.tsx
-cp -r /Users/danielconnolly/Projects/CC4/frontend/src/components/Welcome components/
-```
-
-**AI Assistant:**
-```bash
-cp -r /Users/danielconnolly/Projects/CC4/frontend/src/components/AIAssistant components/
-cp /Users/danielconnolly/Projects/CC4/frontend/src/stores/aiAssistantStore.ts stores/
-cp /Users/danielconnolly/Projects/CC4/frontend/src/services/suggestionEngine.ts services/
-```
-
-**Help Center:**
-```bash
-cp -r /Users/danielconnolly/Projects/CC4/frontend/src/components/HelpCenter components/
-cp /Users/danielconnolly/Projects/CC4/frontend/src/stores/helpStore.ts stores/
-```
-
-**Teacher Customizations Needed:**
-- QuickStart actions → Upload sources, Ask questions, Consult Council
-- AI suggestions → Route-specific teacher tips
-- Help articles → 15 teacher-specific guides
-
----
-
-## 🏃 QUICK START COMMANDS
+## QUICK START COMMANDS
 
 ### Backend
 ```bash
@@ -140,11 +78,8 @@ curl http://localhost:8002/health
 
 ### Frontend
 ```bash
-# Install new dependencies
-npm install zustand lucide-react react-markdown date-fns clsx tailwind-merge
-
-# Run dev server
 npm run dev
+# Visit http://localhost:3000
 ```
 
 ### Testing
@@ -153,10 +88,15 @@ npm run dev
 curl -X POST http://localhost:8002/api/v1/sources/upload \
   -F "file=@test.pdf" -F "title=Test Doc"
 
-# Test search
-curl -X POST http://localhost:8002/api/v1/chat/ask \
+# Test URL ingestion
+curl -X POST http://localhost:8002/api/v1/sources/url \
   -H "Content-Type: application/json" \
-  -d '{"query": "What is the main topic?"}'
+  -d '{"url":"https://example.com","title":"Example"}'
+
+# Test chat
+curl -X POST http://localhost:8002/api/v1/chat/message \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is the main topic?"}'
 
 # Test Inner Council
 curl -X POST http://localhost:8002/api/v1/council/consult \
@@ -166,139 +106,83 @@ curl -X POST http://localhost:8002/api/v1/council/consult \
 
 ---
 
-## 🎯 SUCCESS CRITERIA (v0.1 Pilot)
-
-**Goal:** Prove Knowledge Base + Inner Council concept works for teachers
+## SUCCESS CRITERIA (v0.1 Pilot)
 
 | Feature | Backend | Frontend | Status |
 |---------|---------|----------|--------|
-| Upload curriculum sources | ✅ | 🔴 | 50% |
-| Ask grounded questions | ✅ | 🔴 | 50% |
-| Inner Council consultation | ✅ | 🔴 | 50% |
-| Welcome Dashboard | N/A | 🟡 | 30% |
-| Help Center | N/A | 🟡 | 30% |
-
-**Pilot Complete When:**
-- ✅ Teacher can upload sources and get grounded answers
-- ✅ Inner Council provides structured advisory feedback
-- ✅ Welcome Dashboard shows teacher-specific actions
-- ✅ Help Center has searchable documentation
+| Upload curriculum sources | ✅ | ✅ | **Ready** |
+| URL/webpage ingestion | ✅ | ✅ | **Ready** |
+| Ask grounded questions | ✅ | ✅ | **Ready** |
+| Source transforms | ✅ | ✅ | **Ready** |
+| Inner Council consultation | ✅ | ✅ | **Ready** |
+| Welcome Dashboard | N/A | ✅ | **Ready** |
+| AI Assistant | N/A | ✅ | **Ready** |
+| Help Center | N/A | ✅ | **Ready** |
 
 ---
 
-## 🚫 OUT OF SCOPE (v0.1)
+## OUT OF SCOPE (v0.1)
 
 These are future features, NOT in pilot:
-- ❌ Batch grading (Grade Studio) → v0.2
-- ❌ Lesson planning (Plan Studio) → v0.2
-- ❌ Sunday Rescue Mode → v0.2
-- ❌ Multi-user authentication → v0.2
-- ❌ AI grading (always forbidden)
+- Batch grading (Grade Studio) → v0.2
+- Lesson planning (Plan Studio) → v0.2
+- Sunday Rescue Mode → v0.2
+- Multi-user authentication → v0.2
+- AI grading (always forbidden)
 
 ---
 
-## 🔧 TROUBLESHOOTING
-
-### Backend Won't Start
-```bash
-python3 --version  # Should be 3.11+
-cd backend && source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### ChromaDB Errors
-**Fixed!** We replaced ChromaDB with InMemoryVectorStore. If you see chromadb errors, check that:
-- `backend/requirements.txt` doesn't include chromadb
-- `backend/libs/knowledge_service.py` uses InMemoryVectorStore
-- `backend/api/deps.py` imports from `libs.knowledge_service`
-
-### Frontend Not Connecting to Backend
-```bash
-# Check .env.local
-NEXT_PUBLIC_API_URL=http://localhost:8002
-
-# Check CORS in backend
-# backend/api/config.py should have:
-cors_origins = ["http://localhost:3000", ...]
-```
-
----
-
-## 📞 DECISION LOG
-
-### Why InMemoryVectorStore instead of ChromaDB?
-- **ChromaDB:** Pydantic v2 compatibility issues, complex dependency
-- **InMemoryVectorStore:** Simple, proven in CC4, no dependencies
-- **Decision:** Use InMemoryVectorStore for v0.1, migrate to pgvector in v0.2 if needed
-
-### Why copy CC4 components instead of building custom?
-- **Reason:** TeachAssist is a CC4 fork, proven UX patterns
-- **Benefits:** Faster, consistent, battle-tested
-- **Customization:** Adapt content/suggestions for teachers
-
-### Git worktrees or main branch?
-- **Decision:** Continue on `main` until frontend works
-- **Reason:** Simpler, fewer moving parts during rapid development
-- **Later:** Create feature branches for new features in v0.2
-
----
-
-## 🎨 ARCHITECTURAL NOTES
+## ARCHITECTURAL NOTES
 
 ### Backend Stack
 - **Framework:** FastAPI
 - **Knowledge:** InMemoryVectorStore (numpy + sentence-transformers)
+- **Web Scraping:** httpx + BeautifulSoup4
 - **Personas:** YAML files + PersonaStore
 - **Storage:** File system (no database in v0.1)
 
 ### Frontend Stack
-- **Framework:** Next.js 14 (App Router)
-- **State:** Zustand (copied from CC4)
-- **UI:** Tailwind CSS + shadcn/ui components
-- **Icons:** lucide-react
+- **Framework:** Next.js 15 (App Router)
+- **State:** Zustand
+- **UI:** Tailwind CSS + lucide-react
+- **Auth:** NextAuth with Google OAuth
 
-### CC4 → TeachAssist Mapping
-- CC4 React pages → Next.js `app/*/page.tsx`
-- CC4 components → `components/*` (copy directly)
-- CC4 Zustand stores → `stores/*` (copy directly)
-- CC4 hooks → `hooks/*` (copy directly)
-
----
-
-## 📖 SESSION LOG
-
-### Session 1 (2026-01-25)
-**Duration:** ~3 hours
-**Focus:** ChromaDB resolution + CC4 investigation
-
-**Completed:**
-- Investigated ChromaDB Pydantic v2 incompatibility
-- Discovered CC4 uses InMemoryVectorStore
-- Copied `knowledge_service.py` from CC4
-- Removed ChromaDB dependency
-- Updated backend configuration
-- Tested document ingestion + search (working!)
-- Created consolidated documentation (FINAL_PLAN.md, CC4_REUSE_GUIDE.md)
-
-**Key Insight:** CC4 already solved this problem - don't use ChromaDB!
-
-**Next Session:**
-- Commit current work
-- Copy Welcome Dashboard from CC4
-- Copy AI Assistant sidebar
-- Start frontend integration
+### Key Features
+- **URL Ingestion:** `backend/libs/web_ingester.py` - scrape web pages
+- **Transforms:** `POST /api/v1/chat/transform` - summarize, extract, map
+- **AI Assistant:** Floating action button with context-aware suggestions
 
 ---
 
-## 🔗 RELATED PROJECTS
+## REPO STRUCTURE
+
+```
+TeachAssist/
+├── CLAUDE.md           # This file (AI execution guide)
+├── README.md           # Quick start
+├── app/                # Next.js pages
+├── backend/            # FastAPI backend
+├── components/         # React components
+├── docs/               # All documentation
+│   ├── STATUS.md
+│   ├── PRD.md
+│   ├── MASTER_PLAN.md
+│   ├── API_SPEC.md
+│   └── ...
+├── personas/           # Inner Council YAML
+├── stores/             # Zustand stores
+└── services/           # Frontend services
+```
+
+---
+
+## RELATED PROJECTS
 
 | Project | Path | Purpose |
 |---------|------|---------|
 | **CC4** | `/Users/danielconnolly/Projects/CC4` | Source of proven components |
 | **TeachAssist** | `/Users/danielconnolly/Projects/TeachAssist` | Teacher OS pilot |
 
-**Note:** Both are internal tools - reuse liberally!
-
 ---
 
-**🚀 Ready to execute? Read `docs/FINAL_PLAN.md` for detailed next steps.**
+**Ready to deploy? See `docs/MASTER_PLAN.md` for deployment steps.**
