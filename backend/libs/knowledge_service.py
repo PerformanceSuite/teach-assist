@@ -1,8 +1,8 @@
 """
-KnowledgeBeast Service for CC4 - Simplified Implementation
+KnowledgeBeast Service for TeachAssist - Simplified Implementation
 
 Provides semantic search, RAG, and knowledge management capabilities.
-Uses sentence-transformers for embeddings with in-memory vector storage.
+Uses OpenAI embeddings API for serverless compatibility.
 
 Note: This is a simplified implementation that doesn't require chromadb.
 For production PostgreSQL+pgvector support, see the full KnowledgeBeast library.
@@ -11,7 +11,7 @@ Features:
 - Hybrid search (vector + keyword)
 - Document ingestion with embeddings
 - Per-project knowledge isolation
-- Embedding caching for performance
+- OpenAI embeddings (serverless-friendly, no local ML models)
 """
 
 import hashlib
@@ -21,8 +21,8 @@ from typing import Any, Dict, List, Literal, Optional
 from uuid import UUID
 
 import numpy as np
+from openai import OpenAI
 from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer
 
 from api.config import settings
 
@@ -167,18 +167,18 @@ class KnowledgeService:
     """
     Service for semantic search and RAG operations.
 
-    Uses sentence-transformers for embeddings and in-memory vector storage.
+    Uses OpenAI embeddings API and in-memory vector storage.
     Supports per-project knowledge isolation via collection prefixes.
     """
 
     _instance: Optional['KnowledgeService'] = None
-    _model: Optional[SentenceTransformer] = None
+    _openai: Optional[OpenAI] = None
     _vector_store: Optional[InMemoryVectorStore] = None
     _stats: Dict[str, int]
     _lock: threading.RLock
 
     def __new__(cls):
-        """Singleton pattern for shared model instance."""
+        """Singleton pattern for shared client instance."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
@@ -189,13 +189,14 @@ class KnowledgeService:
         if hasattr(self, '_initialized') and self._initialized:
             return  # Already initialized
 
-        logger.info("Initializing KnowledgeBeast (simplified)...")
+        logger.info("Initializing KnowledgeService with OpenAI embeddings...")
 
         self._lock = threading.RLock()
 
-        # Initialize embedding model
-        logger.info(f"Loading embedding model: {settings.kb_embedding_model}")
-        self._model = SentenceTransformer(settings.kb_embedding_model)
+        # Initialize OpenAI client for embeddings
+        if not settings.openai_api_key:
+            logger.warning("OPENAI_API_KEY not set - embeddings will fail")
+        self._openai = OpenAI(api_key=settings.openai_api_key)
 
         # Initialize vector store
         self._vector_store = InMemoryVectorStore()
@@ -207,14 +208,24 @@ class KnowledgeService:
             'keyword_queries': 0,
             'hybrid_queries': 0,
             'ingests': 0,
+            'embedding_calls': 0,
         }
 
         self._initialized = True
-        logger.info(f"KnowledgeBeast initialized (model: {settings.kb_embedding_model}, dim: {settings.kb_embedding_dimension})")
+        logger.info(f"KnowledgeService initialized (model: {settings.kb_embedding_model}, dim: {settings.kb_embedding_dimension})")
 
     def _embed(self, text: str) -> np.ndarray:
-        """Generate embedding for text."""
-        return self._model.encode(text, normalize_embeddings=True)
+        """Generate embedding for text using OpenAI API."""
+        with self._lock:
+            self._stats['embedding_calls'] += 1
+
+        response = self._openai.embeddings.create(
+            model=settings.kb_embedding_model,
+            input=text
+        )
+        embedding = np.array(response.data[0].embedding)
+        # Normalize for cosine similarity
+        return embedding / np.linalg.norm(embedding)
 
     def _keyword_score(self, query: str, content: str) -> float:
         """Simple keyword matching score."""

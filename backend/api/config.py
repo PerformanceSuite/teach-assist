@@ -21,14 +21,13 @@ class Settings(BaseSettings):
     # Anthropic
     anthropic_api_key: str = ""
 
-    # ChromaDB / KnowledgeBeast
-    chroma_persist_dir: str = "./data/chroma"
-    chroma_collection_name: str = "teachassist_kb"
+    # OpenAI (for embeddings)
+    openai_api_key: str = ""
 
     # Embedding (for knowledge service)
-    embedding_model: str = "all-MiniLM-L6-v2"
-    kb_embedding_model: str = "all-MiniLM-L6-v2"  # Alias for compatibility with CC4's knowledge_service
-    kb_embedding_dimension: int = 384  # all-MiniLM-L6-v2 produces 384-dim embeddings
+    # Using OpenAI's text-embedding-3-small for serverless compatibility
+    kb_embedding_model: str = "text-embedding-3-small"
+    kb_embedding_dimension: int = 1536  # text-embedding-3-small produces 1536-dim embeddings
     kb_persist_directory: str = "./data/knowledge"  # Directory for knowledge artifacts
     kb_collection_prefix: str = "teachassist"  # Prefix for collections
     kb_cache_size: int = 1000  # LRU cache size for queries
