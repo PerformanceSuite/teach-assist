@@ -1,4 +1,4 @@
-# TeachAssist — Consolidated PRD & Product Specification (v1.0)
+# TeachAssist — Consolidated PRD & Product Specification (v1.1)
 
 > **Status:** Friend-only pilot (single-teacher)
 >
@@ -7,6 +7,26 @@
 > **Hosting:** Vercel (Next.js)
 >
 > **Auth:** Google OAuth (teacher sign-in)
+>
+> **Last Updated:** 2026-01-30
+
+---
+
+## Implementation Status
+
+| Feature | Backend | Frontend | Status |
+|---------|---------|----------|--------|
+| Sources / Knowledge Base | ✅ Complete | ✅ Complete | **Ready** |
+| Grounded Chat (RAG) | ✅ Complete | ✅ Complete | **Ready** |
+| Inner Council Advisors | ✅ Complete | ✅ Complete | **Ready** |
+| Narrative Synthesis | ✅ Complete | ❌ Not started | **Needs UI** |
+| Welcome Dashboard | N/A | ✅ Complete | **Ready** |
+| Help Center | N/A | ✅ Complete | **Ready** |
+| Accommodations Toggle | N/A | ✅ Complete | **Ready** |
+| Grade Studio | 🟡 Scaffolds | 🟡 Placeholder | v0.2 |
+| Plan Studio | 🟡 Scaffolds | 🟡 Placeholder | v0.2 |
+| Sunday Rescue Mode | ❌ Not started | ❌ Not started | v0.2 |
+| **Overall** | **~85%** | **~40%** | |
 
 ---
 
@@ -112,43 +132,56 @@ TeachAssist encodes a repeatable design flow:
 
 ---
 
-## 4. Product “Rooms” (Teacher OS Portal)
+## 4. Product "Rooms" (Teacher OS Portal)
 
 TeachAssist is organized as a calm, professional portal with the following primary rooms:
 
-1. **Today Dashboard**
-   - What's due next (grading queue, tomorrow's plan, drafts needing approval)
-   - Quick access to key workflows
-2. **Sources & Knowledge Base**
+1. **Welcome Dashboard** ✅ *Implemented*
+   - Teacher-specific greeting, quick start actions
+   - Recent activity feed, feature overview for new users
+   - Compliance note (FERPA/COPPA)
+2. **Sources & Knowledge Base** ✅ *Implemented*
    - Upload curriculum documents + grounded chat + transforms
-3. **Plan Studio**
+   - Drag-and-drop upload, source list, KB statistics
+3. **Inner Council** ✅ *Implemented*
+   - AI advisory personas with structured feedback
+   - Persona selection, consultation workflow
+4. **Plan Studio** 🟡 *Placeholder (v0.2)*
    - UbD-guided unit/lesson builder
    - Weekly planner
-4. **Grade Studio**
+5. **Grade Studio** 🟡 *Placeholder (v0.2)*
    - Rubrics + narrative comment batching
-5. **Relationships Hub**
+6. **Relationships Hub** 🟡 *Placeholder (v0.2)*
    - Parent/student/staff messaging drafts + thread summaries + templates
-6. **Ideas & Hypotheses**
+7. **Ideas & Hypotheses** 🟡 *Placeholder (v0.2)*
    - Structured teaching R&D space, linked to evidence
-7. **Professional Portal**
+8. **Professional Portal** 🟡 *Placeholder (v0.2)*
    - Credentials, artifacts, interactive resume
-   - Optional consent-based “AI Interview Mode”
-8. **Principles**
-   - Read-only: ethics, pedagogy, guardrails
+   - Optional consent-based "AI Interview Mode"
+9. **Principles** 🟡 *Partial*
+   - Read-only: ethics, pedagogy, guardrails (displays PRD excerpt)
 
 ---
 
 ## 5. Core Modules & Capabilities
 
-### 5.1 Teacher Hub (Today Dashboard)
+### 5.1 Teacher Hub (Today Dashboard) 🟡 *Partial*
 
-- Active units/lessons
-- Upcoming plans (next 1–5 days)
-- Draft inbox (feedback drafts, message drafts, lesson drafts)
-- Insights (misconceptions, patterns)
-- Instant Capture quick entry
+*Current state: Welcome dashboard implemented; Today-specific features planned for v0.2*
 
-### 5.2 Knowledge Base (Sources + Grounded Chat)
+- ~~Active units/lessons~~ (v0.2)
+- ~~Upcoming plans (next 1–5 days)~~ (v0.2)
+- ~~Draft inbox (feedback drafts, message drafts, lesson drafts)~~ (v0.2)
+- ~~Insights (misconceptions, patterns)~~ (v0.2)
+- ~~Instant Capture quick entry~~ (v0.2)
+
+**Implemented:**
+- Quick start actions (Upload Sources, Ask Question, Consult Council, Plan Studio, Help)
+- Recent activity feed
+- Feature overview for new users
+- Compliance note (FERPA/COPPA)
+
+### 5.2 Knowledge Base (Sources + Grounded Chat) ✅ *Implemented*
 
 The Knowledge Base provides a grounded workspace where teachers upload curriculum materials and ask questions that are answered with citations.
 
@@ -175,7 +208,22 @@ The Knowledge Base provides a grounded workspace where teachers upload curriculu
 - Student identifiers should be pseudonymous (e.g., initials) for [FERPA](#glossary)/[COPPA](#glossary) compliance
 - No automatic data collection
 
-### 5.3 Plan Studio (UbD Flow)
+**API Endpoints (Implemented):**
+- `POST /api/v1/sources/upload` - Upload PDF, DOCX, TXT, MD files
+- `GET /api/v1/sources` - List sources with filters
+- `GET /api/v1/sources/{id}` - Source details and preview
+- `DELETE /api/v1/sources/{id}` - Delete source
+- `GET /api/v1/sources/stats` - KB statistics
+- `POST /api/v1/chat/message` - Grounded Q&A with citations
+- `POST /api/v1/chat/transform` - Transform sources (summarize, extract, map standards)
+
+**Frontend Components:**
+- `/sources` page with drag-and-drop upload
+- Source list with delete functionality
+- KB statistics display
+- `/chat` page with citation display
+
+### 5.3 Plan Studio (UbD Flow) 🟡 *Placeholder (v0.2)*
 
 Guided workflow:
 - Transfer goals
@@ -184,11 +232,11 @@ Guided workflow:
 - Formative checks + exit tickets
 - Differentiation suggestions (accommodations-aware for [IEP/504 plans](#glossary) *only if teacher provides context manually; no student PII stored*)
 
-### 5.4 Narrative Comment Synthesis (✅ IMPLEMENTED)
+### 5.4 Narrative Comment Synthesis ✅ *Backend Complete* / ❌ *Frontend Not Started*
 
 **Goal:** Transform scattered semester data into coherent student narratives.
 
-**Status:** Backend API complete and tested (2026-01-26)
+**Status:** Backend API complete and tested (2026-01-26). **Frontend UI not yet implemented.**
 
 Capabilities:
 - Input: student initials, IB criteria scores (1-8), teacher observations, notable work
@@ -209,7 +257,7 @@ Hard constraints:
 - `POST /api/v1/narratives/batch` - Batch processing
 - `GET /api/v1/narratives/batch/{id}/export` - Export for ISAMS
 
-### 5.5 Grade Studio (Future - v0.2)
+### 5.5 Grade Studio 🟡 *Scaffolds Only (v0.2)*
 
 **Goal:** Make "~50 narrative comments" feasible without losing humanity.
 
@@ -225,7 +273,7 @@ Hard constraints:
 - No AI scoring
 - No finalization without teacher action
 
-### 5.6 Relationships Hub (Communications)
+### 5.6 Relationships Hub (Communications) 🟡 *Placeholder (v0.2)*
 
 Thread types:
 - Parent/guardian
@@ -242,7 +290,7 @@ Hard constraints:
 - No automatic sending
 - No storing sensitive student data beyond what teacher provides intentionally
 
-### 5.7 Ideas & Hypothesis Center
+### 5.7 Ideas & Hypothesis Center 🟡 *Placeholder (v0.2)*
 
 Structured thinking environment for instructional iteration.
 
@@ -259,14 +307,21 @@ Linkages:
 - Assessments/rubrics
 - Outcomes and evidence
 
-### 5.8 Inner Council (Advisory)
+### 5.8 Inner Council (Advisory) ✅ *Implemented*
+
+**Status:** Full backend and frontend implementation complete.
 
 Roles (toggleable):
 - Standards Guardian
-- Pedagogy Coach
-- Equity Advocate
-- Time Optimizer
-- (Optional later) Communication Coach, Professional Narrative Editor
+- Learning Designer (was Pedagogy Coach)
+- Equity Champion (was Equity Advocate)
+- Assessment Authority (was Time Optimizer)
+
+**Implemented Personas (YAML-based in `personas/`):**
+- `standards-guardian.yaml` - Standards alignment, scope, clarity
+- `learning-designer.yaml` - Transfer vs recall, formative checkpoints
+- `equity-champion.yaml` - Bias, accessibility, multiple modalities
+- `assessment-authority.yaml` - Authentic assessment, rubric quality
 
 Rules:
 - Advise only
@@ -274,39 +329,39 @@ Rules:
 - No directives; teacher decides
 - Admit uncertainty
 
-#### Inner Council Prompt Contracts (Templates)
+**API Endpoints:**
+- `GET /api/v1/council/personas` - List all advisors
+- `GET /api/v1/council/personas/{name}` - Get advisor details
+- `POST /api/v1/council/consult` - Get structured advice
+- `POST /api/v1/council/chat` - Ongoing conversation
 
-All roles share:
-- **Constraint:** “You are advisory only. Do not decide outcomes. Offer questions + options.”
-- **Output format:** bullet list under headings: `Observations`, `Risks`, `Suggestions`, `Questions`.
+**Frontend:**
+- `/council` page with persona selection grid
+- Context and question input
+- Structured response display (observations, risks, suggestions, questions)
 
-**Standards Guardian**
-- Focus: alignment, scope, clarity
-- Never critiques teacher style; only alignment
+#### Inner Council Response Format
 
-**Pedagogy Coach**
-- Focus: transfer vs recall, formative checkpoints, student agency
+All advisors return structured responses:
+- **Observations** - What they notice
+- **Risks** - Potential concerns
+- **Suggestions** - Options to consider
+- **Questions** - Reflective prompts for teacher
 
-**Equity Advocate**
-- Focus: bias, accessibility, language simplicity, multiple modalities
-
-**Time Optimizer**
-- Focus: simplify steps, reduce prep, preserve learning target
-
-### 5.9 Instant Capture
+### 5.9 Instant Capture 🟡 *Placeholder (v0.2)*
 
 One-click capture of:
 - Instructional insights
 - Grading reflections
 - Communication outcomes
-- “What to change next time”
+- "What to change next time"
 
 Properties:
 - timestamped
 - context-linked (lesson/rubric/thread/idea)
 - teacher-owned and exportable
 
-### 5.10 Professional Portal
+### 5.10 Professional Portal 🟡 *Placeholder (v0.2)*
 
 - Credentials
 - Artifacts (lesson exemplars, anonymized samples, reflections)
@@ -319,9 +374,9 @@ Optional “AI Interview Mode” (future):
 
 ---
 
-## 6. Sunday Rescue Mode (Pilot Flagship)
+## 6. Sunday Rescue Mode (Pilot Flagship) ❌ *Not Started (v0.2)*
 
-A guided flow intended for Sunday evenings:
+A guided flow intended for Sunday evenings (planned for v0.2):
 
 1. **Grade Batch**
    - Select class + assignment
@@ -366,34 +421,52 @@ Pilot is successful if:
 
 ## 9. Technical Requirements (v0)
 
-### 9.1 Stack
+### 9.1 Stack ✅ *Implemented*
 
-- Next.js (App Router) + TypeScript
-- Tailwind CSS
-- Google OAuth (NextAuth)
-- Vercel hosting
+**Backend (FastAPI):**
+- FastAPI + Python 3.11+
+- Anthropic Claude API (claude-3-5-sonnet)
+- InMemoryVectorStore (numpy-based, replaced ChromaDB)
+- sentence-transformers for embeddings
+- File system storage for sources and metadata
 
-### 9.2 Authentication
+**Frontend (Next.js):**
+- Next.js 15 (App Router) + TypeScript
+- Tailwind CSS + lucide-react icons
+- Zustand for state management
+- React Hook Form for form handling
 
-- Google OAuth sign-in required
+**Key Files:**
+- Backend entry: `backend/api/main.py`
+- Knowledge service: `backend/libs/knowledge_service.py`
+- API client: `lib/api.ts`
+- Global layout: `components/GlobalLayout.tsx`
+
+### 9.2 Authentication 🟡 *Partial*
+
+- Google OAuth sign-in (NextAuth) - route stub exists
+- Session display in header
+- **Note:** Backend authentication middleware not yet implemented
 - Only approved teacher email(s) can access (allowlist in env/config)
-- Session-based auth; no DB required for v0
 
-### 9.3 Data & Privacy Defaults
+### 9.3 Data & Privacy Defaults ✅ *Implemented*
 
 - Default to no PII storage
 - Student identifiers are pseudonyms (teacher-defined)
-- Sources stored minimally (local dev or Vercel storage later)
-- Export-first philosophy (teacher can download artifacts)
+- Sources stored on file system (`backend/data/sources/`)
+- InMemoryVectorStore (resets on server restart)
+- Export-first philosophy (CSV/TXT/JSON export for narratives)
 
 ### 9.4 Deployment
 
 - Vercel project connected to GitHub repo
-- Environment variables set in Vercel:
+- Backend runs separately (uvicorn on port 8002)
+- Environment variables:
   - `GOOGLE_CLIENT_ID`
   - `GOOGLE_CLIENT_SECRET`
   - `NEXTAUTH_SECRET`
-  - (optional) `NEXTAUTH_URL` for non-Vercel environments
+  - `NEXT_PUBLIC_API_URL` (backend URL, default: http://localhost:8002)
+  - `ANTHROPIC_API_KEY` (for Claude API)
 
 ---
 
@@ -410,21 +483,45 @@ Primary docs:
 
 ---
 
-## 11. UI Compliance Indicators
+## 11. UI Compliance Indicators ✅ *Implemented*
 
-Pages that handle student data or relate to legal/educational standards should display a **subtle compliance indicator** at the top of the page. This follows progressive disclosure principles—users who need details can click to learn more.
+### 11.1 Welcome Page Compliance Note
 
-**Implementation:**
-- Small, non-intrusive badge or single-line note at top of relevant pages
-- Example: `🔒 FERPA-compliant: Student data uses pseudonyms only` with link to learn more
-- Only shown on pages where it's relevant (Knowledge Base, Grade Studio, Narratives)
-- Links to in-app help or external authoritative sources
+The welcome page displays a **Privacy-First Design** note with:
+- Shield icon indicating compliance focus
+- Links to external FERPA and COPPA resources
+- Guidance on using pseudonyms (initials/codes, not student names)
 
-**Pages requiring indicators:**
-- Knowledge Base / Sources → FERPA notice
-- Grade Studio → FERPA notice
-- Narrative Synthesis → FERPA notice
-- Plan Studio (if IEP/504 context used) → Accessibility accommodations notice
+**File:** `components/Welcome/ComplianceNote.tsx`
+
+### 11.2 Accommodations Mode Toggle
+
+A global toggle in the header allows teachers to enable **Accommodations Mode** for IEP/504-aware features.
+
+**Behavior:**
+- **OFF (default):** Subtle accessibility icon in header
+- **ON:** Purple highlight, dropdown shows IEP/504 privacy notice
+
+**Privacy Notice (shown when ON):**
+- No student PII stored
+- Teacher provides accommodation context manually (e.g., "extended time", "visual supports")
+- Use codes or initials, never student names
+- Context is session-only and not retained
+
+**Links to glossary resources:**
+- [IEP](https://www.understood.org/en/articles/what-is-an-iep) - Individualized Education Program
+- [504 Plan](https://www.understood.org/en/articles/what-is-a-504-plan) - Section 504 accommodation plan
+
+**Files:**
+- `components/AccommodationsToggle.tsx` - Toggle UI component
+- `stores/preferencesStore.ts` - Persisted preference state
+
+### 11.3 Page-Specific Indicators (Future)
+
+Additional page-level indicators planned for v0.2:
+- Knowledge Base / Sources → FERPA notice badge
+- Grade Studio → FERPA notice badge
+- Narrative Synthesis → FERPA notice badge
 
 ---
 

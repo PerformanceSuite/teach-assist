@@ -73,6 +73,142 @@ interface StatsResponse {
   embedding_model: string
 }
 
+// Narratives Types
+interface CriteriaScores {
+  A_knowing?: number
+  B_inquiring?: number
+  C_processing?: number
+  D_reflecting?: number
+}
+
+interface StudentData {
+  initials: string
+  criteria_scores: CriteriaScores
+  units_completed?: string[]
+  observations: string[]
+  formative_trend?: 'improving' | 'consistent' | 'declining'
+  notable_work?: string
+}
+
+interface SynthesizeOptions {
+  tone?: 'encouraging' | 'neutral' | 'direct'
+  include_growth_area?: boolean
+  council_review?: string[]
+}
+
+interface SynthesizeRequest {
+  class_name: string
+  semester: string
+  rubric_source_id?: string
+  students: StudentData[]
+  options?: SynthesizeOptions
+}
+
+interface NarrativeStructure {
+  achievement: string
+  evidence: string
+  growth: string
+  outlook: string
+}
+
+interface CriteriaSummary {
+  strongest: string
+  growth_area: string
+}
+
+interface CouncilReviewResult {
+  approved: boolean
+  notes: string
+}
+
+interface StudentNarrative {
+  initials: string
+  draft: string
+  structure: NarrativeStructure
+  criteria_summary: CriteriaSummary
+  council_review: Record<string, CouncilReviewResult>
+  word_count: number
+  status: 'ready_for_review' | 'approved' | 'needs_attention' | 'error'
+}
+
+interface PatternDetected {
+  pattern: string
+  description: string
+  affected_students: string[]
+  suggestion: string
+}
+
+interface ClusterInfo {
+  cluster_id: string
+  pattern: string
+  student_initials: string[]
+  shared_growth_area: string
+}
+
+interface SynthesizeResponse {
+  batch_id: string
+  class_name: string
+  semester: string
+  narratives: StudentNarrative[]
+  patterns_detected: PatternDetected[]
+  processing_time_ms: number
+}
+
+interface BatchSubmitResponse {
+  batch_id: string
+  student_count: number
+  status: string
+  estimated_time_seconds: number
+  webhook_url?: string
+}
+
+interface BatchStatusResponse {
+  batch_id: string
+  status: 'processing' | 'complete' | 'error'
+  class_name?: string
+  semester?: string
+  progress?: { completed: number; total: number }
+  narratives: StudentNarrative[]
+  clusters: ClusterInfo[]
+  patterns_detected: PatternDetected[]
+  council_summary: Record<string, string>
+}
+
+interface EditResponse {
+  initials: string
+  status: string
+  updated_at: string
+}
+
+interface IBCriterion {
+  id: string
+  name: string
+  strand_i?: string
+  strand_ii?: string
+  strand_iii?: string
+  max_score: number
+}
+
+interface IBRubricResponse {
+  rubric_id: string
+  criteria: IBCriterion[]
+  loaded: boolean
+}
+
+// Export types for use in components
+export type {
+  StudentData,
+  StudentNarrative,
+  PatternDetected,
+  ClusterInfo,
+  SynthesizeRequest,
+  SynthesizeResponse,
+  BatchStatusResponse,
+  IBCriterion,
+  CriteriaScores,
+  SynthesizeOptions,
+}
+
 export const api = {
   // Source Management
   sources: {
@@ -249,6 +385,142 @@ export const api = {
         return { data: data.personas || [] }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Failed to fetch personas' }
+      }
+    },
+  },
+
+  // Narratives
+  narratives: {
+    async synthesize(request: SynthesizeRequest): Promise<ApiResponse<SynthesizeResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/synthesize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(request),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Synthesis failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Synthesis failed' }
+      }
+    },
+
+    async submitBatch(request: SynthesizeRequest): Promise<ApiResponse<BatchSubmitResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/batch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(request),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Batch submission failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Batch submission failed' }
+      }
+    },
+
+    async getBatchStatus(batchId: string): Promise<ApiResponse<BatchStatusResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/batch/${batchId}`)
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to fetch batch status' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch batch status' }
+      }
+    },
+
+    async editNarrative(
+      batchId: string,
+      initials: string,
+      draft: string,
+      status: 'approved' | 'needs_revision'
+    ): Promise<ApiResponse<EditResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/batch/${batchId}/edit`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ initials, edited_draft: draft, status }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Edit failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Edit failed' }
+      }
+    },
+
+    async exportBatch(
+      batchId: string,
+      format: 'csv' | 'txt' | 'json' = 'txt',
+      approvedOnly: boolean = false
+    ): Promise<ApiResponse<string>> {
+      try {
+        const params = new URLSearchParams({
+          format,
+          include_approved_only: approvedOnly.toString(),
+        })
+        const response = await fetch(
+          `${API_BASE}/api/v1/narratives/batch/${batchId}/export?${params}`
+        )
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Export failed' }
+        }
+
+        // For txt/csv, return as text; for json, return as parsed object
+        if (format === 'json') {
+          const data = await response.json()
+          return { data: JSON.stringify(data, null, 2) }
+        } else {
+          const data = await response.text()
+          return { data }
+        }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Export failed' }
+      }
+    },
+
+    async loadIBRubric(gradeBand: string = 'MYP3'): Promise<ApiResponse<IBRubricResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/rubric/ib-science`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ grade_band: gradeBand, include_descriptors: true }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to load rubric' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to load rubric' }
       }
     },
   },

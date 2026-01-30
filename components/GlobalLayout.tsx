@@ -21,6 +21,7 @@ import { useAIAssistantStore } from '../stores/aiAssistantStore'
 import { useHelpStore } from '../stores/helpStore'
 import { AIAssistantPanel } from './AIAssistant'
 import { HelpCenter } from './HelpCenter'
+import { AccommodationsToggle } from './AccommodationsToggle'
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
@@ -81,9 +82,10 @@ export function GlobalLayout({ children }: { children: React.ReactNode }) {
           <Link href="/" className="font-semibold text-white tracking-tight text-lg">
             TeachAssist
           </Link>
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2 text-sm">
+            <AccommodationsToggle />
             {session?.user?.email && (
-              <span className="text-gray-400">{session.user.email}</span>
+              <span className="text-gray-400 hidden md:inline">{session.user.email}</span>
             )}
             <Link
               className="flex items-center gap-1.5 rounded-md border border-gray-700 px-3 py-1.5 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"

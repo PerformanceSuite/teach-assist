@@ -9,6 +9,7 @@ import { WelcomeHero } from '../components/Welcome/WelcomeHero'
 import { QuickStartSection } from '../components/Welcome/QuickStartSection'
 import { RecentActivitySection } from '../components/Welcome/RecentActivitySection'
 import { FeatureOverview } from '../components/Welcome/FeatureOverview'
+import { ComplianceNote } from '../components/Welcome/ComplianceNote'
 import { useRecentActivity } from '../hooks/useRecentActivity'
 import { useState } from 'react'
 
@@ -33,6 +34,9 @@ export default function WelcomePage() {
 
         {/* Feature Overview (for new users) */}
         {isNewUser && <FeatureOverview />}
+
+        {/* Compliance Note */}
+        <ComplianceNote />
       </div>
     </div>
   )
