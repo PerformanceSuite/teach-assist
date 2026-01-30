@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Providers } from "../components/Providers";
 import { GlobalLayout } from "../components/GlobalLayout";
 
 export const metadata: Metadata = {
@@ -41,8 +42,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/icons/icon-192x192.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className="bg-cc-bg text-cc-text antialiased min-h-screen">
-        <GlobalLayout>{children}</GlobalLayout>
+      <body className="bg-gray-950 text-white antialiased min-h-screen">
+        <Providers>
+          <GlobalLayout>{children}</GlobalLayout>
+        </Providers>
       </body>
     </html>
   );

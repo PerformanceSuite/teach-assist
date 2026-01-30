@@ -1,9 +1,8 @@
-import { Shell } from "@/components/Shell";
-import { getSession } from "@/lib/session";
+/**
+ * App Layout - Layout for /app/* routes
+ * Navigation is now handled by GlobalLayout, so this just passes through children
+ */
 
-export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const session = await getSession();
-  const email = session?.user?.email ?? undefined;
-
-  return <Shell userEmail={email}>{children}</Shell>;
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }
