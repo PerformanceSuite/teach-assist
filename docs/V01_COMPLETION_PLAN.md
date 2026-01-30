@@ -2,27 +2,24 @@
 
 > **Goal:** Ship v0.1 to pilot users (shanie@wildvine.com, shanieh@comcast.net)
 > **Created:** 2026-01-30
-> **Estimated Effort:** 3-4 hours
+> **Updated:** 2026-01-30
+> **Status:** Code complete, ready for deployment
 
 ---
 
 ## Executive Summary
 
-| Task | Effort | Priority |
-|------|--------|----------|
-| 1. Clean up stale worktree/folder | 10 min | 1 |
-| 2. Narratives UI (new build) | 2-3 hours | 2 |
-| 3. OAuth email allowlist | 15 min | 3 |
-| 4. Deploy backend (Fly.io) | 30 min | 4 |
-| 5. Deploy frontend (Vercel) | 30 min | 5 |
-| 6. End-to-end testing | 30 min | 6 |
+| Task | Status | Notes |
+|------|--------|-------|
+| Narratives UI | ✅ Done | Merged from feature branch |
+| Light/Dark Theme | ✅ Done | System/Light/Dark toggle |
+| OAuth Allowlist | ✅ Done | TEACHASSIST_ALLOWED_EMAILS env var |
+| Auth Protection | ✅ Done | All routes protected |
+| Deploy Backend | 🔲 Ready | Railway or Render (free tier) |
+| Deploy Frontend | 🔲 Ready | Vercel |
+| End-to-end Test | 🔲 Pending | After deployment |
 
-**Current State:**
-- Backend: 100% complete
-- Frontend: Sources, Chat, Council, Welcome, Help = Complete
-- **Narratives UI: Not implemented** (biggest gap)
-- OAuth: Code exists, needs env config
-- Deployment: Not done
+**Code is complete. Deployment steps below.**
 
 ---
 
@@ -140,51 +137,30 @@ TEACHASSIST_ALLOWED_EMAILS=shanie@wildvine.com,shanieh@comcast.net
 
 ---
 
-## Phase 4: Backend Deployment - Fly.io (30 min)
+## Phase 4: Backend Deployment - Railway (Free Tier)
 
-### Prerequisites
-- Fly CLI installed (`brew install flyctl`)
-- Fly.io account created
-- `ANTHROPIC_API_KEY` ready
+> **Why not Vercel for backend?** The FastAPI backend uses ML models (sentence-transformers)
+> that exceed Vercel's serverless function limits. Railway offers free tier with better Python support.
 
-### Steps
+### Option A: Railway (Recommended)
 
-```bash
-cd backend
+1. Go to [railway.app](https://railway.app)
+2. Click "New Project" → "Deploy from GitHub"
+3. Select the `teach-assist` repo
+4. Set root directory to `backend`
+5. Add environment variables:
+   - `ANTHROPIC_API_KEY` = your key
+   - `PORT` = 8002
+6. Deploy and get URL (e.g., `https://teachassist-api.up.railway.app`)
 
-# Initialize Fly app
-fly launch --name teachassist-api --region sea
+### Option B: Render (Alternative Free Tier)
 
-# Set secrets
-fly secrets set ANTHROPIC_API_KEY=sk-ant-your-key-here
-
-# Deploy
-fly deploy
-
-# Get URL
-fly status
-# Result: https://teachassist-api.fly.dev
-```
-
-### fly.toml
-
-```toml
-app = "teachassist-api"
-primary_region = "sea"
-
-[http_service]
-  internal_port = 8002
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 1
-
-[build]
-  builder = "paketobuildpacks/builder:base"
-
-[env]
-  PORT = "8002"
-```
+1. Go to [render.com](https://render.com)
+2. Create new "Web Service" from GitHub
+3. Set root directory to `backend`
+4. Build command: `pip install -r requirements.txt`
+5. Start command: `uvicorn api.main:app --host 0.0.0.0 --port $PORT`
+6. Add `ANTHROPIC_API_KEY` environment variable
 
 ### Update CORS (backend/api/config.py)
 
