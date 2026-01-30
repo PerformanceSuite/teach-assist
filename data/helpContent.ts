@@ -67,8 +67,8 @@ export const HELP_ARTICLES: HelpArticle[] = [
     content: `TeachAssist is your teaching intelligence system designed to help you work smarter, not harder.
 
 **Key Features:**
-- **Notebook Mode**: Upload curriculum sources for grounded AI assistance
-- **Grounded Chat**: Ask questions with citation-backed answers
+- **Knowledge Base**: Upload curriculum sources for grounded AI assistance
+- **AI Chat**: Ask questions with citation-backed answers
 - **Inner Council**: Consult specialized AI advisors
 - **Privacy First**: Your student data stays private, always
 

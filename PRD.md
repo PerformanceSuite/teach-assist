@@ -170,9 +170,9 @@ The Knowledge Base provides a grounded workspace where teachers upload curriculu
 - Week plan generation
 - Rubric drafting
 
-**Privacy-first design**
+**Privacy-first design** *(see [Compliance Glossary](#glossary))*
 - Teachers control what gets uploaded
-- Student identifiers should be pseudonymous (e.g., initials) for FERPA/COPPA compliance
+- Student identifiers should be pseudonymous (e.g., initials) for [FERPA](#glossary)/[COPPA](#glossary) compliance
 - No automatic data collection
 
 ### 5.3 Plan Studio (UbD Flow)
@@ -182,7 +182,7 @@ Guided workflow:
 - Performance task (GRASPS)
 - Learning sequence
 - Formative checks + exit tickets
-- Differentiation suggestions (IEP/504 aware *only if provided manually; no PII required*)
+- Differentiation suggestions (accommodations-aware for [IEP/504 plans](#glossary) *only if teacher provides context manually; no student PII stored*)
 
 ### 5.4 Narrative Comment Synthesis (✅ IMPLEMENTED)
 
@@ -407,4 +407,53 @@ Primary docs:
 - `docs/reference/` (uploaded reference documents)
 - `docs/ARCHITECTURE.md` (lightweight tech design)
 - `docs/DEPLOYMENT.md` (Vercel + Google OAuth setup)
+
+---
+
+## 11. UI Compliance Indicators
+
+Pages that handle student data or relate to legal/educational standards should display a **subtle compliance indicator** at the top of the page. This follows progressive disclosure principles—users who need details can click to learn more.
+
+**Implementation:**
+- Small, non-intrusive badge or single-line note at top of relevant pages
+- Example: `🔒 FERPA-compliant: Student data uses pseudonyms only` with link to learn more
+- Only shown on pages where it's relevant (Knowledge Base, Grade Studio, Narratives)
+- Links to in-app help or external authoritative sources
+
+**Pages requiring indicators:**
+- Knowledge Base / Sources → FERPA notice
+- Grade Studio → FERPA notice
+- Narrative Synthesis → FERPA notice
+- Plan Studio (if IEP/504 context used) → Accessibility accommodations notice
+
+---
+
+## Glossary
+
+*Educational and legal terms used in TeachAssist. Click links for authoritative external resources.*
+
+<a id="glossary"></a>
+
+### Legal & Privacy
+
+| Term | Definition | Learn More |
+|------|------------|------------|
+| **FERPA** | Family Educational Rights and Privacy Act. US federal law protecting student education records. TeachAssist uses pseudonyms (initials) to avoid storing protected data. | [US Dept. of Education](https://www2.ed.gov/policy/gen/guid/fpco/ferpa/index.html) |
+| **COPPA** | Children's Online Privacy Protection Act. US law protecting personal information of children under 13. TeachAssist does not collect student PII. | [FTC COPPA Guide](https://www.ftc.gov/business-guidance/privacy-security/childrens-privacy) |
+| **PII** | Personally Identifiable Information. Any data that could identify a specific student (name, ID number, etc.). TeachAssist avoids storing PII by design. | [NIST Definition](https://csrc.nist.gov/glossary/term/personally_identifiable_information) |
+
+### Special Education
+
+| Term | Definition | Learn More |
+|------|------------|------------|
+| **IEP** | Individualized Education Program. A legally binding document for students with disabilities (ages 3-21) that outlines specific learning goals, services, and accommodations. | [Understood.org IEP Guide](https://www.understood.org/en/articles/what-is-an-iep) |
+| **504 Plan** | Section 504 accommodation plan. Provides accommodations for students with disabilities that affect learning (e.g., extended time, preferential seating) but doesn't require specialized instruction like an IEP. | [Understood.org 504 Guide](https://www.understood.org/en/articles/what-is-a-504-plan) |
+
+### Curriculum Design
+
+| Term | Definition | Learn More |
+|------|------------|------------|
+| **UbD** | Understanding by Design. A backward-design curriculum framework: start with desired outcomes, then design assessments, then plan instruction. | [ASCD UbD Overview](https://www.ascd.org/books/understanding-by-design-expanded-2nd-edition) |
+| **GRASPS** | Goal, Role, Audience, Situation, Product, Standards. A framework for designing authentic performance tasks within UbD. | [Defined Learning GRASPS](https://www.definedlearning.com/blog/grasps-framework/) |
+| **IB MYP** | International Baccalaureate Middle Years Programme. A curriculum framework for ages 11-16 with criterion-referenced assessment (1-8 scale). | [IB MYP Overview](https://www.ibo.org/programmes/middle-years-programme/) |
 

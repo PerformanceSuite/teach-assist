@@ -32,8 +32,8 @@ const FEATURES: Feature[] = [
     route: '/council',
   },
   {
-    id: 'notebook-mode',
-    title: 'Notebook Mode',
+    id: 'ai-chat',
+    title: 'AI Chat',
     description: 'Ask questions and get grounded answers backed by your uploaded curriculum sources.',
     icon: MessageSquare,
     color: 'from-blue-500/20 to-blue-600/10',

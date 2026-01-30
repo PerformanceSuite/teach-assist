@@ -23,9 +23,9 @@ export function WelcomeHero({ userName }: WelcomeHeroProps) {
         </h1>
       </div>
       <p className="text-gray-400 text-lg max-w-2xl">
-        TeachAssist is your intelligent teaching companion. Upload curriculum sources,
-        ask grounded questions with Notebook Mode, and consult your Inner Council of AI advisors
-        for expert feedback.
+        TeachAssist is your intelligent teaching companion. Upload curriculum sources, ask
+        grounded questions with your Knowledge Base, and consult your Inner Council of AI
+        advisors for expert feedback.
       </p>
     </div>
   )
