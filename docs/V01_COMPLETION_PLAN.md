@@ -137,10 +137,10 @@ TEACHASSIST_ALLOWED_EMAILS=shanie@wildvine.com,shanieh@comcast.net
 
 ---
 
-## Phase 4: Backend Deployment - Railway (Free Tier)
+## Phase 4: Backend Deployment
 
-> **Why not Vercel for backend?** The FastAPI backend uses ML models (sentence-transformers)
-> that exceed Vercel's serverless function limits. Railway offers free tier with better Python support.
+> **Update (2026-01-30):** Backend now uses OpenAI embeddings API instead of local ML models.
+> This makes it serverless-compatible and deployable to Vercel, Railway, or Render.
 
 ### Option A: Railway (Recommended)
 
