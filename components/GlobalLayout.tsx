@@ -20,7 +20,7 @@ import {
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { useAIAssistantStore } from '../stores/aiAssistantStore'
 import { useHelpStore } from '../stores/helpStore'
-import { AIAssistantPanel } from './AIAssistant'
+import { AIAssistantPanel, AIAssistantFAB } from './AIAssistant'
 import { HelpCenter } from './HelpCenter'
 import { AccommodationsToggle } from './AccommodationsToggle'
 import { ThemeToggle } from './ThemeToggle'
@@ -132,6 +132,7 @@ export function GlobalLayout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Global UI */}
+      <AIAssistantFAB />
       <AIAssistantPanel />
       <HelpCenter />
     </div>

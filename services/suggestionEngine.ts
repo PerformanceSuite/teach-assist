@@ -113,6 +113,36 @@ const ROUTE_SUGGESTIONS: Record<string, Omit<Suggestion, 'id' | 'timestamp'>[]> 
       source: 'council',
     },
   ],
+  '/narratives': [
+    {
+      type: 'action',
+      title: 'Add student data first',
+      description: 'Enter student names, grades, and key observations before generating narratives',
+      priority: 'high',
+      source: 'narratives',
+    },
+    {
+      type: 'insight',
+      title: 'Use specific examples',
+      description: 'Include concrete examples of student work or behavior for more personalized narratives',
+      priority: 'medium',
+      source: 'narratives',
+    },
+    {
+      type: 'reminder',
+      title: 'Review before sending',
+      description: 'Always review AI-generated narratives and add your personal touch',
+      priority: 'medium',
+      source: 'narratives',
+    },
+    {
+      type: 'next-step',
+      title: 'Batch process for efficiency',
+      description: 'Enter data for multiple students, then generate narratives in one session',
+      priority: 'low',
+      source: 'narratives',
+    },
+  ],
 }
 
 // Default suggestions for any route
