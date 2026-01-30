@@ -6,6 +6,7 @@ const navItems = [
   { href: "/sources", label: "Knowledge Base" },
   { href: "/chat", label: "AI Chat" },
   { href: "/council", label: "Inner Council" },
+  { href: "/narratives", label: "Narratives" },
   { href: "/app/notebook", label: "Notebook" },
   { href: "/app/plan", label: "Plan Studio" },
   { href: "/app/grade", label: "Grade Studio" },
