@@ -66,7 +66,10 @@ export function SourceList({ refreshTrigger = 0 }: SourceListProps) {
   }
 
   const formatDate = (dateString: string) => {
+    if (!dateString) return 'Unknown'
     const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Unknown'
+
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
     const diffMins = Math.floor(diffMs / 60000)
@@ -81,6 +84,7 @@ export function SourceList({ refreshTrigger = 0 }: SourceListProps) {
   }
 
   const formatSize = (bytes: number) => {
+    if (!bytes || isNaN(bytes)) return '0 B'
     if (bytes < 1024) return `${bytes} B`
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`

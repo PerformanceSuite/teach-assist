@@ -110,7 +110,17 @@ export const api = {
         }
 
         const data = await response.json()
-        return { data: data.sources || [] }
+        // Map backend response to frontend expected format
+        const sources = (data.sources || []).map((s: any) => ({
+          id: s.source_id,
+          title: s.filename?.replace(/\.[^/.]+$/, '') || 'Untitled', // Use filename without extension as title
+          filename: s.filename,
+          filetype: s.filename?.split('.').pop() || 'unknown',
+          upload_date: s.created_at,
+          size_bytes: s.file_size || 0,
+          chunk_count: s.chunk_count || 0,
+        }))
+        return { data: sources }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Failed to fetch sources' }
       }
