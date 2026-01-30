@@ -16,7 +16,10 @@ import {
   ListTodo,
   Keyboard,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  FileText,
+  Users,
+  PenTool
 } from 'lucide-react'
 import { useHelpStore } from '../../stores/helpStore'
 import {
@@ -35,6 +38,10 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Compass,
   ListTodo,
   Keyboard,
+  FileText,
+  Users,
+  PenTool,
+  BookOpen,
 }
 
 export function HelpCenter() {
