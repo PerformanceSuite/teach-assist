@@ -18,11 +18,11 @@ export function WelcomeHero({ userName }: WelcomeHeroProps) {
         <div className="p-2 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl">
           <GraduationCap className="w-6 h-6 text-indigo-400" />
         </div>
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
           {greeting}{userName ? `, ${userName}` : ''}
         </h1>
       </div>
-      <p className="text-gray-400 text-lg max-w-2xl">
+      <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl">
         TeachAssist is your intelligent teaching companion. Upload curriculum sources, ask
         grounded questions with your Knowledge Base, and consult your Inner Council of AI
         advisors for expert feedback.

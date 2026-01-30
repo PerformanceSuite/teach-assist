@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "../components/Providers";
 import { GlobalLayout } from "../components/GlobalLayout";
+import { ThemeProvider } from "../components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "TeachAssist",
@@ -37,14 +38,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/icon-192x192.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className="bg-gray-950 text-white antialiased min-h-screen">
+      <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-white antialiased min-h-screen transition-colors">
         <Providers>
-          <GlobalLayout>{children}</GlobalLayout>
+          <ThemeProvider>
+            <GlobalLayout>{children}</GlobalLayout>
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

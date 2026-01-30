@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -8,6 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Dark theme colors
         'cc-bg': '#0a0b0d',        // Main background
         'cc-surface': '#12141a',   // Card/panel background
         'cc-border': '#1e2028',    // Borders

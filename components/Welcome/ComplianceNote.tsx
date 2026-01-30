@@ -7,22 +7,22 @@ import { Shield, ExternalLink } from 'lucide-react'
 
 export function ComplianceNote() {
   return (
-    <div className="mt-8 p-4 rounded-lg bg-gray-900/50 border border-gray-800">
+    <div className="mt-8 p-4 rounded-lg bg-green-50 dark:bg-gray-900/50 border border-green-200 dark:border-gray-800">
       <div className="flex items-start gap-3">
         <div className="p-1.5 bg-green-500/10 rounded-lg shrink-0">
-          <Shield className="w-4 h-4 text-green-400" />
+          <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
         </div>
         <div className="min-w-0">
-          <h3 className="text-sm font-medium text-gray-200 mb-1">
+          <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
             Privacy-First Design
           </h3>
-          <p className="text-sm text-gray-400 leading-relaxed">
+          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
             TeachAssist is designed with student privacy in mind. We support{' '}
             <a
               href="https://www2.ed.gov/policy/gen/guid/fpco/ferpa/index.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-0.5"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 inline-flex items-center gap-0.5"
             >
               FERPA
               <ExternalLink className="w-3 h-3" />
@@ -32,7 +32,7 @@ export function ComplianceNote() {
               href="https://www.ftc.gov/business-guidance/privacy-security/childrens-privacy"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-0.5"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 inline-flex items-center gap-0.5"
             >
               COPPA
               <ExternalLink className="w-3 h-3" />

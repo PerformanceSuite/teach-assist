@@ -1,15 +1,8 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@teachassist_api_url"
-  },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_API_URL": "@teachassist_api_url"
-    }
-  },
   "headers": [
     {
       "source": "/sw.js",
@@ -36,12 +29,6 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/v1/:path*",
-      "destination": "https://your-backend-api.com/api/v1/:path*"
     }
   ]
 }
