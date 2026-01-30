@@ -19,14 +19,17 @@
 | Sources / Knowledge Base | ✅ Complete | ✅ Complete | **Ready** |
 | Grounded Chat (RAG) | ✅ Complete | ✅ Complete | **Ready** |
 | Inner Council Advisors | ✅ Complete | ✅ Complete | **Ready** |
-| Narrative Synthesis | ✅ Complete | ❌ Not started | **Needs UI** |
+| Narrative Synthesis | ✅ Complete | ✅ Complete | **Ready** |
 | Welcome Dashboard | N/A | ✅ Complete | **Ready** |
-| Help Center | N/A | ✅ Complete | **Ready** |
+| Help Center | N/A | 🟡 Components only | **Needs content** |
 | Accommodations Toggle | N/A | ✅ Complete | **Ready** |
+| Source Transforms | ✅ Complete | ❌ Not started | **Needs UI** |
+| URL Ingestion | 🟡 Scaffolded | ❌ Not started | **Needs impl** |
+| AI Assistant Sidebar | N/A | 🟡 Components only | **Needs integration** |
 | Grade Studio | 🟡 Scaffolds | 🟡 Placeholder | v0.2 |
 | Plan Studio | 🟡 Scaffolds | 🟡 Placeholder | v0.2 |
 | Sunday Rescue Mode | ❌ Not started | ❌ Not started | v0.2 |
-| **Overall** | **~85%** | **~40%** | |
+| **Overall** | **~95%** | **~70%** | |
 
 ---
 

@@ -1,6 +1,6 @@
 # TeachAssist Status
 
-> **Last Updated:** 2026-01-26
+> **Last Updated:** 2026-01-30
 
 ---
 
@@ -19,36 +19,34 @@ TeachAssist is a teacher-first professional operating system. The v0.1 pilot foc
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Health endpoint | ✅ Working | `/health` |
-| Sources API | ✅ Working | Upload, list, delete, search |
+| Health endpoint | ✅ Working | `/health`, `/health/ready`, `/health/live` |
+| Sources API | ✅ Working | Upload, list, delete, stats |
 | Chat API | ✅ Working | Grounded Q&A with citations |
+| Chat Transforms | ✅ Working | Summarize, extract, map standards (needs frontend) |
 | Council API | ✅ Working | Persona consultation |
-| **Narratives API** | ✅ Working | Semester comment synthesis, IB criteria, batch processing |
-| Knowledge Service | ✅ Working | InMemoryVectorStore (numpy-based) |
+| Narratives API | ✅ Working | Synthesis, batch, edit, export |
+| Knowledge Service | ✅ Working | InMemoryVectorStore + OpenAI embeddings |
 | Personas | ✅ Created | 4 YAML files in `personas/` |
-| Planning API | 🟡 Partial | Endpoints exist, not fully tested |
-| Grading API | 🟡 Partial | Endpoints exist, not fully tested |
+| URL Ingestion | 🟡 Scaffolded | Endpoint exists, returns "not implemented" |
+| Planning API | 🟡 Scaffolded | Endpoints exist, not implemented |
+| Grading API | 🟡 Scaffolded | Endpoints exist, not implemented |
 
-**Backend Routers:**
-- `backend/api/routers/health.py`
-- `backend/api/routers/sources.py`
-- `backend/api/routers/chat.py`
-- `backend/api/routers/council.py`
-- `backend/api/routers/narratives.py` ⭐ NEW
-- `backend/api/routers/planning.py`
-- `backend/api/routers/grading.py`
-
-### Frontend (Next.js) - ~30% Complete
+### Frontend (Next.js) - ~70% Complete
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| App shell | ✅ Working | Basic layout and navigation |
-| Welcome page | 🟡 Partial | Components exist, needs polish |
-| Sources UI | 🟡 Partial | Components exist at `components/Sources/` |
-| Chat UI | 🟡 Partial | Route exists at `app/chat/` |
-| Council UI | 🟡 Partial | Route exists at `app/council/` |
-| Help Center | 🟡 Partial | Components at `components/HelpCenter/` |
-| AI Assistant | 🟡 Partial | Components at `components/AIAssistant/` |
+| App shell | ✅ Working | GlobalLayout, theme, providers |
+| Welcome page | ✅ Working | Hero, quick start, activity, compliance |
+| Sources UI | ✅ Working | Upload, list, delete, stats |
+| Chat UI | ✅ Working | RAG with citations display |
+| Council UI | ✅ Working | Persona selection, consultation |
+| Narratives UI | ✅ Working | Full wizard (8 components) |
+| Notebook mode | ✅ Working | Two-column sources + chat |
+| Theme toggle | ✅ Working | Dark/light mode |
+| Accommodations | ✅ Working | IEP/504 toggle |
+| Source Transforms | ❌ Not started | Backend ready, needs UI |
+| Help Center | 🟡 Components only | Needs 15 teacher articles |
+| AI Assistant | 🟡 Components only | Needs layout integration |
 
 **Frontend Routes:**
 - `app/page.tsx` - Landing/welcome
