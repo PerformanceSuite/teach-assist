@@ -195,6 +195,30 @@ interface IBRubricResponse {
   loaded: boolean
 }
 
+// Transform Types
+type TransformType = 'summarize' | 'extract_misconceptions' | 'map_standards' | 'generate_questions' | 'simplify_language'
+
+interface TransformOptions {
+  audience?: 'students' | 'teachers'
+  length?: 'short' | 'medium' | 'long'
+  count?: number
+  grade_level?: string
+}
+
+interface TransformRequest {
+  transform: TransformType
+  source_ids?: string[]
+  options?: TransformOptions
+  notebook_id?: string
+}
+
+interface TransformResponse {
+  transform: string
+  result: string
+  sources_used: string[]
+  metadata: Record<string, unknown>
+}
+
 // Export types for use in components
 export type {
   StudentData,
@@ -207,6 +231,10 @@ export type {
   IBCriterion,
   CriteriaScores,
   SynthesizeOptions,
+  TransformType,
+  TransformOptions,
+  TransformRequest,
+  TransformResponse,
 }
 
 export const api = {
@@ -327,6 +355,36 @@ export const api = {
         }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Query failed' }
+      }
+    },
+
+    async transform(
+      transform: TransformType,
+      sourceIds?: string[],
+      options?: TransformOptions
+    ): Promise<ApiResponse<TransformResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/chat/transform`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            transform,
+            source_ids: sourceIds || [],
+            options: options || {},
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Transform failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Transform failed' }
       }
     },
   },

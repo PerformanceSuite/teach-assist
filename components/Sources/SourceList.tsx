@@ -5,7 +5,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, Trash2, Clock, FileType, Loader2 } from 'lucide-react'
+import { FileText, Trash2, Clock, FileType, Loader2, Sparkles } from 'lucide-react'
 import api from '@/lib/api'
 
 interface Source {
@@ -20,9 +20,10 @@ interface Source {
 
 interface SourceListProps {
   refreshTrigger?: number
+  onTransformSelect?: (source: Source) => void
 }
 
-export function SourceList({ refreshTrigger = 0 }: SourceListProps) {
+export function SourceList({ refreshTrigger = 0, onTransformSelect }: SourceListProps) {
   const [sources, setSources] = useState<Source[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
@@ -147,18 +148,29 @@ export function SourceList({ refreshTrigger = 0 }: SourceListProps) {
                   <p className="text-sm text-gray-400 truncate mt-0.5">{source.filename}</p>
                 </div>
 
-                <button
-                  onClick={() => handleDelete(source.id, source.filename)}
-                  disabled={deleting === source.id}
-                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
-                  title="Delete document"
-                >
-                  {deleting === source.id ? (
-                    <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
-                  ) : (
-                    <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                <div className="flex items-center gap-1">
+                  {onTransformSelect && (
+                    <button
+                      onClick={() => onTransformSelect(source)}
+                      className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors group"
+                      title="Transform source"
+                    >
+                      <Sparkles className="w-4 h-4 text-gray-400 group-hover:text-purple-400" />
+                    </button>
                   )}
-                </button>
+                  <button
+                    onClick={() => handleDelete(source.id, source.filename)}
+                    disabled={deleting === source.id}
+                    className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Delete document"
+                  >
+                    {deleting === source.id ? (
+                      <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
