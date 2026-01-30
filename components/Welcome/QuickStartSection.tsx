@@ -9,7 +9,7 @@ import {
   MessageSquare,
   Users,
   HelpCircle,
-  BookOpen,
+  Calendar,
   ArrowRight
 } from 'lucide-react'
 
@@ -60,13 +60,13 @@ export function QuickStartSection({ onOpenHelp }: QuickStartSectionProps) {
       href: '/council',
     },
     {
-      id: 'browse-sources',
-      title: 'Browse Sources',
-      description: 'View and manage your uploaded curriculum materials',
-      icon: BookOpen,
+      id: 'plan-studio',
+      title: 'Plan Studio',
+      description: 'Design lessons and units with AI-assisted planning',
+      icon: Calendar,
       iconColor: 'text-orange-400',
       bgColor: 'bg-orange-500/10 hover:bg-orange-500/20',
-      href: '/sources',
+      href: '/app/plan',
     },
     {
       id: 'view-help',
