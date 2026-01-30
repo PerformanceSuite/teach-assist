@@ -29,6 +29,20 @@ interface UploadResponse {
   message: string
 }
 
+interface UrlUploadRequest {
+  url: string
+  title?: string
+  tags?: string[]
+}
+
+interface UrlUploadResponse {
+  source_id: string
+  filename: string
+  pages: number | null
+  chunks: number
+  status: string
+}
+
 // Chat Types
 interface ChatRequest {
   query: string
@@ -291,6 +305,32 @@ export const api = {
         return { data }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Failed to fetch stats' }
+      }
+    },
+
+    async uploadUrl(url: string, title?: string, tags?: string[]): Promise<ApiResponse<UrlUploadResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/sources/url`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url,
+            title: title || undefined,
+            tags: tags || [],
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'URL upload failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'URL upload failed' }
       }
     },
   },

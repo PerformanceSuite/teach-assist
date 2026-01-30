@@ -3,6 +3,7 @@ Sources Router
 
 Document ingestion and management for Notebook Mode.
 Uses KnowledgeBeast for RAG capabilities.
+Supports file uploads and URL/webpage ingestion.
 """
 
 import json
@@ -18,6 +19,12 @@ from pydantic import BaseModel
 
 from api.config import settings
 from api.deps import get_knowledge_engine
+from libs.web_ingester import (
+    fetch_and_parse,
+    InvalidUrlError,
+    FetchError,
+    ParseError,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -65,7 +72,10 @@ class SourceDetail(BaseModel):
 class UrlIngestRequest(BaseModel):
     """Request to ingest a URL."""
     url: str
+    title: Optional[str] = None
     notebook_id: str = "default"
+    tags: List[str] = []
+    description: Optional[str] = None
 
 
 # --- Helper Functions ---
@@ -204,21 +214,114 @@ async def upload_source(
 @router.post("/url", response_model=SourceResponse)
 async def ingest_url(request: UrlIngestRequest):
     """
-    Ingest a web page or Google Doc.
+    Ingest a web page URL.
 
-    The content will be fetched, extracted, chunked, and indexed.
+    The content will be fetched, extracted, and indexed into the knowledge base.
+
+    Supports:
+    - Standard HTML pages
+    - Blog posts and articles
+    - Documentation pages
+
+    Note: Google Docs requires sharing settings to be "Anyone with the link can view".
     """
-    # TODO: Implement URL fetching and ingestion
-    # This would require:
-    # 1. Fetching the URL content
-    # 2. Extracting text (handling HTML, Google Docs API, etc.)
-    # 3. Saving locally
-    # 4. Indexing in KnowledgeBeast
+    try:
+        # Fetch and parse the URL
+        logger.info("ingesting_url", url=request.url)
+        web_content = await fetch_and_parse(request.url, timeout=30.0)
 
-    raise HTTPException(
-        status_code=501,
-        detail="URL ingestion not yet implemented. Please upload files directly.",
-    )
+        # Generate source ID
+        source_id = f"url_{uuid.uuid4().hex[:12]}"
+
+        # Use provided title or extracted title
+        title = request.title or web_content["title"]
+        content = web_content["content"]
+
+        # Save content to file for persistence
+        file_path = settings.sources_path / f"{source_id}.txt"
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(f"Source: {web_content['url']}\n")
+            f.write(f"Title: {title}\n")
+            f.write(f"---\n\n")
+            f.write(content)
+
+        file_size = file_path.stat().st_size
+
+        logger.info(
+            "url_content_saved",
+            source_id=source_id,
+            url=request.url,
+            title=title,
+            content_length=len(content),
+        )
+
+        # Save metadata
+        metadata = SourceMetadata(
+            tags=request.tags,
+            description=request.description or web_content.get("description"),
+            notebook_id=request.notebook_id,
+        )
+
+        # Add URL to metadata dict for save
+        meta = {
+            "source_id": source_id,
+            "filename": title,
+            "created_at": datetime.utcnow().isoformat(),
+            "file_size": file_size,
+            "tags": metadata.tags,
+            "description": metadata.description,
+            "notebook_id": metadata.notebook_id,
+            "source_url": web_content["url"],
+            "source_type": "url",
+        }
+        meta_path = get_source_metadata_path(source_id)
+        with open(meta_path, "w") as f:
+            json.dump(meta, f, indent=2)
+
+        # Index in KnowledgeBeast
+        kb = get_knowledge_engine()
+        chunks = 0
+
+        if kb:
+            try:
+                result = await kb.ingest(
+                    content=content,
+                    source_id=source_id,
+                    title=title,
+                    source_type="url",
+                    metadata={
+                        "source_url": web_content["url"],
+                        "description": web_content.get("description"),
+                    }
+                )
+                chunks = result.chunks_created
+                logger.info("url_source_indexed", source_id=source_id, chunks=chunks)
+            except Exception as e:
+                logger.error("url_indexing_failed", source_id=source_id, error=str(e))
+
+        return SourceResponse(
+            source_id=source_id,
+            filename=title,
+            pages=None,
+            chunks=chunks,
+            status="indexed" if kb else "saved",
+        )
+
+    except InvalidUrlError as e:
+        logger.warning("invalid_url", url=request.url, error=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except FetchError as e:
+        logger.warning("fetch_error", url=request.url, error=str(e))
+        raise HTTPException(status_code=422, detail=f"Failed to fetch URL: {str(e)}")
+
+    except ParseError as e:
+        logger.warning("parse_error", url=request.url, error=str(e))
+        raise HTTPException(status_code=422, detail=f"Failed to parse content: {str(e)}")
+
+    except Exception as e:
+        logger.error("url_ingestion_failed", url=request.url, error=str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
 
 @router.get("", response_model=dict)

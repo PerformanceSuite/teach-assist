@@ -5,17 +5,21 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, Lightbulb } from 'lucide-react'
+import { BookOpen, Lightbulb, Upload, Globe } from 'lucide-react'
 import { SourceUploader } from '@/components/Sources/SourceUploader'
+import { UrlUploader } from '@/components/Sources/UrlUploader'
 import { SourceList } from '@/components/Sources/SourceList'
 import { SourceStats } from '@/components/Sources/SourceStats'
+
+type UploadTab = 'file' | 'url'
 
 export default function SourcesPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<UploadTab>('file')
 
   const handleUploadComplete = (result: any) => {
-    setUploadSuccess(`Uploaded ${result.filename} - ${result.chunk_count} chunks created`)
+    setUploadSuccess(`Added "${result.filename}" - ${result.chunk_count || result.chunks} chunks created`)
     setRefreshTrigger(prev => prev + 1)
 
     // Clear success message after 5 seconds
@@ -51,9 +55,41 @@ export default function SourcesPage() {
         )}
 
         {/* Upload section */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-medium text-white">Upload Documents</h2>
-          <SourceUploader onUploadComplete={handleUploadComplete} />
+        <div className="space-y-4">
+          <h2 className="text-lg font-medium text-white">Add Sources</h2>
+
+          {/* Tab buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('file')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                activeTab === 'file'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-300'
+              }`}
+            >
+              <Upload className="w-4 h-4" />
+              Upload File
+            </button>
+            <button
+              onClick={() => setActiveTab('url')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                activeTab === 'url'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-300'
+              }`}
+            >
+              <Globe className="w-4 h-4" />
+              Add URL
+            </button>
+          </div>
+
+          {/* Tab content */}
+          {activeTab === 'file' ? (
+            <SourceUploader onUploadComplete={handleUploadComplete} />
+          ) : (
+            <UrlUploader onUploadComplete={handleUploadComplete} />
+          )}
         </div>
 
         {/* Sources list */}
