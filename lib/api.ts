@@ -153,13 +153,13 @@ export const api = {
   chat: {
     async ask(query: string, options?: Omit<ChatRequest, 'query'>): Promise<ApiResponse<ChatResponse>> {
       try {
-        const response = await fetch(`${API_BASE}/api/v1/chat/ask`, {
+        const response = await fetch(`${API_BASE}/api/v1/chat/message`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            query,
+            message: query,
             ...options,
           }),
         })
@@ -170,7 +170,15 @@ export const api = {
         }
 
         const data = await response.json()
-        return { data }
+        // Map backend response format to frontend expected format
+        return {
+          data: {
+            query,
+            answer: data.response,
+            sources: data.citations || [],
+            chunk_count: data.sources_searched || 0,
+          }
+        }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Query failed' }
       }
@@ -187,8 +195,11 @@ export const api = {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            persona,
-            context,
+            personas: [persona],
+            context: {
+              type: 'teaching',
+              content: context,
+            },
             question,
           }),
         })
@@ -199,7 +210,18 @@ export const api = {
         }
 
         const data = await response.json()
-        return { data }
+        // Map backend response to frontend expected format
+        const advice = data.advice?.[0]
+        return {
+          data: {
+            persona,
+            persona_name: advice?.display_name || persona,
+            context,
+            question,
+            advice: advice?.response ? JSON.stringify(advice.response, null, 2) : 'No advice available',
+            timestamp: new Date().toISOString(),
+          }
+        }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Consultation failed' }
       }
