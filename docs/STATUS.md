@@ -184,6 +184,53 @@ The Narratives API is the core feature for the pilot user's workflow.
 
 ---
 
+## Frontend Remaining Work (95% Complete)
+
+### Pre-Deployment Checklist
+
+| Task | Status | Command |
+|------|--------|---------|
+| Install dependencies | Required | `npm install` |
+| Verify backend running | Required | `curl http://localhost:8002/health` |
+| Test upload → search → council flow | Required | Manual test |
+| Check `.env.local` has `NEXT_PUBLIC_API_URL` | Required | Verify config |
+
+### v0.1 Features - All Complete ✅
+
+| Feature | Component | Status |
+|---------|-----------|--------|
+| Welcome/Landing | `app/page.tsx` | ✅ Complete |
+| Sources management | `app/sources/page.tsx` | ✅ Complete |
+| URL ingestion | `components/Sources/UrlUploader.tsx` | ✅ Complete |
+| Source transforms | `components/Sources/TransformPanel.tsx` | ✅ Complete |
+| Chat interface | `app/chat/page.tsx` | ✅ Complete |
+| Inner Council | `app/council/page.tsx` | ✅ Complete |
+| Narratives wizard | `app/narratives/page.tsx` | ✅ Complete |
+| AI Assistant FAB | `components/AIAssistant/` | ✅ Complete |
+| Help Center | `components/HelpCenter/` | ✅ Complete |
+| Theme/dark mode | `components/ThemeToggle.tsx` | ✅ Complete |
+| Auth middleware | `middleware.ts` | ✅ Complete |
+
+### v0.2 Placeholder Pages (Intentional - Out of Scope)
+
+| Route | Feature | File |
+|-------|---------|------|
+| `/app/grade` | Grade Studio | `app/app/grade/page.tsx` |
+| `/app/plan` | Plan Studio | `app/app/plan/page.tsx` |
+| `/app/ideas` | Ideas Hub | `app/app/ideas/page.tsx` |
+| `/app/relationships` | Relationships Hub | `app/app/relationships/page.tsx` |
+| `/app/pro` | Professional Portal | `app/app/pro/page.tsx` |
+
+### Minor Cleanup (Optional - Low Priority)
+
+| Category | Location | Notes |
+|----------|----------|-------|
+| Type safety | `UrlUploader.tsx`, `SourceUploader.tsx` | Replace `any` with strict types |
+| Placeholders | `app/app/page.tsx` | "Draft Inbox" and "Instant Capture" labels |
+| Logging | `hooks/useRecentActivity.ts:78` | `console.error` for debugging |
+
+---
+
 ## Next Steps
 
 1. **Deploy to Production** - See `docs/MASTER_PLAN.md` for deployment steps
