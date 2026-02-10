@@ -17,7 +17,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import settings
-from api.routers import chat, council, grading, health, narratives, planning, sources
+from api.routers import chat, council, grading, health, narratives, planning, sources, students
 
 logger = structlog.get_logger(__name__)
 
@@ -59,6 +59,7 @@ app.include_router(council.router, prefix="/api/v1/council", tags=["council"])
 app.include_router(grading.router, prefix="/api/v1/grading", tags=["grading"])
 app.include_router(planning.router, prefix="/api/v1/planning", tags=["planning"])
 app.include_router(narratives.router, prefix="/api/v1/narratives", tags=["narratives"])
+app.include_router(students.router, prefix="/api/v1/students", tags=["students"])
 
 
 @app.get("/")

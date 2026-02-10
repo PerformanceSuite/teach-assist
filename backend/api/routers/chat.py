@@ -13,6 +13,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from api.deps import get_anthropic_client, get_knowledge_engine
+from libs.student_store import StudentStore
 
 logger = structlog.get_logger(__name__)
 
@@ -38,6 +39,7 @@ class ChatMessage(BaseModel):
     conversation_id: Optional[str] = None
     include_citations: bool = True
     top_k: int = 5
+    student_ids: Optional[List[str]] = None  # Selected student IDs for personalization
 
 
 class ChatResponse(BaseModel):
@@ -171,6 +173,32 @@ async def send_message(
         context = "\n---\n".join(context_parts)
     else:
         context = "(No relevant sources found. Responding based on general knowledge.)"
+
+    # Add student personalization context if student IDs provided
+    if request.student_ids:
+        student_store = StudentStore()
+        students = student_store.get_many(request.student_ids)
+
+        if students:
+            student_lines = []
+            for student in students:
+                interests_str = ", ".join(student.interests) if student.interests else "not specified"
+                student_lines.append(f"- {student.name} (interests: {interests_str})")
+
+            personalization_context = f"""
+STUDENT PERSONALIZATION:
+You are personalizing this response for:
+{chr(10).join(student_lines)}
+
+When explaining concepts, connect them to these students' interests to increase engagement. Use examples, analogies, or references they would find relatable.
+
+"""
+            context = personalization_context + context
+
+            logger.info(
+                "student_personalization_added",
+                student_count=len(students),
+            )
 
     # Generate response using Claude
     try:

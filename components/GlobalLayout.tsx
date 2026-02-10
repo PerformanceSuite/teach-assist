@@ -12,6 +12,7 @@ import {
   BookOpen,
   MessageSquare,
   Users,
+  UsersRound,
   Calendar,
   GraduationCap,
   FileText,
@@ -28,6 +29,7 @@ import { ThemeToggle } from './ThemeToggle'
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/sources', label: 'Knowledge Base', icon: BookOpen },
+  { href: '/students', label: 'Students', icon: UsersRound },
   { href: '/chat', label: 'AI Chat', icon: MessageSquare },
   { href: '/council', label: 'Inner Council', icon: Users },
   { href: '/narratives', label: 'Narratives', icon: FileText },

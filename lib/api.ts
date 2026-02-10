@@ -43,12 +43,32 @@ interface UrlUploadResponse {
   status: string
 }
 
+// Student Types
+export interface StudentProfile {
+  id: string
+  name: string
+  interests: string[]
+  created_at: string
+  updated_at: string
+}
+
+export interface StudentCreate {
+  name: string
+  interests?: string[]
+}
+
+export interface StudentUpdate {
+  name?: string
+  interests?: string[]
+}
+
 // Chat Types
 interface ChatRequest {
   query: string
   use_hybrid?: boolean
   top_k?: number
   rerank?: boolean
+  student_ids?: string[]
 }
 
 interface ChatResponse {
@@ -359,6 +379,100 @@ export const api = {
         return { data }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'URL upload failed' }
+      }
+    },
+  },
+
+  // Student Management
+  students: {
+    async list(): Promise<ApiResponse<StudentProfile[]>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/students`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch students' }
+        }
+
+        const data = await response.json()
+        return { data: data.students || data || [] }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch students' }
+      }
+    },
+
+    async create(data: StudentCreate): Promise<ApiResponse<StudentProfile>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/students`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to create student' }
+        }
+
+        const result = await response.json()
+        return { data: result }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to create student' }
+      }
+    },
+
+    async get(id: string): Promise<ApiResponse<StudentProfile>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/students/${id}`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch student' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch student' }
+      }
+    },
+
+    async update(id: string, data: StudentUpdate): Promise<ApiResponse<StudentProfile>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/students/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to update student' }
+        }
+
+        const result = await response.json()
+        return { data: result }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to update student' }
+      }
+    },
+
+    async delete(id: string): Promise<ApiResponse<{ message: string }>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/students/${id}`, {
+          method: 'DELETE',
+        })
+
+        if (!response.ok) {
+          return { error: 'Failed to delete student' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to delete student' }
       }
     },
   },

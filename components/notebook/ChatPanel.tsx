@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import api from '@/lib/api';
+import { useStudentsStore } from '@/stores/studentsStore';
+import StudentSelector from '@/components/Chat/StudentSelector';
 
 interface Citation {
   chunk_id: string
@@ -25,6 +27,7 @@ export default function ChatPanel({ notebookId = 'default' }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const selectedStudentIds = useStudentsStore((state) => state.selectedStudentIds);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -35,7 +38,9 @@ export default function ChatPanel({ notebookId = 'default' }: ChatPanelProps) {
     setLoading(true);
 
     try {
-      const result = await api.chat.ask(userMessage);
+      const result = await api.chat.ask(userMessage, {
+        student_ids: selectedStudentIds.length > 0 ? selectedStudentIds : undefined,
+      });
 
       if (result.error) {
         setMessages(prev => [
@@ -128,6 +133,11 @@ export default function ChatPanel({ notebookId = 'default' }: ChatPanelProps) {
         {loading && (
           <div className="text-sm text-neutral-500">Assistant is thinking...</div>
         )}
+      </div>
+
+      {/* Student Selector */}
+      <div className="border-t border-neutral-200 p-4 pb-2">
+        <StudentSelector />
       </div>
 
       {/* Input */}
