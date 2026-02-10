@@ -26,6 +26,7 @@ export function StudentList({ onEdit, onDelete }: StudentListProps) {
             <tr className="bg-gray-800">
               <th className="text-left py-3 px-4 text-gray-400 font-medium">Name</th>
               <th className="text-left py-3 px-4 text-gray-400 font-medium">Interests</th>
+              <th className="text-left py-3 px-4 text-gray-400 font-medium">Accommodations</th>
               <th className="text-right py-3 px-4 text-gray-400 font-medium">Actions</th>
             </tr>
           </thead>
@@ -38,6 +39,11 @@ export function StudentList({ onEdit, onDelete }: StudentListProps) {
                 <td className="py-3 px-4">
                   <div className="flex gap-2">
                     <div className="h-6 w-16 bg-gray-700 rounded-full animate-pulse" />
+                    <div className="h-6 w-20 bg-gray-700 rounded-full animate-pulse" />
+                  </div>
+                </td>
+                <td className="py-3 px-4">
+                  <div className="flex gap-2">
                     <div className="h-6 w-20 bg-gray-700 rounded-full animate-pulse" />
                   </div>
                 </td>
@@ -96,6 +102,7 @@ export function StudentList({ onEdit, onDelete }: StudentListProps) {
           <tr className="bg-gray-800">
             <th className="text-left py-3 px-4 text-gray-400 font-medium">Name</th>
             <th className="text-left py-3 px-4 text-gray-400 font-medium">Interests</th>
+            <th className="text-left py-3 px-4 text-gray-400 font-medium">Accommodations</th>
             <th className="text-right py-3 px-4 text-gray-400 font-medium">Actions</th>
           </tr>
         </thead>
@@ -118,7 +125,23 @@ export function StudentList({ onEdit, onDelete }: StudentListProps) {
                       </span>
                     ))
                   ) : (
-                    <span className="text-gray-500 text-xs">No interests added</span>
+                    <span className="text-gray-500 text-xs">-</span>
+                  )}
+                </div>
+              </td>
+              <td className="py-3 px-4">
+                <div className="flex flex-wrap gap-1.5">
+                  {student.accommodations && student.accommodations.length > 0 ? (
+                    student.accommodations.map((acc, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                      >
+                        {acc}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-500 text-xs">-</span>
                   )}
                 </div>
               </td>

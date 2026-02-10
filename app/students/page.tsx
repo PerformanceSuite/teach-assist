@@ -37,7 +37,7 @@ export default function StudentsPage() {
     setDeleteConfirm(null)
   }
 
-  const handleSave = async (data: { name: string; interests: string[] }) => {
+  const handleSave = async (data: { name: string; interests: string[]; accommodations: string[] }) => {
     setIsSaving(true)
     try {
       if (editingStudent) {
@@ -78,8 +78,8 @@ export default function StudentsPage() {
             </button>
           </div>
           <p className="text-gray-400 max-w-2xl">
-            Manage your student profiles. Add interests to help personalize learning experiences
-            and track individual student needs.
+            Manage your student profiles. Add interests and accommodations to personalize learning
+            and ensure AI responses meet individual student needs.
           </p>
         </div>
 

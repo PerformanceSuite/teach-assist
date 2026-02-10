@@ -183,14 +183,22 @@ async def send_message(
             student_lines = []
             for student in students:
                 interests_str = ", ".join(student.interests) if student.interests else "not specified"
-                student_lines.append(f"- {student.name} (interests: {interests_str})")
+                accommodations_str = ", ".join(student.accommodations) if student.accommodations else None
+
+                line = f"- {student.name} (interests: {interests_str})"
+                if accommodations_str:
+                    line += f" [accommodations: {accommodations_str}]"
+                student_lines.append(line)
 
             personalization_context = f"""
 STUDENT PERSONALIZATION:
 You are personalizing this response for:
 {chr(10).join(student_lines)}
 
-When explaining concepts, connect them to these students' interests to increase engagement. Use examples, analogies, or references they would find relatable.
+When explaining concepts:
+- Connect them to students' interests to increase engagement
+- Use examples, analogies, or references they would find relatable
+- If accommodations are listed, ensure your response supports those needs (e.g., simpler language for reading support, step-by-step for executive function support)
 
 """
             context = personalization_context + context

@@ -1,12 +1,7 @@
-export { default } from "next-auth/middleware";
+// Auth disabled for pilot - all pages accessible without login
+// To re-enable: uncomment below and add routes to matcher
+// export { default } from "next-auth/middleware";
 
 export const config = {
-  // Protect all authenticated routes
-  matcher: [
-    "/app/:path*",
-    "/narratives/:path*",
-    "/sources/:path*",
-    "/chat/:path*",
-    "/council/:path*",
-  ],
+  matcher: [], // Empty = no protected routes
 };

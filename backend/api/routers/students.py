@@ -33,15 +33,17 @@ def get_store() -> StudentStore:
 
 
 class StudentCreate(BaseModel):
-    """Request to create a new student."""
+    """Request to create a new student. Use anonymized names (e.g., 'Alex M.')."""
     name: str
     interests: List[str] = []
+    accommodations: List[str] = []  # IEP/504 accommodations
 
 
 class StudentUpdate(BaseModel):
     """Request to update a student."""
     name: Optional[str] = None
     interests: Optional[List[str]] = None
+    accommodations: Optional[List[str]] = None
 
 
 class StudentResponse(BaseModel):
@@ -49,6 +51,7 @@ class StudentResponse(BaseModel):
     id: str
     name: str
     interests: List[str]
+    accommodations: List[str]
     created_at: str
     updated_at: str
 
@@ -72,6 +75,7 @@ async def list_students():
                 id=s.id,
                 name=s.name,
                 interests=s.interests,
+                accommodations=s.accommodations,
                 created_at=s.created_at,
                 updated_at=s.updated_at,
             ).model_dump()
@@ -97,6 +101,7 @@ async def create_student(request: StudentCreate):
     student = store.create(
         name=request.name,
         interests=request.interests,
+        accommodations=request.accommodations,
     )
 
     logger.info("student_created_via_api", student_id=student.id, name=student.name)
@@ -105,6 +110,7 @@ async def create_student(request: StudentCreate):
         id=student.id,
         name=student.name,
         interests=student.interests,
+        accommodations=student.accommodations,
         created_at=student.created_at,
         updated_at=student.updated_at,
     )
@@ -135,6 +141,7 @@ async def get_student(student_id: str):
         id=student.id,
         name=student.name,
         interests=student.interests,
+        accommodations=student.accommodations,
         created_at=student.created_at,
         updated_at=student.updated_at,
     )
@@ -164,6 +171,8 @@ async def update_student(student_id: str, request: StudentUpdate):
             kwargs["name"] = request.name
         if request.interests is not None:
             kwargs["interests"] = request.interests
+        if request.accommodations is not None:
+            kwargs["accommodations"] = request.accommodations
 
         if not kwargs:
             # No updates provided, just return current
@@ -180,6 +189,7 @@ async def update_student(student_id: str, request: StudentUpdate):
         id=student.id,
         name=student.name,
         interests=student.interests,
+        accommodations=student.accommodations,
         created_at=student.created_at,
         updated_at=student.updated_at,
     )

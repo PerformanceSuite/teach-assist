@@ -23,7 +23,6 @@ import { useAIAssistantStore } from '../stores/aiAssistantStore'
 import { useHelpStore } from '../stores/helpStore'
 import { AIAssistantPanel, AIAssistantFAB } from './AIAssistant'
 import { HelpCenter } from './HelpCenter'
-import { AccommodationsToggle } from './AccommodationsToggle'
 import { ThemeToggle } from './ThemeToggle'
 
 const navItems = [
@@ -89,7 +88,6 @@ export function GlobalLayout({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex items-center gap-2 text-sm">
             <ThemeToggle />
-            <AccommodationsToggle />
             {session?.user?.email && (
               <span className="text-gray-500 dark:text-gray-400 hidden md:inline">{session.user.email}</span>
             )}

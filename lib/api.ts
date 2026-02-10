@@ -46,8 +46,9 @@ interface UrlUploadResponse {
 // Student Types
 export interface StudentProfile {
   id: string
-  name: string
+  name: string  // Use anonymized names (e.g., "Alex M.")
   interests: string[]
+  accommodations: string[]  // IEP/504 accommodations
   created_at: string
   updated_at: string
 }
@@ -55,11 +56,13 @@ export interface StudentProfile {
 export interface StudentCreate {
   name: string
   interests?: string[]
+  accommodations?: string[]
 }
 
 export interface StudentUpdate {
   name?: string
   interests?: string[]
+  accommodations?: string[]
 }
 
 // Chat Types

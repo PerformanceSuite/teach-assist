@@ -25,11 +25,14 @@ class Student:
     Student profile for personalization.
 
     Used to make AI responses more engaging by connecting
-    concepts to student interests.
+    concepts to student interests and respecting accommodations.
+
+    Note: Use anonymized names (e.g., "Alex M.") - no full names or PII.
     """
     id: str
-    name: str  # Display name (e.g., "Alex M.")
+    name: str  # Display name (e.g., "Alex M.") - anonymized
     interests: List[str] = field(default_factory=list)
+    accommodations: List[str] = field(default_factory=list)  # IEP/504 accommodations
     created_at: str = ""
     updated_at: str = ""
 
@@ -39,6 +42,7 @@ class Student:
             "id": self.id,
             "name": self.name,
             "interests": self.interests,
+            "accommodations": self.accommodations,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
@@ -50,6 +54,7 @@ class Student:
             id=data.get("id", ""),
             name=data.get("name", data.get("display_name", "")),  # Backward compat
             interests=data.get("interests", []),
+            accommodations=data.get("accommodations", []),
             created_at=data.get("created_at", ""),
             updated_at=data.get("updated_at", ""),
         )
@@ -159,7 +164,7 @@ class StudentStore:
                 logger.warning("student_not_found", student_id=sid)
         return students
 
-    def create(self, name: str, interests: Optional[List[str]] = None) -> Student:
+    def create(self, name: str, interests: Optional[List[str]] = None, accommodations: Optional[List[str]] = None) -> Student:
         """
         Create a new student.
 
@@ -177,6 +182,7 @@ class StudentStore:
             id=student_id,
             name=name,
             interests=interests or [],
+            accommodations=accommodations or [],
             created_at=now,
             updated_at=now,
         )
@@ -206,6 +212,8 @@ class StudentStore:
             student.name = kwargs["name"]
         if "interests" in kwargs:
             student.interests = kwargs["interests"]
+        if "accommodations" in kwargs:
+            student.accommodations = kwargs["accommodations"]
 
         student.updated_at = datetime.utcnow().isoformat()
 

@@ -8,7 +8,7 @@ interface StudentFormProps {
   isOpen: boolean
   onClose: () => void
   student?: StudentProfile | null
-  onSave: (data: { name: string; interests: string[] }) => Promise<void>
+  onSave: (data: { name: string; interests: string[]; accommodations: string[] }) => Promise<void>
   isSaving?: boolean
 }
 
@@ -16,6 +16,8 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
   const [name, setName] = useState('')
   const [interests, setInterests] = useState<string[]>([])
   const [interestInput, setInterestInput] = useState('')
+  const [accommodations, setAccommodations] = useState<string[]>([])
+  const [accommodationInput, setAccommodationInput] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   // Populate form when editing
@@ -23,11 +25,14 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
     if (student) {
       setName(student.name)
       setInterests(student.interests || [])
+      setAccommodations(student.accommodations || [])
     } else {
       setName('')
       setInterests([])
+      setAccommodations([])
     }
     setInterestInput('')
+    setAccommodationInput('')
     setError(null)
   }, [student, isOpen])
 
@@ -39,6 +44,14 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
     }
   }, [interestInput, interests])
 
+  const handleAddAccommodation = useCallback(() => {
+    const trimmed = accommodationInput.trim()
+    if (trimmed && !accommodations.includes(trimmed)) {
+      setAccommodations((prev) => [...prev, trimmed])
+      setAccommodationInput('')
+    }
+  }, [accommodationInput, accommodations])
+
   const handleInterestKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
@@ -46,8 +59,19 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
     }
   }
 
+  const handleAccommodationKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      handleAddAccommodation()
+    }
+  }
+
   const handleRemoveInterest = (index: number) => {
     setInterests((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleRemoveAccommodation = (index: number) => {
+    setAccommodations((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,6 +87,7 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
       await onSave({
         name: name.trim(),
         interests,
+        accommodations,
       })
       onClose()
     } catch (err) {
@@ -81,7 +106,7 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
       />
 
       {/* Modal */}
-      <div className="relative bg-gray-900 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4 shadow-2xl">
+      <div className="relative bg-gray-900 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">
@@ -113,10 +138,13 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter student name"
+              placeholder="Use initials or nickname (e.g., Alex M.)"
               className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               autoFocus
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Use anonymized names only - no full names or PII
+            </p>
           </div>
 
           {/* Interests field */}
@@ -132,7 +160,7 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
                   value={interestInput}
                   onChange={(e) => setInterestInput(e.target.value)}
                   onKeyDown={handleInterestKeyDown}
-                  placeholder="Type and press Enter or comma to add"
+                  placeholder="soccer, music, gaming..."
                   className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 />
                 <button
@@ -167,7 +195,60 @@ export function StudentForm({ isOpen, onClose, student, onSave, isSaving = false
               )}
 
               <p className="text-xs text-gray-500">
-                Add interests to help personalize learning experiences
+                Helps personalize explanations with relatable examples
+              </p>
+            </div>
+          </div>
+
+          {/* Accommodations field */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Accommodations <span className="text-purple-400 text-xs">(IEP/504)</span>
+            </label>
+            <div className="space-y-3">
+              {/* Accommodation input */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={accommodationInput}
+                  onChange={(e) => setAccommodationInput(e.target.value)}
+                  onKeyDown={handleAccommodationKeyDown}
+                  placeholder="extended time, visual supports..."
+                  className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddAccommodation}
+                  disabled={!accommodationInput.trim()}
+                  className="px-3 py-2.5 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Accommodation tags */}
+              {accommodations.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {accommodations.map((accommodation, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                    >
+                      {accommodation}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveAccommodation(index)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <p className="text-xs text-gray-500">
+                AI will adapt responses for these needs (e.g., simpler language, step-by-step)
               </p>
             </div>
           </div>
