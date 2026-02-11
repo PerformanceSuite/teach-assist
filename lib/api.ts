@@ -256,6 +256,84 @@ interface TransformResponse {
   metadata: Record<string, unknown>
 }
 
+// Planning Types
+interface UnitConstraints {
+  lab_days_per_week?: number
+  materials_budget?: 'limited' | 'standard' | 'flexible'
+  max_homework_minutes?: number
+}
+
+interface UnitCreate {
+  title: string
+  grade: number
+  subject: string
+  duration_weeks: number
+  standards: string[]
+  constraints?: UnitConstraints
+}
+
+interface GRASPS {
+  goal: string
+  role: string
+  audience: string
+  situation: string
+  product: string
+  standards: string
+}
+
+interface PerformanceTask {
+  grasps: GRASPS
+}
+
+interface LessonOutline {
+  lesson: number
+  title: string
+  type: string
+  activities: string[]
+}
+
+interface UnitResponse {
+  unit_id: string
+  title: string
+  transfer_goals: string[]
+  essential_questions: string[]
+  performance_task: PerformanceTask
+  lesson_sequence: LessonOutline[]
+  status: string
+}
+
+interface LessonSection {
+  duration: number
+  activity: string
+  key_points?: string[]
+}
+
+interface LessonPlan {
+  opening: LessonSection
+  instruction: LessonSection
+  practice: LessonSection
+  closing: LessonSection
+}
+
+interface LessonCreate {
+  unit_id?: string
+  lesson_number?: number
+  topic: string
+  duration_minutes?: number
+  format?: 'minimum_viable' | 'detailed' | 'stretch'
+  student_ids?: string[]
+}
+
+interface LessonResponse {
+  lesson_id: string
+  title: string
+  learning_target: string
+  plan: LessonPlan
+  materials: string[]
+  differentiation_notes: string
+  format: string
+}
+
 // Export types for use in components
 export type {
   StudentData,
@@ -272,6 +350,11 @@ export type {
   TransformOptions,
   TransformRequest,
   TransformResponse,
+  UnitCreate,
+  UnitResponse,
+  LessonCreate,
+  LessonResponse,
+  UnitConstraints,
 }
 
 export const api = {
@@ -736,6 +819,116 @@ export const api = {
         return { data }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Failed to load rubric' }
+      }
+    },
+  },
+
+  // Planning
+  planning: {
+    async createUnit(data: UnitCreate): Promise<ApiResponse<UnitResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/planning/units`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to create unit' }
+        }
+
+        const result = await response.json()
+        return { data: result }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to create unit' }
+      }
+    },
+
+    async createLesson(data: LessonCreate): Promise<ApiResponse<LessonResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/planning/lessons`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to create lesson' }
+        }
+
+        const result = await response.json()
+        return { data: result }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to create lesson' }
+      }
+    },
+
+    async listUnits(): Promise<ApiResponse<UnitResponse[]>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/planning/units`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch units' }
+        }
+
+        const data = await response.json()
+        return { data: data.units || data || [] }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch units' }
+      }
+    },
+
+    async getUnit(unitId: string): Promise<ApiResponse<UnitResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/planning/units/${unitId}`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch unit' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch unit' }
+      }
+    },
+
+    async listLessons(unitId?: string): Promise<ApiResponse<LessonResponse[]>> {
+      try {
+        const params = unitId ? `?unit_id=${unitId}` : ''
+        const response = await fetch(`${API_BASE}/api/v1/planning/lessons${params}`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch lessons' }
+        }
+
+        const data = await response.json()
+        return { data: data.lessons || data || [] }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch lessons' }
+      }
+    },
+
+    async deleteUnit(unitId: string): Promise<ApiResponse<{ message: string }>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/planning/units/${unitId}`, {
+          method: 'DELETE',
+        })
+
+        if (!response.ok) {
+          return { error: 'Failed to delete unit' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to delete unit' }
       }
     },
   },

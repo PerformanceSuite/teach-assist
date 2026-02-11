@@ -1,7 +1,7 @@
 # CLAUDE.md - TeachAssist Execution Guide
 
 > **This file guides autonomous execution via Claude Code CLI**
-> **Last Updated:** 2026-01-30
+> **Last Updated:** 2026-02-10
 
 ---
 
@@ -25,10 +25,22 @@
 | URL Ingestion | ✅ Complete | 100% |
 | Source Transforms | ✅ Complete | 100% |
 | Personas | ✅ Complete | 100% |
-| Frontend UX | ✅ Complete | 95% |
+| **Plan Studio** | ✅ Complete | 100% |
+| Frontend UX | ✅ Complete | 98% |
 | AI Assistant | ✅ Complete | 100% |
 | Help Center | ✅ Complete | 100% |
-| **OVERALL** | **✅ Ready for Pilot** | **98%** |
+| **OVERALL** | **✅ Ready for Pilot** | **99%** |
+
+---
+
+## COMPLETED (Session: 2026-02-10)
+
+### Plan Studio - COMPLETE
+- [x] **PlanningStore** - File-based storage for units/lessons (`backend/libs/planning_store.py`)
+- [x] **Planning Router** - LLM-powered unit/lesson generation with student personalization
+- [x] **Frontend Store** - Zustand store with persistence (`stores/planningStore.ts`)
+- [x] **API Client** - Added planning types and methods to `lib/api.ts`
+- [x] **Plan Studio Page** - Tab-based UI with unit/lesson forms, results display
 
 ---
 
@@ -60,6 +72,9 @@
 | Backend Entry | `backend/api/main.py` |
 | Knowledge Service | `backend/libs/knowledge_service.py` |
 | Web Ingester | `backend/libs/web_ingester.py` |
+| **Planning Store** | `backend/libs/planning_store.py` |
+| **Planning Router** | `backend/api/routers/planning.py` |
+| **Plan Studio Page** | `app/app/plan/page.tsx` |
 | Personas | `personas/*.yaml` (4 files) |
 
 ---
@@ -102,6 +117,16 @@ curl -X POST http://localhost:8002/api/v1/chat/message \
 curl -X POST http://localhost:8002/api/v1/council/consult \
   -H "Content-Type: application/json" \
   -d '{"persona": "standards-guardian", "context": "Forces lesson", "question": "Standards alignment?"}'
+
+# Test Unit Planning
+curl -X POST http://localhost:8002/api/v1/planning/unit \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Forces","grade":8,"subject":"Science","duration_weeks":2,"standards":["NGSS MS-PS2-1"]}'
+
+# Test Lesson Planning
+curl -X POST http://localhost:8002/api/v1/planning/lesson \
+  -H "Content-Type: application/json" \
+  -d '{"topic":"Introduction to Forces","duration_minutes":50,"format":"detailed"}'
 ```
 
 ---
@@ -115,6 +140,8 @@ curl -X POST http://localhost:8002/api/v1/council/consult \
 | Ask grounded questions | ✅ | ✅ | **Ready** |
 | Source transforms | ✅ | ✅ | **Ready** |
 | Inner Council consultation | ✅ | ✅ | **Ready** |
+| **Plan Studio (Units)** | ✅ | ✅ | **Ready** |
+| **Plan Studio (Lessons)** | ✅ | ✅ | **Ready** |
 | Welcome Dashboard | N/A | ✅ | **Ready** |
 | AI Assistant | N/A | ✅ | **Ready** |
 | Help Center | N/A | ✅ | **Ready** |

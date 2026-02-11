@@ -1,6 +1,6 @@
 # TeachAssist Status
 
-> **Last Updated:** 2026-01-30
+> **Last Updated:** 2026-02-10
 > **Current Phase:** Feature Complete - Ready for Pilot
 
 ---
@@ -30,10 +30,10 @@ TeachAssist is a teacher-first professional operating system. The v0.1 pilot foc
 | Narratives API | ✅ Working | Synthesis, batch, edit, export |
 | Knowledge Service | ✅ Working | InMemoryVectorStore + OpenAI embeddings |
 | Personas | ✅ Working | 4 YAML files in `personas/` |
-| Planning API | 🟡 Scaffolded | Endpoints exist, not implemented (v0.2) |
+| **Planning API** | ✅ Working | Unit + lesson planning with LLM, student personalization |
 | Grading API | 🟡 Scaffolded | Endpoints exist, not implemented (v0.2) |
 
-### Frontend (Next.js) - 95% Complete
+### Frontend (Next.js) - 98% Complete
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -50,6 +50,7 @@ TeachAssist is a teacher-first professional operating system. The v0.1 pilot foc
 | Accommodations | ✅ Working | IEP/504 toggle |
 | **AI Assistant** | ✅ Working | FAB with animations, quick actions, suggestions |
 | **Help Center** | ✅ Working | 15+ teacher help articles, searchable |
+| **Plan Studio** | ✅ Working | UbD unit + lesson planning with student personalization |
 
 **Frontend Routes:**
 - `app/page.tsx` - Landing/welcome
@@ -100,7 +101,6 @@ The pilot user shared her actual weekend workflow for writing narrative comments
 ## What's Not Built (Out of Scope for v0.1)
 
 - Sunday Rescue Mode (batch grading + planning) - v0.2
-- Plan Studio (UbD lesson builder) - v0.2
 - Grade Studio (rubric + batch comments) - v0.2
 - Multi-user authentication - v0.2
 - AI grading (always forbidden)
@@ -168,7 +168,19 @@ The Narratives API is the core feature for the pilot user's workflow.
 
 ---
 
-## Recent Updates (2026-01-30)
+## Recent Updates (2026-02-10)
+
+### Plan Studio Implementation
+- **Backend**: `PlanningStore` + full LLM integration for unit and lesson planning
+- **Endpoints**:
+  - `POST /api/v1/planning/unit` - Generate UbD-aligned unit plans
+  - `POST /api/v1/planning/lesson` - Generate lesson plans with student personalization
+  - `GET/DELETE /api/v1/planning/units/*`, `/api/v1/planning/lessons/*`
+- **Frontend**: Full Plan Studio page with tab navigation (Unit/Lesson), forms, and results display
+- **Student Integration**: Lessons can be personalized based on student interests and accommodations
+- **Storage**: File-based JSON in `backend/data/units/` and `backend/data/lessons/`
+
+## Previous Updates (2026-01-30)
 
 ### Feature Branch Merge Complete
 - **URL Ingestion** - Web page scraping into knowledge base (+744 lines)
@@ -216,7 +228,6 @@ The Narratives API is the core feature for the pilot user's workflow.
 | Route | Feature | File |
 |-------|---------|------|
 | `/app/grade` | Grade Studio | `app/app/grade/page.tsx` |
-| `/app/plan` | Plan Studio | `app/app/plan/page.tsx` |
 | `/app/ideas` | Ideas Hub | `app/app/ideas/page.tsx` |
 | `/app/relationships` | Relationships Hub | `app/app/relationships/page.tsx` |
 | `/app/pro` | Professional Portal | `app/app/pro/page.tsx` |

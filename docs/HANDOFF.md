@@ -1,11 +1,36 @@
 # HANDOFF: Plan Studio + Student Integration
 
 > **Created:** 2026-02-10
-> **Next Task:** Build Plan Studio with student profile integration
+> **Status:** ✅ COMPLETED (2026-02-10)
+> **Next Task:** None - feature complete
 
 ---
 
-## COMPLETED THIS SESSION
+## PLAN STUDIO IMPLEMENTATION (2026-02-10)
+
+### Backend
+- **PlanningStore** (`backend/libs/planning_store.py`) - File-based storage for units and lessons
+- **Planning Router** (`backend/api/routers/planning.py`) - Full LLM integration with:
+  - `POST /api/v1/planning/unit` - UbD-aligned unit plan generation
+  - `POST /api/v1/planning/lesson` - Lesson plan with student personalization
+  - CRUD endpoints for units and lessons
+  - Knowledge base integration for curriculum grounding
+  - Student interests + accommodations injected into LLM context
+
+### Frontend
+- **Planning Store** (`stores/planningStore.ts`) - Zustand store with persistence
+- **API Client** (`lib/api.ts`) - Added planning types and methods
+- **Plan Studio Page** (`app/app/plan/page.tsx`) - Full-featured UI with:
+  - Tab navigation (Unit Planner / Lesson Planner)
+  - Unit form: title, subject, grade, duration, standards
+  - Lesson form: topic, duration, format, student selector
+  - Markdown-rendered results with copy functionality
+  - Saved units sidebar
+  - Error handling and loading states
+
+---
+
+## PREVIOUSLY COMPLETED
 
 1. **Student Profiles Feature** - Full implementation
    - Backend: `backend/libs/student_store.py`, `backend/api/routers/students.py`
