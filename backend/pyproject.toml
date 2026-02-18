@@ -6,12 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "teachassist-backend"
 version = "0.1.0"
 description = "TeachAssist API Backend"
-readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
-authors = [
-    {name = "TeachAssist Team"}
-]
+license = "MIT"
 dependencies = [
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
@@ -19,11 +15,12 @@ dependencies = [
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
     "httpx>=0.26.0",
+    "beautifulsoup4>=4.12.0",
     "structlog>=24.1.0",
     "PyYAML>=6.0",
     "python-dotenv>=1.0.0",
-    "chromadb>=0.5.0,<1.0.0",
-    "sentence-transformers>=2.2.2",
+    "openai>=1.0.0",
+    "numpy>=1.24.0",
     "pypdf>=3.17.0",
     "python-docx>=1.1.0",
     "tiktoken>=0.5.2",
@@ -37,6 +34,9 @@ dev = [
     "black>=24.1.0",
     "ruff>=0.2.0",
 ]
+
+[tool.setuptools.packages.find]
+include = ["api*"]
 
 [tool.black]
 line-length = 100

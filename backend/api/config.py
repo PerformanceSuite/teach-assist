@@ -34,7 +34,12 @@ class Settings(BaseSettings):
     kb_search_alpha: float = 0.7  # Weight for vector search in hybrid mode (0-1)
 
     # CORS
-    cors_origins: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    cors_origins: List[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://wildvine.net",
+        "https://teach-assist-three.vercel.app",
+    ]
 
     # Personas
     personas_dir: str = "../personas"
