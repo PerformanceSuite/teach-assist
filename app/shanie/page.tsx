@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { GraduationCap, Home } from 'lucide-react';
 
+const HOUSE_URL = process.env.NEXT_PUBLIC_HOUSE_URL || 'http://localhost:5180';
+
 export default function ShanieHub() {
   return (
     <div className="min-h-screen bg-cc-bg flex flex-col items-center justify-center px-4">
@@ -35,8 +37,8 @@ export default function ShanieHub() {
         </Link>
 
         {/* House card */}
-        <Link
-          href="/propertymanager"
+        <a
+          href={HOUSE_URL}
           className="group flex flex-col items-center gap-4 p-8 bg-cc-surface border border-cc-border rounded-2xl hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 transition-all"
         >
           <div className="p-4 bg-indigo-500/10 rounded-2xl group-hover:bg-indigo-500/20 transition-colors">
@@ -46,7 +48,7 @@ export default function ShanieHub() {
             <h2 className="text-xl font-semibold text-cc-text mb-1">House</h2>
             <p className="text-sm text-cc-muted">Property Manager</p>
           </div>
-        </Link>
+        </a>
       </div>
     </div>
   );
