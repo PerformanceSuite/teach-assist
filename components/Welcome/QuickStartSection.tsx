@@ -10,6 +10,7 @@ import {
   Users,
   HelpCircle,
   Calendar,
+  UserPen,
   ArrowRight
 } from 'lucide-react'
 
@@ -67,6 +68,15 @@ export function QuickStartSection({ onOpenHelp }: QuickStartSectionProps) {
       iconColor: 'text-orange-400',
       bgColor: 'bg-orange-500/10 hover:bg-orange-500/20',
       href: '/app/plan',
+    },
+    {
+      id: 'edit-profile',
+      title: 'Edit Public Profile',
+      description: 'Update your teacher profile, photo, and schedule',
+      icon: UserPen,
+      iconColor: 'text-teal-400',
+      bgColor: 'bg-teal-500/10 hover:bg-teal-500/20',
+      href: '/profile',
     },
     {
       id: 'view-help',

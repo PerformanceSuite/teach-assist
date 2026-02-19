@@ -17,7 +17,10 @@ import {
   Calendar,
   GraduationCap,
   FileText,
+  UserPen,
   LogOut,
+  ArrowLeft,
+  ShieldCheck,
 } from 'lucide-react'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { useAIAssistantStore } from '../stores/aiAssistantStore'
@@ -35,6 +38,7 @@ const navItems = [
   { href: '/narratives', label: 'Narratives', icon: FileText },
   { href: '/app/plan', label: 'Plan Studio', icon: Calendar },
   { href: '/app/grade', label: 'Grade Studio', icon: GraduationCap },
+  { href: '/profile', label: 'Public Profile', icon: UserPen },
 ]
 
 function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
@@ -87,13 +91,35 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
       {!isEmbedded && (
         <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-            <Link href="/" className="font-semibold text-gray-900 dark:text-white tracking-tight text-lg">
-              TeachAssist
-            </Link>
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/shanie"
+                className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                title="Back to Shanie hub"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+              <Link href="/" className="font-semibold text-gray-900 dark:text-white tracking-tight text-lg">
+                TeachAssist
+              </Link>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
               <ThemeToggle />
-              {session?.user?.email && (
-                <span className="text-gray-500 dark:text-gray-400 hidden md:inline">{session.user.email}</span>
+              {session?.user && (
+                <div className="flex items-center gap-2 rounded-full bg-gray-100 dark:bg-gray-800 pl-2 pr-3 py-1">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  {session.user.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={session.user.image} alt="" className="w-5 h-5 rounded-full" />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] font-bold text-white">
+                      {session.user.name?.charAt(0) || session.user.email?.charAt(0) || '?'}
+                    </div>
+                  )}
+                  <span className="text-gray-700 dark:text-gray-300 hidden md:inline font-medium">
+                    {session.user.name || session.user.email}
+                  </span>
+                </div>
               )}
               <Link
                 className="flex items-center gap-1.5 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"

@@ -15,20 +15,6 @@ const withPWA = withPWAInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Allow embedding in wildvine.net portal iframe
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' https://wildvine.net http://localhost:5180",
-          },
-        ],
-      },
-    ];
-  },
   // Proxy API requests to backend during development
   async rewrites() {
     return [

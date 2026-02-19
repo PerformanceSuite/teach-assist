@@ -1,7 +1,9 @@
-// Auth disabled for pilot - all pages accessible without login
-// To re-enable: uncomment below and add routes to matcher
-// export { default } from "next-auth/middleware";
+export { default } from "next-auth/middleware";
 
 export const config = {
-  matcher: [], // Empty = no protected routes
+  // Protect all routes EXCEPT: /shanie*, /api/*, static assets
+  // /shanie covers both /shanie (hub) and /shanieholman (public profile)
+  matcher: [
+    "/((?!shanie|api|_next/static|_next/image|favicon\\.ico|icons|manifest\\.json|sw\\.js).*)",
+  ],
 };

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "../components/Providers";
-import { GlobalLayout } from "../components/GlobalLayout";
 import { ThemeProvider } from "../components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -46,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-white antialiased min-h-screen transition-colors">
         <Providers>
           <ThemeProvider>
-            <GlobalLayout>{children}</GlobalLayout>
+            {children}
           </ThemeProvider>
         </Providers>
       </body>
