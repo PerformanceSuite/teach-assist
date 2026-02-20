@@ -13,6 +13,7 @@ import {
   X,
   Users
 } from 'lucide-react';
+import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useStudentsStore } from '@/stores/studentsStore';
@@ -495,9 +496,9 @@ export default function PlanStudioPage() {
                     <div className="px-3 pb-3 space-y-2">
                       {students.length === 0 ? (
                         <div className="text-sm text-neutral-500 py-2">
-                          <a href="/students" className="text-blue-600 hover:underline">
+                          <Link href="/students" className="text-blue-600 hover:underline">
                             Add students to personalize responses
-                          </a>
+                          </Link>
                         </div>
                       ) : (
                         <>

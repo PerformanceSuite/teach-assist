@@ -14,6 +14,7 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: '/teach',
   reactStrictMode: true,
   // Proxy API requests to backend during development
   async rewrites() {

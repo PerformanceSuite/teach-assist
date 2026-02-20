@@ -2,56 +2,57 @@
   "name": "TeachAssist",
   "short_name": "TeachAssist",
   "description": "Teacher-first AI assistant with grounded Q&A and advisory personas",
-  "start_url": "/",
+  "start_url": "/teach",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#4f46e5",
   "orientation": "portrait-primary",
+  "scope": "/teach/",
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
+      "src": "/teach/icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-96x96.png",
+      "src": "/teach/icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-128x128.png",
+      "src": "/teach/icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-144x144.png",
+      "src": "/teach/icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-152x152.png",
+      "src": "/teach/icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "/teach/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-384x384.png",
+      "src": "/teach/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "/teach/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -63,22 +64,22 @@
       "name": "Upload Source",
       "short_name": "Upload",
       "description": "Upload curriculum documents",
-      "url": "/sources",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+      "url": "/teach/sources",
+      "icons": [{ "src": "/teach/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Chat",
       "short_name": "Chat",
       "description": "Ask grounded questions",
-      "url": "/chat",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+      "url": "/teach/chat",
+      "icons": [{ "src": "/teach/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Inner Council",
       "short_name": "Council",
       "description": "Consult AI advisors",
-      "url": "/council",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+      "url": "/teach/council",
+      "icons": [{ "src": "/teach/icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ]
 }

@@ -39,8 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/icons/icon-192x192.png" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <link rel="icon" href="/teach/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/teach/icons/icon-192x192.png" />
       </head>
       <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-white antialiased min-h-screen transition-colors">
         <Providers>
