@@ -121,8 +121,30 @@ export default function ProfileEditor() {
       </div>
 
       {!profileId && (
-        <div className="bg-amber-500/10 border border-amber-500/30 text-amber-200 px-4 py-3 rounded-lg text-sm">
-          No profile found in the database. Create one in Supabase first.
+        <div className="flex flex-col items-start gap-3 bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 px-4 py-4 rounded-lg text-sm">
+          <p className="font-medium">No profile found in the database.</p>
+          <button
+            onClick={async () => {
+              setSaving(true);
+              const { upsertTeacherProfile, DEFAULT_PROFILE } = await import('@/lib/teacherProfile');
+              const newProfile = await upsertTeacherProfile('shanie-default-id', DEFAULT_PROFILE);
+              if (newProfile) {
+                setProfileId(newProfile.id);
+                setName(newProfile.name);
+                setTagline(newProfile.tagline);
+                setBio(newProfile.bio);
+                setPhilosophy(newProfile.philosophy);
+                setPhotoUrl(newProfile.photoUrl);
+                setSchedule(newProfile.schedule);
+              }
+              setSaving(false);
+            }}
+            disabled={saving}
+            className="flex items-center gap-2 px-3 py-1.5 bg-amber-500 text-amber-950 rounded-md font-semibold hover:bg-amber-400 transition-colors"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+            Initialize Default Profile
+          </button>
         </div>
       )}
 
