@@ -121,13 +121,13 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
                   </span>
                 </div>
               )}
-              <Link
+              <button
                 className="flex items-center gap-1.5 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
-                href="/api/auth/signout"
+                onClick={() => signOut({ callbackUrl: '/teach' })}
               >
                 <LogOut className="w-4 h-4" />
                 Sign out
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -141,11 +141,10 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${
-                      isActive
+                    className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${isActive
                         ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
-                    }`}
+                      }`}
                   >
                     <item.icon className="w-4 h-4" />
                     {item.label}
