@@ -24,6 +24,11 @@ export const authOptions: NextAuthOptions = {
       const email = (user.email ?? "").toLowerCase();
       if (!email) return false;
 
+      // Automatically allow anyone from the wildvine domains (Google Workspace)
+      if (email.endsWith('@wildvine.com') || email.endsWith('@wildvine.net')) {
+        return true;
+      }
+
       // Friend-only pilot: if allowlist is empty, allow all (local dev convenience).
       if (allowedEmails.size === 0) return true;
 
