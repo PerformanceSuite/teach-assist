@@ -20,4 +20,3 @@ chroma/
 .env.local
 *.log
 *.pid
-.vercel
