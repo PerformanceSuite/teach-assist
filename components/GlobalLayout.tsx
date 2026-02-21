@@ -4,10 +4,11 @@
 
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
+import { createClient } from '../lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import {
   Home,
   BookOpen,
@@ -21,7 +22,9 @@ import {
   LogOut,
   ArrowLeft,
   ShieldCheck,
+  KeyRound,
 } from 'lucide-react'
+import { ChangePasswordModal } from './ChangePasswordModal'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { useAIAssistantStore } from '../stores/aiAssistantStore'
 import { useHelpStore } from '../stores/helpStore'
@@ -45,10 +48,28 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { data: session } = useSession()
   const { toggleAssistant } = useAIAssistantStore()
   const { toggleHelp } = useHelpStore()
   const isEmbedded = searchParams.get('embedded') === 'true'
+
+  const [user, setUser] = useState<User | null>(null)
+  const [showChangePassword, setShowChangePassword] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   // Set up keyboard shortcuts
   useKeyboardShortcuts([
@@ -105,25 +126,27 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center gap-3 text-sm">
               <ThemeToggle />
-              {session?.user && (
+              {user && (
                 <div className="flex items-center gap-2 rounded-full bg-gray-100 dark:bg-gray-800 pl-2 pr-3 py-1">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                  {session.user.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={session.user.image} alt="" className="w-5 h-5 rounded-full" />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] font-bold text-white">
-                      {session.user.name?.charAt(0) || session.user.email?.charAt(0) || '?'}
-                    </div>
-                  )}
+                  <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] font-bold text-white">
+                    {user.email?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
                   <span className="text-gray-700 dark:text-gray-300 hidden md:inline font-medium">
-                    {session.user.name || session.user.email}
+                    {user.email}
                   </span>
                 </div>
               )}
               <button
                 className="flex items-center gap-1.5 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
-                onClick={() => signOut({ callbackUrl: '/teach' })}
+                onClick={() => setShowChangePassword(true)}
+                title="Change password"
+              >
+                <KeyRound className="w-4 h-4" />
+              </button>
+              <button
+                className="flex items-center gap-1.5 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+                onClick={handleSignOut}
               >
                 <LogOut className="w-4 h-4" />
                 Sign out
@@ -165,6 +188,9 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
       <AIAssistantFAB />
       <AIAssistantPanel />
       <HelpCenter />
+      {showChangePassword && (
+        <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
+      )}
     </div>
   )
 }

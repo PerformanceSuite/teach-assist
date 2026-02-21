@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Providers } from "../components/Providers";
 import { ThemeProvider } from "../components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -43,11 +42,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/teach/icons/icon-192x192.png" />
       </head>
       <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-white antialiased min-h-screen transition-colors">
-        <Providers>
-          <ThemeProvider>
-            {children}
-          </ThemeProvider>
-        </Providers>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
