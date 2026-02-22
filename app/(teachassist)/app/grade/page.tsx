@@ -1,11 +1,17 @@
-export default function Page() {
+'use client'
+
+import { GradeWizard } from '@/components/GradeStudio'
+
+export default function GradeStudioPage() {
   return (
-    <div className="space-y-3">
-      <h1 className="text-2xl font-semibold">Grade Studio</h1>
-      <p className="text-neutral-700">Rubric-based feedback drafts + narrative comment batching (teacher approves).</p>
-      <div className="rounded-lg border p-4 text-sm text-neutral-600">
-        v0 scaffolding: UI + routing + auth are in place. Implement core workflows next.
+    <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-white">Grade Studio</h1>
+        <p className="text-gray-400 mt-1">
+          Generate rubric-aligned feedback drafts for student work. You review and approve every comment.
+        </p>
       </div>
+      <GradeWizard />
     </div>
-  );
+  )
 }

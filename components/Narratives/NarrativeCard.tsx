@@ -129,9 +129,19 @@ export function NarrativeCard({ narrative, onApprove, onFlag }: NarrativeCardPro
         </div>
       ) : (
         <>
-          <p className="text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">
-            {narrative.draft}
-          </p>
+          {/* Structured narrative view */}
+          {narrative.structure.achievement ? (
+            <div className="space-y-2">
+              <StructuredSentence label="Achievement" text={narrative.structure.achievement} color="text-blue-400" />
+              <StructuredSentence label="Evidence" text={narrative.structure.evidence} color="text-emerald-400" />
+              <StructuredSentence label="Growth" text={narrative.structure.growth} color="text-amber-400" />
+              <StructuredSentence label="Outlook" text={narrative.structure.outlook} color="text-purple-400" />
+            </div>
+          ) : (
+            <p className="text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">
+              {narrative.draft}
+            </p>
+          )}
 
           {/* Council Review Notes */}
           {Object.keys(narrative.council_review).length > 0 && (
@@ -159,6 +169,7 @@ export function NarrativeCard({ narrative, onApprove, onFlag }: NarrativeCardPro
             <button
               onClick={() => setIsEditing(true)}
               className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-medium transition-colors"
+              aria-label={`Edit narrative for ${narrative.initials}`}
             >
               <Edit2 className="w-4 h-4" />
               Edit
@@ -186,6 +197,18 @@ export function NarrativeCard({ narrative, onApprove, onFlag }: NarrativeCardPro
           </div>
         </>
       )}
+    </div>
+  )
+}
+
+function StructuredSentence({ label, text, color }: { label: string; text: string; color: string }) {
+  if (!text) return null
+  return (
+    <div className="flex gap-3 items-start">
+      <span className={`text-[10px] uppercase tracking-wider font-semibold ${color} w-20 flex-shrink-0 pt-0.5`}>
+        {label}
+      </span>
+      <p className="text-gray-200 text-sm leading-relaxed">{text}</p>
     </div>
   )
 }

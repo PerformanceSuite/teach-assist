@@ -4,7 +4,7 @@
 
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '../lib/supabase/client'
@@ -23,6 +23,8 @@ import {
   ArrowLeft,
   ShieldCheck,
   KeyRound,
+  Menu,
+  X,
 } from 'lucide-react'
 import { ChangePasswordModal } from './ChangePasswordModal'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
@@ -32,17 +34,22 @@ import { AIAssistantPanel, AIAssistantFAB } from './AIAssistant'
 import { HelpCenter } from './HelpCenter'
 import { ThemeToggle } from './ThemeToggle'
 
-const navItems = [
+const primaryNav = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/sources', label: 'Knowledge Base', icon: BookOpen },
+  { href: '/app/plan', label: 'Plan Studio', icon: Calendar },
+  { href: '/narratives', label: 'Narratives', icon: FileText },
+  { href: '/app/grade', label: 'Grade Studio', icon: GraduationCap },
+]
+
+const secondaryNav = [
   { href: '/students', label: 'Students', icon: UsersRound },
   { href: '/chat', label: 'AI Chat', icon: MessageSquare },
-  { href: '/council', label: 'Inner Council', icon: Users },
-  { href: '/narratives', label: 'Narratives', icon: FileText },
-  { href: '/app/plan', label: 'Plan Studio', icon: Calendar },
-  { href: '/app/grade', label: 'Grade Studio', icon: GraduationCap },
-  { href: '/profile', label: 'Public Profile', icon: UserPen },
+  { href: '/council', label: 'Council', icon: Users },
+  { href: '/profile', label: 'Profile', icon: UserPen },
 ]
+
+const allNavItems = [...primaryNav, ...secondaryNav]
 
 function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -54,6 +61,9 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null)
   const [showChangePassword, setShowChangePassword] = useState(false)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
+
+  const toggleMobileNav = useCallback(() => setMobileNavOpen(prev => !prev), [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -108,6 +118,11 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950 transition-colors">
+      {/* Skip link for keyboard users */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       {/* Header - hidden when embedded in portal iframe */}
       {!isEmbedded && (
         <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
@@ -117,6 +132,7 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
                 href="/shanie"
                 className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 title="Back to Shanie hub"
+                aria-label="Back to Shanie hub"
               >
                 <ArrowLeft className="w-4 h-4" />
               </Link>
@@ -141,6 +157,7 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
                 className="flex items-center gap-1.5 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
                 onClick={() => setShowChangePassword(true)}
                 title="Change password"
+                aria-label="Change password"
               >
                 <KeyRound className="w-4 h-4" />
               </button>
@@ -154,10 +171,10 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="mx-auto max-w-6xl px-4 pb-3">
-            <div className="flex flex-wrap gap-1">
-              {navItems.map((item) => {
+          {/* Navigation — Desktop */}
+          <nav className="mx-auto max-w-6xl px-4 pb-3 hidden md:block" aria-label="Main navigation">
+            <div className="flex items-center gap-1">
+              {primaryNav.map((item) => {
                 const isActive = pathname === item.href ||
                   (item.href !== '/' && pathname?.startsWith(item.href))
                 return (
@@ -165,8 +182,29 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${isActive
-                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                )
+              })}
+
+              {/* Separator */}
+              <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" aria-hidden="true" />
+
+              {secondaryNav.map((item) => {
+                const isActive = pathname === item.href ||
+                  (item.href !== '/' && pathname?.startsWith(item.href))
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${isActive
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium'
+                      : 'text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
                       }`}
                   >
                     <item.icon className="w-4 h-4" />
@@ -176,13 +214,51 @@ function GlobalLayoutInner({ children }: { children: React.ReactNode }) {
               })}
             </div>
           </nav>
+
+          {/* Navigation — Mobile hamburger toggle */}
+          <div className="md:hidden px-4 pb-3">
+            <button
+              onClick={toggleMobileNav}
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm transition-colors"
+              aria-label={mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileNavOpen}
+            >
+              {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              Menu
+            </button>
+            {mobileNavOpen && (
+              <nav className="mt-2 flex flex-col gap-1" aria-label="Main navigation">
+                {allNavItems.map((item) => {
+                  const isActive = pathname === item.href ||
+                    (item.href !== '/' && pathname?.startsWith(item.href))
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileNavOpen(false)}
+                      className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${isActive
+                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                    >
+                      <item.icon className="w-4 h-4" />
+                      {item.label}
+                    </Link>
+                  )
+                })}
+              </nav>
+            )}
+          </div>
         </header>
       )}
 
       {/* Main content */}
-      <main className="flex-1 bg-gray-50 dark:bg-gray-950">
+      <main id="main-content" className="flex-1 bg-gray-50 dark:bg-gray-950" role="main">
         {children}
       </main>
+
+      {/* Aria live region for status announcements */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only" id="status-announcements" />
 
       {/* Global UI */}
       <AIAssistantFAB />

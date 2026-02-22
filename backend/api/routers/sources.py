@@ -25,6 +25,7 @@ from libs.web_ingester import (
     FetchError,
     ParseError,
 )
+from libs.table_extractor import extract_document
 
 logger = structlog.get_logger(__name__)
 
@@ -186,18 +187,33 @@ async def upload_source(
 
     if kb:
         try:
-            # Read file content for ingestion
-            with open(file_path, "rb") as f:
-                file_content = f.read()
+            # Use table-aware extraction for DOCX and PDF
+            if ext in {".docx", ".pdf"}:
+                content_blocks = extract_document(file_path)
+                for block in content_blocks:
+                    result = await kb.ingest(
+                        content=block["content"],
+                        source_id=source_id,
+                        title=filename,
+                        source_type=ext[1:],
+                        metadata={
+                            "content_type": block.get("content_type", "prose"),
+                            **block.get("metadata", {}),
+                        },
+                    )
+                    chunks += result.chunks_created
+            else:
+                # Plain text files
+                with open(file_path, "rb") as f:
+                    file_content = f.read()
+                result = await kb.ingest(
+                    content=file_content.decode('utf-8', errors='ignore'),
+                    source_id=source_id,
+                    title=filename,
+                    source_type=ext[1:],
+                )
+                chunks = result.chunks_created
 
-            # Ingest the document
-            result = await kb.ingest(
-                content=file_content.decode('utf-8', errors='ignore'),
-                source_id=source_id,
-                title=filename,
-                source_type=ext[1:]  # Remove leading dot
-            )
-            chunks = result.chunks_created
             logger.info("source_indexed", source_id=source_id, chunks=chunks)
         except Exception as e:
             logger.error("source_indexing_failed", source_id=source_id, error=str(e))

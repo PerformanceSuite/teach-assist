@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNarrativesStore } from '@/stores/narrativesStore'
 import type { StudentData, CriteriaScores } from '@/lib/api'
 import {
@@ -15,7 +15,7 @@ import {
   Check,
 } from 'lucide-react'
 
-const CRITERIA_LABELS: Record<keyof CriteriaScores, string> = {
+const DEFAULT_CRITERIA_LABELS: Record<string, string> = {
   A_knowing: 'A: Knowing',
   B_inquiring: 'B: Inquiring',
   C_processing: 'C: Processing',
@@ -31,49 +31,71 @@ const TREND_OPTIONS = [
 
 interface StudentFormState {
   initials: string
-  A_knowing: number
-  B_inquiring: number
-  C_processing: number
-  D_reflecting: number
+  criteriaScores: Record<string, number>
   observations: string
   formative_trend: string
   notable_work: string
 }
 
-const emptyForm: StudentFormState = {
-  initials: '',
-  A_knowing: 5,
-  B_inquiring: 5,
-  C_processing: 5,
-  D_reflecting: 5,
-  observations: '',
-  formative_trend: '',
-  notable_work: '',
-}
-
 export function StudentDataStep() {
-  const { students, addStudent, updateStudent, removeStudent, clearStudents, nextStep, prevStep } =
+  const { students, addStudent, updateStudent, removeStudent, clearStudents, nextStep, prevStep, rubricCriteria, selectedRubricTemplate } =
     useNarrativesStore()
 
-  const [form, setForm] = useState<StudentFormState>(emptyForm)
+  // Derive criteria labels from rubric template or fallback to defaults
+  const criteriaLabels = useMemo(() => {
+    if (selectedRubricTemplate && selectedRubricTemplate.criteria.length > 0) {
+      const labels: Record<string, string> = {}
+      selectedRubricTemplate.criteria.forEach(c => {
+        labels[c.id] = `${c.id.split('_')[0].toUpperCase()}: ${c.name.split(' ')[0]}`
+      })
+      return labels
+    }
+    if (rubricCriteria.length > 0) {
+      const labels: Record<string, string> = {}
+      rubricCriteria.forEach(c => {
+        labels[c.id] = `${c.id.split('_')[0].toUpperCase()}: ${c.name.split(' ')[0]}`
+      })
+      return labels
+    }
+    return DEFAULT_CRITERIA_LABELS
+  }, [selectedRubricTemplate, rubricCriteria])
+
+  const criteriaKeys = Object.keys(criteriaLabels)
+
+  const makeEmptyForm = (): StudentFormState => ({
+    initials: '',
+    criteriaScores: Object.fromEntries(criteriaKeys.map(k => [k, 5])),
+    observations: '',
+    formative_trend: '',
+    notable_work: '',
+  })
+
+  const [form, setForm] = useState<StudentFormState>(makeEmptyForm)
   const [editingInitials, setEditingInitials] = useState<string | null>(null)
   const [showImportModal, setShowImportModal] = useState(false)
 
-  const handleFormChange = (field: keyof StudentFormState, value: string | number) => {
+  const handleFormChange = (field: string, value: string | number) => {
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleScoreChange = (criterionId: string, value: number) => {
+    setForm((prev) => ({
+      ...prev,
+      criteriaScores: { ...prev.criteriaScores, [criterionId]: value },
+    }))
   }
 
   const handleAddStudent = () => {
     if (!form.initials.trim()) return
 
+    const criteriaScoresObj: CriteriaScores = {}
+    for (const [key, val] of Object.entries(form.criteriaScores)) {
+      (criteriaScoresObj as Record<string, number>)[key] = val
+    }
+
     const studentData: StudentData = {
       initials: form.initials.toUpperCase().trim(),
-      criteria_scores: {
-        A_knowing: form.A_knowing,
-        B_inquiring: form.B_inquiring,
-        C_processing: form.C_processing,
-        D_reflecting: form.D_reflecting,
-      },
+      criteria_scores: criteriaScoresObj,
       observations: form.observations
         .split('\n')
         .map((o) => o.trim())
@@ -83,7 +105,6 @@ export function StudentDataStep() {
     }
 
     if (editingInitials) {
-      // Update existing student
       removeStudent(editingInitials)
       addStudent(studentData)
       setEditingInitials(null)
@@ -91,16 +112,17 @@ export function StudentDataStep() {
       addStudent(studentData)
     }
 
-    setForm(emptyForm)
+    setForm(makeEmptyForm())
   }
 
   const handleEditStudent = (student: StudentData) => {
+    const scores: Record<string, number> = {}
+    for (const key of criteriaKeys) {
+      scores[key] = (student.criteria_scores as Record<string, number | undefined>)[key] || 5
+    }
     setForm({
       initials: student.initials,
-      A_knowing: student.criteria_scores.A_knowing || 5,
-      B_inquiring: student.criteria_scores.B_inquiring || 5,
-      C_processing: student.criteria_scores.C_processing || 5,
-      D_reflecting: student.criteria_scores.D_reflecting || 5,
+      criteriaScores: scores,
       observations: student.observations.join('\n'),
       formative_trend: student.formative_trend || '',
       notable_work: student.notable_work || '',
@@ -109,7 +131,7 @@ export function StudentDataStep() {
   }
 
   const handleCancelEdit = () => {
-    setForm(emptyForm)
+    setForm(makeEmptyForm())
     setEditingInitials(null)
   }
 
@@ -184,7 +206,7 @@ export function StudentDataStep() {
           {editingInitials ? `Edit ${editingInitials}` : 'Add Student'}
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div className={`grid grid-cols-1 gap-4`} style={{ gridTemplateColumns: `repeat(${Math.min(criteriaKeys.length + 2, 6)}, minmax(0, 1fr))` }}>
           {/* Initials */}
           <div>
             <label className="block text-xs font-medium text-gray-400 mb-1">Initials</label>
@@ -198,18 +220,18 @@ export function StudentDataStep() {
             />
           </div>
 
-          {/* Criteria Scores */}
-          {(Object.keys(CRITERIA_LABELS) as Array<keyof CriteriaScores>).map((key) => (
+          {/* Dynamic Criteria Scores */}
+          {criteriaKeys.map((key) => (
             <div key={key}>
               <label className="block text-xs font-medium text-gray-400 mb-1">
-                {CRITERIA_LABELS[key]}
+                {criteriaLabels[key]}
               </label>
               <input
                 type="number"
                 min="1"
                 max="8"
-                value={form[key]}
-                onChange={(e) => handleFormChange(key, parseInt(e.target.value) || 1)}
+                value={form.criteriaScores[key] || 5}
+                onChange={(e) => handleScoreChange(key, parseInt(e.target.value) || 1)}
                 className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -307,15 +329,16 @@ export function StudentDataStep() {
             </button>
           </div>
 
-          <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden">
+          <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-800">
                   <th className="text-left py-2 px-3 text-gray-400 font-medium">Initials</th>
-                  <th className="text-center py-2 px-2 text-gray-400 font-medium">A</th>
-                  <th className="text-center py-2 px-2 text-gray-400 font-medium">B</th>
-                  <th className="text-center py-2 px-2 text-gray-400 font-medium">C</th>
-                  <th className="text-center py-2 px-2 text-gray-400 font-medium">D</th>
+                  {criteriaKeys.map(key => (
+                    <th key={key} className="text-center py-2 px-2 text-gray-400 font-medium">
+                      {key.split('_')[0].toUpperCase()}
+                    </th>
+                  ))}
                   <th className="text-left py-2 px-3 text-gray-400 font-medium">Trend</th>
                   <th className="text-left py-2 px-3 text-gray-400 font-medium">Observations</th>
                   <th className="text-right py-2 px-3 text-gray-400 font-medium">Actions</th>
@@ -328,18 +351,11 @@ export function StudentDataStep() {
                     className="border-t border-gray-700 hover:bg-gray-800/50"
                   >
                     <td className="py-2 px-3 text-white font-medium">{student.initials}</td>
-                    <td className="text-center py-2 px-2 text-gray-300">
-                      {student.criteria_scores.A_knowing || '-'}
-                    </td>
-                    <td className="text-center py-2 px-2 text-gray-300">
-                      {student.criteria_scores.B_inquiring || '-'}
-                    </td>
-                    <td className="text-center py-2 px-2 text-gray-300">
-                      {student.criteria_scores.C_processing || '-'}
-                    </td>
-                    <td className="text-center py-2 px-2 text-gray-300">
-                      {student.criteria_scores.D_reflecting || '-'}
-                    </td>
+                    {criteriaKeys.map(key => (
+                      <td key={key} className="text-center py-2 px-2 text-gray-300">
+                        {(student.criteria_scores as Record<string, number | undefined>)[key] || '-'}
+                      </td>
+                    ))}
                     <td className="py-2 px-3 text-gray-300 capitalize">
                       {student.formative_trend || '-'}
                     </td>
@@ -353,12 +369,14 @@ export function StudentDataStep() {
                         <button
                           onClick={() => handleEditStudent(student)}
                           className="p-1 text-gray-400 hover:text-white transition-colors"
+                          aria-label={`Edit student ${student.initials}`}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => removeStudent(student.initials)}
                           className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                          aria-label={`Remove student ${student.initials}`}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

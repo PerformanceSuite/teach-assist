@@ -15,6 +15,14 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
 from api.deps import get_anthropic_client, get_persona_store
+from libs.rubric_templates import (
+    list_templates,
+    get_template,
+    save_custom_template,
+    get_criteria_prompt_block,
+    RubricCriterion as RubricCriterionModel,
+    RubricTemplate,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -69,11 +77,26 @@ IB_MYP_SCIENCE_CRITERIA = {
 
 
 class CriteriaScores(BaseModel):
-    """IB MYP Science criteria scores (1-8 scale)."""
+    """Criteria scores (1-8 scale). Accepts dynamic criterion IDs."""
     A_knowing: Optional[int] = Field(None, ge=1, le=8)
     B_inquiring: Optional[int] = Field(None, ge=1, le=8)
     C_processing: Optional[int] = Field(None, ge=1, le=8)
     D_reflecting: Optional[int] = Field(None, ge=1, le=8)
+    # Design Technology criteria
+    A_inquiring: Optional[int] = Field(None, ge=1, le=8)
+    B_developing: Optional[int] = Field(None, ge=1, le=8)
+    C_creating: Optional[int] = Field(None, ge=1, le=8)
+    D_evaluating: Optional[int] = Field(None, ge=1, le=8)
+    # Math criteria
+    B_investigating: Optional[int] = Field(None, ge=1, le=8)
+    C_communicating: Optional[int] = Field(None, ge=1, le=8)
+    D_applying: Optional[int] = Field(None, ge=1, le=8)
+    # I&S criteria
+    D_thinking: Optional[int] = Field(None, ge=1, le=8)
+
+    def get_active_scores(self) -> Dict[str, int]:
+        """Return only non-None scores as a dict."""
+        return {k: v for k, v in self.model_dump().items() if v is not None}
 
 
 class StudentData(BaseModel):
@@ -98,6 +121,7 @@ class SynthesizeRequest(BaseModel):
     class_name: str
     semester: str
     rubric_source_id: Optional[str] = None
+    rubric_template_id: Optional[str] = Field(None, description="ID of rubric template to use")
     students: List[StudentData] = Field(..., min_length=1, max_length=50)
     options: SynthesizeOptions = SynthesizeOptions()
 
@@ -216,7 +240,7 @@ Your goal is to help teachers draft professional student evaluations while ensur
 
 CORE CONSTRAINTS:
 1. IDENTITY: Only use the provided student initials. Never use full names. This is required for FERPA/COPPA compliance.
-2. PEDAGOGICAL ALIGNMENT: Ground feedback in the provided IB Science/Math rubrics and criteria.
+2. PEDAGOGICAL ALIGNMENT: Ground feedback in the provided rubric criteria.
 3. TONE: {tone}. Avoid generic "great job" statements. Use evidence-based observations.
 4. FORMAT: Output a 4-sentence narrative comment ready for the teacher to edit.
 
@@ -226,11 +250,7 @@ DRAFTING STRUCTURE:
 - Sentence 3 (Growth): Identify one actionable area for development based on criteria scores.
 - Sentence 4 (Outlook): A brief professional outlook for the next semester.
 
-IB MYP CRITERIA REFERENCE:
-- Criterion A (Knowing and Understanding): Scientific knowledge, application, analysis
-- Criterion B (Inquiring and Designing): Questions, hypotheses, investigation design
-- Criterion C (Processing and Evaluating): Data presentation, interpretation, evaluation
-- Criterion D (Reflecting): Applications, implications, communication
+{criteria_reference}
 
 OUTPUT FORMAT:
 For each student, output a JSON object with:
@@ -248,6 +268,12 @@ For each student, output a JSON object with:
 }}
 """
 
+DEFAULT_CRITERIA_REFERENCE = """IB MYP CRITERIA REFERENCE:
+- Criterion A (Knowing and Understanding): Scientific knowledge, application, analysis
+- Criterion B (Inquiring and Designing): Questions, hypotheses, investigation design
+- Criterion C (Processing and Evaluating): Data presentation, interpretation, evaluation
+- Criterion D (Reflecting): Applications, implications, communication"""
+
 
 # --- Helper Functions ---
 
@@ -262,35 +288,37 @@ def get_tone_description(tone: str) -> str:
     return tones.get(tone, tones["encouraging"])
 
 
-def identify_strongest_and_growth(scores: CriteriaScores) -> tuple:
+def identify_strongest_and_growth(scores: CriteriaScores, rubric: Optional[RubricTemplate] = None) -> tuple:
     """Identify the strongest criterion and area for growth."""
-    score_dict = {
-        "A_knowing": scores.A_knowing or 0,
-        "B_inquiring": scores.B_inquiring or 0,
-        "C_processing": scores.C_processing or 0,
-        "D_reflecting": scores.D_reflecting or 0,
-    }
+    active_scores = scores.get_active_scores()
 
-    # Filter out zeros
-    valid_scores = {k: v for k, v in score_dict.items() if v > 0}
+    if not active_scores:
+        # Fallback defaults based on rubric
+        if rubric and len(rubric.criteria) >= 2:
+            return rubric.criteria[0].id, rubric.criteria[-1].id
+        return "A_knowing", "D_reflecting"
 
-    if not valid_scores:
-        return "A_knowing", "D_reflecting"  # Default
-
-    strongest = max(valid_scores, key=valid_scores.get)
-    growth = min(valid_scores, key=valid_scores.get)
+    strongest = max(active_scores, key=active_scores.get)
+    growth = min(active_scores, key=active_scores.get)
 
     return strongest, growth
 
 
-def detect_patterns(students: List[StudentData]) -> List[PatternDetected]:
+def detect_patterns(students: List[StudentData], rubric: Optional[RubricTemplate] = None) -> List[PatternDetected]:
     """Detect cross-student patterns from the data."""
     patterns = []
+
+    # Build criterion name lookup from rubric or fallback
+    criterion_names = {}
+    if rubric:
+        criterion_names = {c.id: c.name for c in rubric.criteria}
+    else:
+        criterion_names = {k: v["name"] for k, v in IB_MYP_SCIENCE_CRITERIA.items()}
 
     # Check for common growth areas
     growth_areas = {}
     for student in students:
-        _, growth = identify_strongest_and_growth(student.criteria_scores)
+        _, growth = identify_strongest_and_growth(student.criteria_scores, rubric)
         if growth not in growth_areas:
             growth_areas[growth] = []
         growth_areas[growth].append(student.initials)
@@ -298,7 +326,7 @@ def detect_patterns(students: List[StudentData]) -> List[PatternDetected]:
     # Report patterns where 3+ students share a growth area
     for criterion, initials in growth_areas.items():
         if len(initials) >= 3:
-            criterion_name = IB_MYP_SCIENCE_CRITERIA.get(criterion, {}).get("name", criterion)
+            criterion_name = criterion_names.get(criterion, criterion)
             patterns.append(PatternDetected(
                 pattern=f"{criterion}_growth",
                 description=f"Multiple students show growth area in {criterion_name}",
@@ -329,12 +357,41 @@ async def generate_narrative_with_llm(
     semester: str,
     tone: str,
     client,
+    rubric: Optional[RubricTemplate] = None,
 ) -> StudentNarrative:
     """Generate a narrative for a single student using the LLM."""
 
-    strongest, growth = identify_strongest_and_growth(student.criteria_scores)
-    strongest_name = IB_MYP_SCIENCE_CRITERIA.get(strongest, {}).get("name", strongest)
-    growth_name = IB_MYP_SCIENCE_CRITERIA.get(growth, {}).get("name", growth)
+    strongest, growth = identify_strongest_and_growth(student.criteria_scores, rubric)
+
+    # Build criterion name lookup
+    criterion_names = {}
+    if rubric:
+        criterion_names = {c.id: c.name for c in rubric.criteria}
+    else:
+        criterion_names = {k: v["name"] for k, v in IB_MYP_SCIENCE_CRITERIA.items()}
+
+    strongest_name = criterion_names.get(strongest, strongest)
+    growth_name = criterion_names.get(growth, growth)
+
+    # Build dynamic criteria scores section
+    active_scores = student.criteria_scores.get_active_scores()
+    if rubric:
+        criteria_lines = []
+        for c in rubric.criteria:
+            score = active_scores.get(c.id, None)
+            criteria_lines.append(f"- {c.id.split('_')[0].upper()}: {c.name}: {score or 'Not assessed'}")
+        criteria_scores_text = "\n".join(criteria_lines)
+    else:
+        criteria_scores_text = f"""- Criterion A (Knowing): {student.criteria_scores.A_knowing or 'Not assessed'}
+- Criterion B (Inquiring): {student.criteria_scores.B_inquiring or 'Not assessed'}
+- Criterion C (Processing): {student.criteria_scores.C_processing or 'Not assessed'}
+- Criterion D (Reflecting): {student.criteria_scores.D_reflecting or 'Not assessed'}"""
+
+    # Build criteria reference for system prompt
+    if rubric:
+        criteria_reference = get_criteria_prompt_block(rubric)
+    else:
+        criteria_reference = DEFAULT_CRITERIA_REFERENCE
 
     # Build the user message
     user_message = f"""
@@ -345,10 +402,7 @@ SEMESTER: {semester}
 STUDENT INITIALS: {student.initials}
 
 CRITERIA SCORES (1-8 scale):
-- Criterion A (Knowing): {student.criteria_scores.A_knowing or 'Not assessed'}
-- Criterion B (Inquiring): {student.criteria_scores.B_inquiring or 'Not assessed'}
-- Criterion C (Processing): {student.criteria_scores.C_processing or 'Not assessed'}
-- Criterion D (Reflecting): {student.criteria_scores.D_reflecting or 'Not assessed'}
+{criteria_scores_text}
 
 STRONGEST AREA: {strongest_name}
 GROWTH AREA: {growth_name}
@@ -371,7 +425,10 @@ Return ONLY the JSON object, no other text.
             model="claude-sonnet-4-20250514",
             max_tokens=1024,
             temperature=0.4,
-            system=NARRATIVE_SYSTEM_PROMPT.format(tone=get_tone_description(tone)),
+            system=NARRATIVE_SYSTEM_PROMPT.format(
+                tone=get_tone_description(tone),
+                criteria_reference=criteria_reference,
+            ),
             messages=[{"role": "user", "content": user_message}],
         )
 
@@ -534,6 +591,13 @@ async def synthesize_narratives(request: SynthesizeRequest):
             detail="Too many students for sync processing. Use POST /batch for 10+ students.",
         )
 
+    # Resolve rubric template
+    rubric = None
+    if request.rubric_template_id:
+        rubric = get_template(request.rubric_template_id)
+        if not rubric:
+            raise HTTPException(status_code=404, detail=f"Rubric template '{request.rubric_template_id}' not found")
+
     narratives = []
 
     for student in request.students:
@@ -544,6 +608,7 @@ async def synthesize_narratives(request: SynthesizeRequest):
             semester=request.semester,
             tone=request.options.tone,
             client=client,
+            rubric=rubric,
         )
 
         # Council review if requested
@@ -558,7 +623,7 @@ async def synthesize_narratives(request: SynthesizeRequest):
         narratives.append(narrative)
 
     # Detect patterns across students
-    patterns = detect_patterns(request.students)
+    patterns = detect_patterns(request.students, rubric)
 
     batch_id = f"narr_{uuid.uuid4().hex[:12]}"
     processing_time = int((time.time() - start_time) * 1000)
@@ -647,6 +712,11 @@ async def _process_batch_async(batch_id: str, request: SynthesizeRequest):
         _narrative_batches[batch_id]["error"] = "No API key configured"
         return
 
+    # Resolve rubric template
+    rubric = None
+    if request.rubric_template_id:
+        rubric = get_template(request.rubric_template_id)
+
     narratives = []
 
     for i, student in enumerate(request.students):
@@ -656,6 +726,7 @@ async def _process_batch_async(batch_id: str, request: SynthesizeRequest):
             semester=request.semester,
             tone=request.options.tone,
             client=client,
+            rubric=rubric,
         )
 
         # Council review if requested
@@ -674,7 +745,14 @@ async def _process_batch_async(batch_id: str, request: SynthesizeRequest):
         _narrative_batches[batch_id]["narratives"] = [n.model_dump() for n in narratives]
 
     # Detect patterns and clusters
-    patterns = detect_patterns(request.students)
+    patterns = detect_patterns(request.students, rubric)
+
+    # Build criterion name lookup
+    criterion_names = {}
+    if rubric:
+        criterion_names = {c.id: c.name for c in rubric.criteria}
+    else:
+        criterion_names = {k: v["name"] for k, v in IB_MYP_SCIENCE_CRITERIA.items()}
 
     # Create clusters based on growth areas
     clusters = []
@@ -687,7 +765,7 @@ async def _process_batch_async(batch_id: str, request: SynthesizeRequest):
 
     for growth_area, initials in growth_groups.items():
         if len(initials) >= 2:
-            growth_name = IB_MYP_SCIENCE_CRITERIA.get(growth_area, {}).get("name", growth_area)
+            growth_name = criterion_names.get(growth_area, growth_area)
             clusters.append(ClusterInfo(
                 cluster_id=f"cluster_{growth_area}",
                 pattern=f"Shared growth area: {growth_name}",
@@ -885,3 +963,83 @@ async def load_ib_science_rubric(request: IBRubricRequest):
         criteria=criteria,
         loaded=True,
     )
+
+
+# --- Rubric Template Endpoints ---
+
+
+class RubricTemplateListResponse(BaseModel):
+    """Response listing available rubric templates."""
+    templates: List[dict]
+
+
+class CustomRubricRequest(BaseModel):
+    """Request to create a custom rubric template."""
+    name: str
+    subject: str
+    description: str = ""
+    criteria: List[dict]
+
+
+class RubricTemplateResponse(BaseModel):
+    """Response with a single rubric template."""
+    template_id: str
+    name: str
+    subject: str
+    description: str
+    criteria: List[dict]
+    is_builtin: bool
+
+
+@router.get("/rubrics", response_model=RubricTemplateListResponse)
+async def list_rubric_templates():
+    """
+    List all available rubric templates (built-in + custom).
+    """
+    templates = list_templates()
+    return RubricTemplateListResponse(
+        templates=[t.model_dump() for t in templates]
+    )
+
+
+@router.get("/rubrics/{template_id}", response_model=RubricTemplateResponse)
+async def get_rubric_template(template_id: str):
+    """
+    Get a specific rubric template by ID.
+    """
+    template = get_template(template_id)
+    if not template:
+        raise HTTPException(status_code=404, detail=f"Rubric template '{template_id}' not found")
+
+    return RubricTemplateResponse(**template.model_dump())
+
+
+@router.post("/rubrics/custom", response_model=RubricTemplateResponse)
+async def create_custom_rubric(request: CustomRubricRequest):
+    """
+    Save a custom rubric template.
+    """
+    if not request.criteria:
+        raise HTTPException(status_code=400, detail="Rubric must have at least one criterion")
+
+    criteria = []
+    for c in request.criteria:
+        criteria.append(RubricCriterionModel(
+            id=c.get("id", f"criterion_{len(criteria)+1}"),
+            name=c.get("name", f"Criterion {len(criteria)+1}"),
+            strand_i=c.get("strand_i"),
+            strand_ii=c.get("strand_ii"),
+            strand_iii=c.get("strand_iii"),
+            max_score=c.get("max_score", 8),
+        ))
+
+    template = save_custom_template(
+        name=request.name,
+        subject=request.subject,
+        description=request.description,
+        criteria=criteria,
+    )
+
+    logger.info("custom_rubric_created", template_id=template.template_id, name=request.name)
+
+    return RubricTemplateResponse(**template.model_dump())

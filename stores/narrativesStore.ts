@@ -12,6 +12,7 @@ import type {
   ClusterInfo,
   SynthesizeOptions,
   IBCriterion,
+  RubricTemplate,
 } from '@/lib/api'
 
 interface NarrativesState {
@@ -23,6 +24,9 @@ interface NarrativesState {
   semester: string
   rubricLoaded: boolean
   rubricCriteria: IBCriterion[]
+  rubricTemplates: RubricTemplate[]
+  selectedRubricTemplateId: string | null
+  selectedRubricTemplate: RubricTemplate | null
 
   // Step 2: Student Data
   students: StudentData[]
@@ -49,6 +53,8 @@ interface NarrativesState {
   // Actions - Class Setup
   setClassInfo: (className: string, semester: string) => void
   loadRubric: () => Promise<void>
+  loadRubricTemplates: () => Promise<void>
+  selectRubricTemplate: (templateId: string) => void
 
   // Actions - Student Data
   addStudent: (student: StudentData) => void
@@ -77,8 +83,11 @@ const initialState = {
   className: '',
   semester: '',
   rubricLoaded: false,
-  rubricCriteria: [],
-  students: [],
+  rubricCriteria: [] as IBCriterion[],
+  rubricTemplates: [] as RubricTemplate[],
+  selectedRubricTemplateId: null as string | null,
+  selectedRubricTemplate: null as RubricTemplate | null,
+  students: [] as StudentData[],
   batchId: null,
   isGenerating: false,
   progress: null,
@@ -112,6 +121,33 @@ export const useNarrativesStore = create<NarrativesState>()(
           set({
             rubricLoaded: true,
             rubricCriteria: result.data.criteria,
+          })
+        }
+      },
+
+      loadRubricTemplates: async () => {
+        const result = await api.narratives.listRubricTemplates()
+        if (result.data) {
+          set({ rubricTemplates: result.data })
+        }
+      },
+
+      selectRubricTemplate: (templateId: string) => {
+        const state = get()
+        const template = state.rubricTemplates.find(t => t.template_id === templateId) || null
+        if (template) {
+          set({
+            selectedRubricTemplateId: templateId,
+            selectedRubricTemplate: template,
+            rubricLoaded: true,
+            rubricCriteria: template.criteria.map(c => ({
+              id: c.id,
+              name: c.name,
+              strand_i: c.strand_i,
+              strand_ii: c.strand_ii,
+              strand_iii: c.strand_iii,
+              max_score: c.max_score,
+            })),
           })
         }
       },
@@ -172,6 +208,7 @@ export const useNarrativesStore = create<NarrativesState>()(
         const request = {
           class_name: state.className,
           semester: state.semester,
+          rubric_template_id: state.selectedRubricTemplateId || undefined,
           students: state.students,
           options: state.options,
         }
@@ -298,11 +335,12 @@ export const useNarrativesStore = create<NarrativesState>()(
     {
       name: 'teachassist-narratives-store',
       partialize: (state) => ({
-        // Persist class info and students between sessions
+        // Persist class info, students, and rubric selection between sessions
         className: state.className,
         semester: state.semester,
         students: state.students,
         rubricLoaded: state.rubricLoaded,
+        selectedRubricTemplateId: state.selectedRubricTemplateId,
         // Don't persist generation results or wizard step
       }),
     }

@@ -134,7 +134,7 @@ export function GenerateStep() {
 
       {/* Error Display */}
       {generationError && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
+        <div role="alert" className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div>
             <div className="text-red-400 font-medium">Generation failed</div>
@@ -143,30 +143,50 @@ export function GenerateStep() {
         </div>
       )}
 
-      {/* Progress Display */}
+      {/* Progress Display with Skeletons */}
       {isGenerating && (
-        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <div className="flex items-center gap-3 mb-4">
-            <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
-            <span className="text-white font-medium">
-              {progress
-                ? `Generating narratives... ${progress.completed}/${progress.total}`
-                : 'Starting generation...'}
-            </span>
-          </div>
-          {progress && (
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <div
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              />
+        <div className="space-y-4">
+          <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+            <div className="flex items-center gap-3 mb-4">
+              <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+              <span className="text-white font-medium">
+                {progress
+                  ? `Generating narratives... ${progress.completed}/${progress.total}`
+                  : 'Starting generation...'}
+              </span>
             </div>
-          )}
-          <p className="text-gray-400 text-sm mt-3">
-            {students.length > 10
-              ? 'Large batch processing may take a few minutes. You can wait or check back later.'
-              : 'This usually takes about 30 seconds.'}
-          </p>
+            {progress && (
+              <div className="w-full bg-gray-700 rounded-full h-2">
+                <div
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            )}
+            <p className="text-gray-400 text-sm mt-3">
+              {students.length > 10
+                ? 'Large batch processing may take a few minutes. You can wait or check back later.'
+                : 'This usually takes about 30 seconds.'}
+            </p>
+          </div>
+
+          {/* Loading skeletons */}
+          <div className="space-y-3">
+            {Array.from({ length: Math.min(students.length, 3) }).map((_, i) => (
+              <div key={i} className="bg-gray-800/50 rounded-lg border border-gray-700 p-4 animate-pulse">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-8 bg-gray-700 rounded" />
+                  <div className="w-16 h-5 bg-gray-700 rounded" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 bg-gray-700 rounded w-full" />
+                  <div className="h-3 bg-gray-700 rounded w-5/6" />
+                  <div className="h-3 bg-gray-700 rounded w-4/6" />
+                  <div className="h-3 bg-gray-700 rounded w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

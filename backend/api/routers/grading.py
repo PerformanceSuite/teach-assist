@@ -1,202 +1,406 @@
 """
 Grading Router
 
-Batch feedback workflow for narrative comments.
+Batch feedback generation for student work.
+Generates rubric-aligned feedback drafts (NOT scores) for teacher review.
+Human-in-the-loop: teacher always has final authority.
 """
 
-from typing import List, Optional
+import uuid
+import asyncio
+from datetime import datetime
+from typing import Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+import structlog
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import PlainTextResponse
+from pydantic import BaseModel, Field
+
+from api.deps import get_anthropic_client
+from libs.rubric_templates import get_template, RubricTemplate, get_criteria_prompt_block
+
+logger = structlog.get_logger(__name__)
 
 router = APIRouter()
+
+
+# --- In-Memory Storage (v0.1) ---
+
+_grade_batches: Dict[str, dict] = {}
 
 
 # --- Schemas ---
 
 
-class RubricLevel(BaseModel):
-    """A level within a rubric criterion."""
-    score: int
-    description: str
+class StudentWork(BaseModel):
+    """A piece of student work to generate feedback for."""
+    student_id: str = Field(..., min_length=1, max_length=10, description="Student initials (FERPA-safe)")
+    content: str = Field(..., min_length=1, description="The student's work (text or description)")
+    submission_type: str = Field("text", pattern="^(text|description|summary)$")
 
 
-class RubricCriterion(BaseModel):
-    """A criterion in a rubric."""
-    name: str
-    levels: List[RubricLevel]
+class GradeBatchRequest(BaseModel):
+    """Request to create a grading feedback batch."""
+    rubric_template_id: Optional[str] = Field(None, description="ID of rubric template to use")
+    assignment_name: str = Field(..., min_length=1, description="Name/description of the assignment")
+    assignment_context: str = Field("", description="Additional context about the assignment")
+    submissions: List[StudentWork] = Field(..., min_length=1, max_length=50)
 
 
-class RubricCreate(BaseModel):
-    """Request to create a rubric."""
-    name: str
-    criteria: List[RubricCriterion]
+class FeedbackDraft(BaseModel):
+    """Generated feedback for a student."""
+    student_id: str
+    strengths: List[str] = Field(description="Specific strengths identified")
+    growth_areas: List[str] = Field(description="Areas for development")
+    evidence: List[str] = Field(description="Specific evidence from student work")
+    next_steps: List[str] = Field(description="Actionable suggestions")
+    draft_comment: str = Field(description="Full feedback draft ready for teacher editing")
+    criteria_alignment: Dict[str, str] = Field(default_factory=dict, description="Alignment to rubric criteria")
+    status: str = Field("ready_for_review", pattern="^(ready_for_review|approved|edited)$")
+    word_count: int = 0
 
 
-class RubricResponse(BaseModel):
-    """Response after creating a rubric."""
-    rubric_id: str
-    name: str
-    criteria_count: int
-    created_at: str
-
-
-class Submission(BaseModel):
-    """A student submission."""
-    student_id: str  # Pseudonymous
-    content: str
-
-
-class BatchCreate(BaseModel):
-    """Request to create a grading batch."""
-    rubric_id: str
-    assignment_name: str
-    submissions: List[Submission]
-
-
-class BatchResponse(BaseModel):
-    """Response after creating a batch."""
+class GradeBatchResponse(BaseModel):
+    """Response from batch submission."""
     batch_id: str
     submission_count: int
     status: str
-    estimated_time_seconds: Optional[int] = None
+    estimated_time_seconds: int
 
 
-class FeedbackCluster(BaseModel):
-    """A cluster of similar feedback patterns."""
-    cluster_id: str
-    pattern: str
-    count: int
-    student_ids: List[str]
-    draft_comment: str
-
-
-class BatchResult(BaseModel):
-    """Result of a processed batch."""
+class GradeBatchStatusResponse(BaseModel):
+    """Status of a grade batch."""
     batch_id: str
+    assignment_name: str
     status: str
-    clusters: List[FeedbackCluster] = []
-    unclustered: int = 0
+    progress: Optional[dict] = None
+    feedback: List[FeedbackDraft] = []
+    rubric_template_id: Optional[str] = None
 
 
-class CommentUpdate(BaseModel):
-    """Request to update a cluster's comment."""
-    cluster_id: str
-    approved_comment: str
-    apply_to_all: bool = True
+class FeedbackEditRequest(BaseModel):
+    """Request to edit/approve feedback."""
+    student_id: str
+    draft_comment: str
+    status: str = Field("approved", pattern="^(approved|edited)$")
+
+
+class FeedbackEditResponse(BaseModel):
+    """Response from editing feedback."""
+    student_id: str
+    status: str
+    updated_at: str
+
+
+# --- Feedback Generation Prompt ---
+
+FEEDBACK_SYSTEM_PROMPT = """You are a feedback generation assistant for TeachAssist.
+
+Your goal is to help teachers draft rubric-aligned feedback for student work.
+You generate FEEDBACK, never SCORES or GRADES. The teacher always has final authority.
+
+CORE RULES:
+1. IDENTITY: Use only student initials provided. Never use full names (FERPA compliance).
+2. SPECIFICITY: Reference specific elements of the student's work as evidence.
+3. GROWTH-ORIENTED: Frame feedback constructively with clear next steps.
+4. BALANCED: Include both strengths and growth areas.
+
+{criteria_reference}
+
+OUTPUT FORMAT:
+Return a JSON object with:
+{{
+  "strengths": ["strength 1", "strength 2"],
+  "growth_areas": ["area 1", "area 2"],
+  "evidence": ["specific evidence from work 1", "evidence 2"],
+  "next_steps": ["actionable step 1", "step 2"],
+  "draft_comment": "Full paragraph of feedback...",
+  "criteria_alignment": {{"criterion_id": "brief alignment note"}}
+}}
+"""
+
+
+# --- Helper Functions ---
+
+
+async def generate_feedback_with_llm(
+    work: StudentWork,
+    assignment_name: str,
+    assignment_context: str,
+    client,
+    rubric: Optional[RubricTemplate] = None,
+) -> FeedbackDraft:
+    """Generate feedback for a single piece of student work."""
+
+    if rubric:
+        criteria_reference = get_criteria_prompt_block(rubric)
+    else:
+        criteria_reference = "No specific rubric provided. Generate general feedback based on the work quality."
+
+    user_message = f"""
+Generate feedback for this student's work:
+
+ASSIGNMENT: {assignment_name}
+CONTEXT: {assignment_context or 'None provided'}
+STUDENT ID: {work.student_id}
+SUBMISSION TYPE: {work.submission_type}
+
+STUDENT WORK:
+{work.content}
+
+Generate balanced, specific feedback. Return ONLY the JSON object.
+"""
+
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            temperature=0.3,
+            system=FEEDBACK_SYSTEM_PROMPT.format(criteria_reference=criteria_reference),
+            messages=[{"role": "user", "content": user_message}],
+        )
+
+        response_text = response.content[0].text.strip()
+
+        import json
+        if response_text.startswith("```"):
+            response_text = response_text.split("```")[1]
+            if response_text.startswith("json"):
+                response_text = response_text[4:]
+
+        try:
+            parsed = json.loads(response_text)
+        except json.JSONDecodeError:
+            logger.warning("feedback_json_parse_failed", student_id=work.student_id)
+            parsed = {
+                "strengths": [],
+                "growth_areas": [],
+                "evidence": [],
+                "next_steps": [],
+                "draft_comment": response_text,
+                "criteria_alignment": {},
+            }
+
+        draft = parsed.get("draft_comment", response_text)
+
+        return FeedbackDraft(
+            student_id=work.student_id,
+            strengths=parsed.get("strengths", []),
+            growth_areas=parsed.get("growth_areas", []),
+            evidence=parsed.get("evidence", []),
+            next_steps=parsed.get("next_steps", []),
+            draft_comment=draft,
+            criteria_alignment=parsed.get("criteria_alignment", {}),
+            word_count=len(draft.split()),
+            status="ready_for_review",
+        )
+
+    except Exception as e:
+        logger.error("feedback_generation_failed", student_id=work.student_id, error=str(e))
+        return FeedbackDraft(
+            student_id=work.student_id,
+            strengths=[],
+            growth_areas=[],
+            evidence=[],
+            next_steps=[],
+            draft_comment=f"[Error generating feedback for {work.student_id}: {str(e)}]",
+            criteria_alignment={},
+            word_count=0,
+            status="ready_for_review",
+        )
 
 
 # --- Endpoints ---
 
 
-@router.post("/rubrics", response_model=RubricResponse)
-async def create_rubric(request: RubricCreate):
+@router.post("/batch", response_model=GradeBatchResponse)
+async def create_grade_batch(request: GradeBatchRequest):
     """
-    Create or upload a rubric.
+    Submit a batch of student work for feedback generation.
 
-    Rubrics define the criteria against which student work
-    will be evaluated for feedback generation.
+    Generates rubric-aligned feedback drafts (NOT scores).
+    Teacher reviews, edits, and approves each piece of feedback.
     """
-    # Validate rubric has at least one criterion
-    if not request.criteria:
+    client = get_anthropic_client()
+    if not client:
         raise HTTPException(
-            status_code=400,
-            detail="Rubric must have at least one criterion",
+            status_code=503,
+            detail="LLM service not available. Please configure ANTHROPIC_API_KEY.",
         )
 
-    # TODO: Store rubric
-    return RubricResponse(
-        rubric_id="rub_placeholder",
-        name=request.name,
-        criteria_count=len(request.criteria),
-        created_at="2026-01-24T00:00:00Z",
-    )
+    # Resolve rubric
+    rubric = None
+    if request.rubric_template_id:
+        rubric = get_template(request.rubric_template_id)
+        if not rubric:
+            raise HTTPException(status_code=404, detail=f"Rubric template '{request.rubric_template_id}' not found")
 
+    batch_id = f"grade_{uuid.uuid4().hex[:12]}"
 
-@router.get("/rubrics", response_model=dict)
-async def list_rubrics():
-    """
-    List all rubrics.
-    """
-    # TODO: Retrieve stored rubrics
-    return {"rubrics": []}
-
-
-@router.post("/batch", response_model=BatchResponse)
-async def create_batch(request: BatchCreate):
-    """
-    Submit a batch of student work for feedback clustering.
-
-    The system will:
-    1. Analyze each submission against the rubric
-    2. Cluster submissions by feedback pattern
-    3. Generate draft comments for each cluster
-    4. Return clusters for teacher review
-    """
-    if not request.submissions:
-        raise HTTPException(
-            status_code=400,
-            detail="Batch must have at least one submission",
-        )
-
-    # TODO: Implement batch processing
-    # 1. Validate rubric exists
-    # 2. Queue submissions for analysis
-    # 3. Run clustering algorithm
-    # 4. Generate draft comments
-
-    return BatchResponse(
-        batch_id="batch_placeholder",
-        submission_count=len(request.submissions),
-        status="pending_implementation",
-        estimated_time_seconds=len(request.submissions) * 2,
-    )
-
-
-@router.get("/batch/{batch_id}", response_model=BatchResult)
-async def get_batch_status(batch_id: str):
-    """
-    Get batch status and results.
-
-    Returns processing status and, when complete,
-    the feedback clusters with draft comments.
-    """
-    # TODO: Retrieve batch results
-    return BatchResult(
-        batch_id=batch_id,
-        status="pending_implementation",
-        clusters=[],
-        unclustered=0,
-    )
-
-
-@router.put("/batch/{batch_id}/comments")
-async def update_comments(batch_id: str, request: CommentUpdate):
-    """
-    Update/approve comments for a cluster.
-
-    Teacher can edit the draft comment and apply it
-    to all students in the cluster.
-    """
-    # TODO: Update stored comments
-    return {
-        "updated": False,
+    _grade_batches[batch_id] = {
         "batch_id": batch_id,
-        "cluster_id": request.cluster_id,
-        "reason": "pending_implementation",
+        "assignment_name": request.assignment_name,
+        "assignment_context": request.assignment_context,
+        "rubric_template_id": request.rubric_template_id,
+        "feedback": [],
+        "status": "processing",
+        "progress": {"completed": 0, "total": len(request.submissions)},
+        "created_at": datetime.utcnow().isoformat(),
     }
+
+    # Start background processing
+    asyncio.create_task(_process_grade_batch(batch_id, request, client, rubric))
+
+    estimated_seconds = len(request.submissions) * 3
+
+    logger.info("grade_batch_submitted", batch_id=batch_id, count=len(request.submissions))
+
+    return GradeBatchResponse(
+        batch_id=batch_id,
+        submission_count=len(request.submissions),
+        status="processing",
+        estimated_time_seconds=estimated_seconds,
+    )
+
+
+async def _process_grade_batch(
+    batch_id: str,
+    request: GradeBatchRequest,
+    client,
+    rubric: Optional[RubricTemplate],
+):
+    """Process a grade batch asynchronously."""
+    feedback_items = []
+
+    for i, work in enumerate(request.submissions):
+        feedback = await generate_feedback_with_llm(
+            work=work,
+            assignment_name=request.assignment_name,
+            assignment_context=request.assignment_context,
+            client=client,
+            rubric=rubric,
+        )
+        feedback_items.append(feedback)
+
+        _grade_batches[batch_id]["progress"]["completed"] = i + 1
+        _grade_batches[batch_id]["feedback"] = [f.model_dump() for f in feedback_items]
+
+    _grade_batches[batch_id].update({
+        "feedback": [f.model_dump() for f in feedback_items],
+        "status": "complete",
+        "completed_at": datetime.utcnow().isoformat(),
+    })
+
+    logger.info("grade_batch_complete", batch_id=batch_id, count=len(feedback_items))
+
+
+@router.get("/batch/{batch_id}", response_model=GradeBatchStatusResponse)
+async def get_grade_batch_status(batch_id: str):
+    """Get batch status and feedback results."""
+    if batch_id not in _grade_batches:
+        raise HTTPException(status_code=404, detail=f"Batch '{batch_id}' not found")
+
+    batch = _grade_batches[batch_id]
+
+    return GradeBatchStatusResponse(
+        batch_id=batch["batch_id"],
+        assignment_name=batch["assignment_name"],
+        status=batch["status"],
+        progress=batch.get("progress"),
+        feedback=[FeedbackDraft(**f) for f in batch.get("feedback", [])],
+        rubric_template_id=batch.get("rubric_template_id"),
+    )
+
+
+@router.put("/batch/{batch_id}/feedback", response_model=FeedbackEditResponse)
+async def edit_feedback(batch_id: str, request: FeedbackEditRequest):
+    """Update/approve feedback after teacher review."""
+    if batch_id not in _grade_batches:
+        raise HTTPException(status_code=404, detail=f"Batch '{batch_id}' not found")
+
+    batch = _grade_batches[batch_id]
+
+    found = False
+    for feedback in batch.get("feedback", []):
+        if feedback["student_id"] == request.student_id:
+            feedback["draft_comment"] = request.draft_comment
+            feedback["status"] = request.status
+            feedback["word_count"] = len(request.draft_comment.split())
+            found = True
+            break
+
+    if not found:
+        raise HTTPException(status_code=404, detail=f"Student '{request.student_id}' not found in batch")
+
+    updated_at = datetime.utcnow().isoformat()
+
+    logger.info("feedback_edited", batch_id=batch_id, student_id=request.student_id, status=request.status)
+
+    return FeedbackEditResponse(
+        student_id=request.student_id,
+        status=request.status,
+        updated_at=updated_at,
+    )
 
 
 @router.get("/batch/{batch_id}/export")
-async def export_batch(batch_id: str):
-    """
-    Export comments as CSV.
+async def export_grade_batch(
+    batch_id: str,
+    format: str = Query("txt", pattern="^(csv|json|txt)$"),
+    approved_only: bool = False,
+):
+    """Export feedback in various formats."""
+    if batch_id not in _grade_batches:
+        raise HTTPException(status_code=404, detail=f"Batch '{batch_id}' not found")
 
-    Returns a downloadable CSV with columns:
-    student_id, cluster, comment
-    """
-    # TODO: Generate CSV export
-    raise HTTPException(
-        status_code=501,
-        detail="Export pending implementation",
-    )
+    batch = _grade_batches[batch_id]
+    feedback_items = batch.get("feedback", [])
+
+    if approved_only:
+        feedback_items = [f for f in feedback_items if f.get("status") == "approved"]
+
+    if format == "csv":
+        import csv
+        import io
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["student_id", "feedback", "status", "word_count"])
+
+        for f in feedback_items:
+            writer.writerow([
+                f["student_id"],
+                f["draft_comment"],
+                f["status"],
+                f["word_count"],
+            ])
+
+        return PlainTextResponse(
+            content=output.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename={batch_id}.csv"}
+        )
+
+    elif format == "txt":
+        lines = [
+            f"=== {batch.get('assignment_name', 'Assignment')} — Feedback ===",
+            "",
+        ]
+        for f in feedback_items:
+            lines.append(f"[{f['student_id']}]")
+            lines.append(f["draft_comment"])
+            lines.append("")
+
+        return PlainTextResponse(
+            content="\n".join(lines),
+            media_type="text/plain",
+            headers={"Content-Disposition": f"attachment; filename={batch_id}.txt"}
+        )
+
+    else:  # json
+        return {
+            "batch_id": batch_id,
+            "assignment_name": batch.get("assignment_name"),
+            "feedback": feedback_items,
+            "exported_at": datetime.utcnow().isoformat(),
+        }

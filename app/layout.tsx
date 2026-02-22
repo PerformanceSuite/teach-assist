@@ -1,6 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import "./globals.css";
 import { ThemeProvider } from "../components/ThemeProvider";
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "TeachAssist",
@@ -36,7 +43,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={jakarta.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/teach/icons/icon-192x192.png" />
         <link rel="apple-touch-icon" href="/teach/icons/icon-192x192.png" />

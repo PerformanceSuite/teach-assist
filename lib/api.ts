@@ -110,12 +110,44 @@ interface StatsResponse {
   embedding_model: string
 }
 
+// Rubric Template Types
+interface RubricTemplateCriterion {
+  id: string
+  name: string
+  strand_i?: string
+  strand_ii?: string
+  strand_iii?: string
+  max_score: number
+}
+
+interface RubricTemplate {
+  template_id: string
+  name: string
+  subject: string
+  description: string
+  criteria: RubricTemplateCriterion[]
+  is_builtin: boolean
+  created_at?: string
+}
+
 // Narratives Types
 interface CriteriaScores {
   A_knowing?: number
   B_inquiring?: number
   C_processing?: number
   D_reflecting?: number
+  // Design Technology
+  A_inquiring?: number
+  B_developing?: number
+  C_creating?: number
+  D_evaluating?: number
+  // Math
+  B_investigating?: number
+  C_communicating?: number
+  D_applying?: number
+  // I&S
+  D_thinking?: number
+  [key: string]: number | undefined
 }
 
 interface StudentData {
@@ -137,6 +169,7 @@ interface SynthesizeRequest {
   class_name: string
   semester: string
   rubric_source_id?: string
+  rubric_template_id?: string
   students: StudentData[]
   options?: SynthesizeOptions
 }
@@ -230,6 +263,54 @@ interface IBRubricResponse {
   rubric_id: string
   criteria: IBCriterion[]
   loaded: boolean
+}
+
+// Grading Types
+interface StudentWork {
+  student_id: string
+  content: string
+  submission_type?: 'text' | 'description' | 'summary'
+}
+
+interface GradeBatchRequest {
+  rubric_template_id?: string
+  assignment_name: string
+  assignment_context?: string
+  submissions: StudentWork[]
+}
+
+interface FeedbackDraft {
+  student_id: string
+  strengths: string[]
+  growth_areas: string[]
+  evidence: string[]
+  next_steps: string[]
+  draft_comment: string
+  criteria_alignment: Record<string, string>
+  status: 'ready_for_review' | 'approved' | 'edited'
+  word_count: number
+}
+
+interface GradeBatchResponse {
+  batch_id: string
+  submission_count: number
+  status: string
+  estimated_time_seconds: number
+}
+
+interface GradeBatchStatusResponse {
+  batch_id: string
+  assignment_name: string
+  status: 'processing' | 'complete' | 'error'
+  progress?: { completed: number; total: number }
+  feedback: FeedbackDraft[]
+  rubric_template_id?: string
+}
+
+interface FeedbackEditResponse {
+  student_id: string
+  status: string
+  updated_at: string
 }
 
 // Transform Types
@@ -346,6 +427,13 @@ export type {
   IBCriterion,
   CriteriaScores,
   SynthesizeOptions,
+  RubricTemplate,
+  RubricTemplateCriterion,
+  StudentWork,
+  FeedbackDraft,
+  GradeBatchRequest,
+  GradeBatchResponse,
+  GradeBatchStatusResponse,
   TransformType,
   TransformOptions,
   TransformRequest,
@@ -819,6 +907,152 @@ export const api = {
         return { data }
       } catch (error) {
         return { error: error instanceof Error ? error.message : 'Failed to load rubric' }
+      }
+    },
+
+    async listRubricTemplates(): Promise<ApiResponse<RubricTemplate[]>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/rubrics`)
+
+        if (!response.ok) {
+          return { error: 'Failed to fetch rubric templates' }
+        }
+
+        const data = await response.json()
+        return { data: data.templates || [] }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch rubric templates' }
+      }
+    },
+
+    async getRubricTemplate(templateId: string): Promise<ApiResponse<RubricTemplate>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/rubrics/${templateId}`)
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to fetch rubric template' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch rubric template' }
+      }
+    },
+
+    async createCustomRubric(rubric: {
+      name: string
+      subject: string
+      description?: string
+      criteria: Array<{ id: string; name: string; max_score?: number }>
+    }): Promise<ApiResponse<RubricTemplate>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/narratives/rubrics/custom`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rubric),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to create custom rubric' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to create custom rubric' }
+      }
+    },
+  },
+
+  // Grading
+  grading: {
+    async submitBatch(request: GradeBatchRequest): Promise<ApiResponse<GradeBatchResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/grading/batch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(request),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Batch submission failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Batch submission failed' }
+      }
+    },
+
+    async getBatchStatus(batchId: string): Promise<ApiResponse<GradeBatchStatusResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/grading/batch/${batchId}`)
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Failed to fetch batch status' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Failed to fetch batch status' }
+      }
+    },
+
+    async editFeedback(
+      batchId: string,
+      studentId: string,
+      draftComment: string,
+      status: 'approved' | 'edited'
+    ): Promise<ApiResponse<FeedbackEditResponse>> {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/grading/batch/${batchId}/feedback`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ student_id: studentId, draft_comment: draftComment, status }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Edit failed' }
+        }
+
+        const data = await response.json()
+        return { data }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Edit failed' }
+      }
+    },
+
+    async exportBatch(
+      batchId: string,
+      format: 'csv' | 'txt' | 'json' = 'txt',
+      approvedOnly: boolean = false
+    ): Promise<ApiResponse<string>> {
+      try {
+        const params = new URLSearchParams({ format, approved_only: approvedOnly.toString() })
+        const response = await fetch(`${API_BASE}/api/v1/grading/batch/${batchId}/export?${params}`)
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          return { error: errorData.detail || 'Export failed' }
+        }
+
+        if (format === 'json') {
+          const data = await response.json()
+          return { data: JSON.stringify(data, null, 2) }
+        } else {
+          const data = await response.text()
+          return { data }
+        }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Export failed' }
       }
     },
   },
