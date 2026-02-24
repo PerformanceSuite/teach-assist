@@ -246,29 +246,27 @@ export default function PlanStudioPage() {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main Content (2/3) */}
-        <div className="lg:col-span-2 space-y-6">
+      <div className={`grid gap-6 ${units.length > 0 ? 'lg:grid-cols-3' : 'lg:grid-cols-1 max-w-4xl'}`}>
+        {/* Main Content */}
+        <div className={`space-y-6 ${units.length > 0 ? 'lg:col-span-2' : ''}`}>
           {/* Tabs */}
           <div className="flex border-b border-neutral-200">
             <button
               onClick={() => setActiveTab('unit')}
-              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
-                activeTab === 'unit'
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'unit'
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-neutral-600 hover:border-neutral-300'
-              }`}
+                }`}
             >
               <BookOpen className="h-4 w-4" />
               Unit Planner
             </button>
             <button
               onClick={() => setActiveTab('lesson')}
-              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
-                activeTab === 'lesson'
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'lesson'
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-neutral-600 hover:border-neutral-300'
-              }`}
+                }`}
             >
               <FileText className="h-4 w-4" />
               Lesson Planner
@@ -328,20 +326,22 @@ export default function PlanStudioPage() {
                   </div>
                 </div>
 
-                {/* Duration */}
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
-                    Duration (weeks)
-                  </label>
-                  <select
-                    value={unitForm.duration_weeks}
-                    onChange={(e) => setUnitForm({ ...unitForm, duration_weeks: parseInt(e.target.value) })}
-                    className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                  >
-                    {Array.from({ length: 8 }, (_, i) => i + 1).map(weeks => (
-                      <option key={weeks} value={weeks}>{weeks} week{weeks > 1 ? 's' : ''}</option>
-                    ))}
-                  </select>
+                {/* Duration Row */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                      Duration (weeks)
+                    </label>
+                    <select
+                      value={unitForm.duration_weeks}
+                      onChange={(e) => setUnitForm({ ...unitForm, duration_weeks: parseInt(e.target.value) })}
+                      className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    >
+                      {Array.from({ length: 8 }, (_, i) => i + 1).map(weeks => (
+                        <option key={weeks} value={weeks}>{weeks} week{weeks > 1 ? 's' : ''}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {/* Standards */}
@@ -509,14 +509,13 @@ export default function PlanStudioPage() {
                                 <button
                                   key={student.id}
                                   onClick={() => toggleStudentSelection(student.id)}
-                                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-100 transition-colors ${
-                                    isSelected ? 'bg-blue-50' : ''
-                                  }`}
+                                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-100 transition-colors ${isSelected ? 'bg-blue-50' : ''
+                                    }`}
                                 >
                                   <input
                                     type="checkbox"
                                     checked={isSelected}
-                                    onChange={() => {}}
+                                    onChange={() => { }}
                                     className="w-4 h-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
                                   />
                                   <span className="text-neutral-700">{student.name}</span>
@@ -617,16 +616,11 @@ export default function PlanStudioPage() {
           )}
         </div>
 
-        {/* Sidebar (1/3) */}
-        <div className="space-y-4">
-          <div className="rounded-lg border bg-white p-4 shadow-sm">
-            <h3 className="font-semibold text-lg mb-3">Saved Unit Plans</h3>
-
-            {units.length === 0 ? (
-              <p className="text-sm text-neutral-500">
-                No unit plans yet. Create one to get started.
-              </p>
-            ) : (
+        {/* Sidebar */}
+        {units.length > 0 && (
+          <div className="space-y-4">
+            <div className="rounded-lg border bg-white p-4 shadow-sm">
+              <h3 className="font-semibold text-lg mb-3">Saved Unit Plans</h3>
               <div className="space-y-2">
                 {units.map((unit) => (
                   <div
@@ -657,20 +651,9 @@ export default function PlanStudioPage() {
                   </div>
                 ))}
               </div>
-            )}
+            </div>
           </div>
-
-          {/* Quick Tips */}
-          <div className="rounded-lg border bg-blue-50 p-4">
-            <h4 className="font-medium text-blue-900 mb-2">UbD Planning Tips</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>- Start with transfer goals (Stage 1)</li>
-              <li>- Design assessments before lessons (Stage 2)</li>
-              <li>- Use GRASPS for performance tasks</li>
-              <li>- Align all activities to standards</li>
-            </ul>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

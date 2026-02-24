@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  /* Let the OS and Tailwind handle the color-scheme */
 }
 
 body {

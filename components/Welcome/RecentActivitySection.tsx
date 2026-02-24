@@ -29,16 +29,16 @@ export function RecentActivitySection({ activities, loading }: RecentActivitySec
 
   if (loading) {
     return (
-      <div className="mb-8">
-        <h2 className="text-lg font-medium text-white mb-4">Recent Activity</h2>
+      <div className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Recent Activity</h2>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="p-4 bg-gray-900 rounded-xl border border-gray-800 animate-pulse">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gray-800 rounded-lg" />
+            <div key={i} className="p-5 bg-white dark:bg-cc-surface rounded-2xl border border-gray-200 dark:border-gray-800 animate-pulse">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-xl" />
                 <div className="flex-1">
-                  <div className="h-4 w-48 bg-gray-800 rounded mb-2" />
-                  <div className="h-3 w-32 bg-gray-800 rounded" />
+                  <div className="h-4 w-48 bg-gray-200 dark:bg-gray-800 rounded mb-2" />
+                  <div className="h-3 w-32 bg-gray-100 dark:bg-gray-800/80 rounded" />
                 </div>
               </div>
             </div>
@@ -50,11 +50,11 @@ export function RecentActivitySection({ activities, loading }: RecentActivitySec
 
   if (activities.length === 0) {
     return (
-      <div className="mb-8">
-        <h2 className="text-lg font-medium text-white mb-4">Recent Activity</h2>
-        <div className="p-8 bg-gray-900 rounded-xl border border-gray-800 text-center">
-          <Clock className="w-10 h-10 text-gray-500 mx-auto mb-3" />
-          <p className="text-gray-400">No activity yet</p>
+      <div className="mb-10">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Recent Activity</h2>
+        <div className="p-8 bg-white dark:bg-cc-surface rounded-2xl border border-gray-200 dark:border-gray-800 text-center shadow-sm">
+          <Clock className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+          <p className="text-gray-600 dark:text-gray-400 font-medium">No activity yet</p>
           <p className="text-sm text-gray-500 mt-1">
             Upload your first curriculum source or ask a question to get started
           </p>
@@ -64,9 +64,9 @@ export function RecentActivitySection({ activities, loading }: RecentActivitySec
   }
 
   return (
-    <div className="mb-8">
-      <h2 className="text-lg font-medium text-white mb-4">Recent Activity</h2>
-      <div className="space-y-2">
+    <div className="mb-10">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Recent Activity</h2>
+      <div className="space-y-3">
         {activities.map((activity) => {
           const config = TYPE_CONFIG[activity.type] || TYPE_CONFIG.document
           const Icon = config.icon
@@ -75,26 +75,26 @@ export function RecentActivitySection({ activities, loading }: RecentActivitySec
             <button
               key={activity.id}
               onClick={() => router.push(config.route)}
-              className="w-full p-4 bg-gray-900 hover:bg-gray-900/80 rounded-xl border border-gray-800 transition-colors text-left group"
+              className="w-full p-5 bg-white dark:bg-cc-surface hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all duration-200 text-left group"
             >
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg bg-gray-800`}>
-                  <Icon className={`w-4 h-4 ${config.color}`} />
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-xl bg-gray-50 dark:bg-gray-800`}>
+                  <Icon className={`w-5 h-5 ${config.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-white truncate">{activity.title}</span>
-                    <span className="text-xs text-gray-500 capitalize px-2 py-0.5 bg-gray-800 rounded-full">
+                    <span className="font-semibold text-gray-900 dark:text-white truncate">{activity.title}</span>
+                    <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wider px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-full">
                       {activity.type}
                     </span>
                   </div>
                   {activity.description && (
-                    <p className="text-sm text-gray-400 truncate mt-0.5">{activity.description}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate mt-1 leading-relaxed">{activity.description}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-2 text-gray-500">
-                  <span className="text-xs">{formatTimeAgo(activity.updatedAt || activity.createdAt)}</span>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500">
+                  <span className="text-sm font-medium">{formatTimeAgo(activity.updatedAt || activity.createdAt)}</span>
+                  <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
             </button>

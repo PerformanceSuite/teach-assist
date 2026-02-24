@@ -84,7 +84,7 @@ export const useGradeStore = create<GradeState>()(
 
       // Navigation
       setStep: (step: number) => set({ currentStep: step }),
-      nextStep: () => set((state) => ({ currentStep: Math.min(state.currentStep + 1, 4) })),
+      nextStep: () => set((state) => ({ currentStep: Math.min(state.currentStep + 1, 3) })),
       prevStep: () => set((state) => ({ currentStep: Math.max(state.currentStep - 1, 1) })),
 
       // Setup
@@ -187,7 +187,7 @@ export const useGradeStore = create<GradeState>()(
               feedback: result.data.feedback,
               isProcessing: false,
               progress: null,
-              currentStep: 3,
+              currentStep: 2,
             })
             return true
           } else if (result.data.status === 'error') {

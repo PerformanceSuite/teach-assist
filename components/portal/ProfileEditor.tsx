@@ -43,18 +43,32 @@ export default function ProfileEditor() {
   }, []);
 
   const handleSave = async () => {
-    if (!profileId) return;
     setSaving(true);
     setSaved(false);
 
-    await updateTeacherProfileById(profileId, {
-      name,
-      tagline,
-      bio,
-      philosophy,
-      photoUrl,
-      schedule,
-    });
+    if (profileId) {
+      await updateTeacherProfileById(profileId, {
+        name,
+        tagline,
+        bio,
+        philosophy,
+        photoUrl,
+        schedule,
+      });
+    } else {
+      // Create new profile dynamically instead of requiring a separate step
+      const { upsertTeacherProfile } = await import('@/lib/teacherProfile');
+      // In a real app we'd use the user's Auth UUID. For now we use the mock user.
+      const newProfile = await upsertTeacherProfile('mock-teacher-id', {
+        name,
+        tagline,
+        bio,
+        philosophy,
+        photoUrl,
+        schedule,
+      });
+      if (newProfile) setProfileId(newProfile.id);
+    }
 
     setSaving(false);
     setSaved(true);
@@ -63,13 +77,40 @@ export default function ProfileEditor() {
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !profileId) return;
+    if (!file) return;
 
     setSaving(true);
-    const url = await uploadTeacherPhoto(profileId, file);
-    if (url) {
-      setPhotoUrl(url);
+    let targetProfileId = profileId;
+
+    if (!targetProfileId) {
+      // Dynamically create the profile so we have an ID to attach the photo to
+      const { upsertTeacherProfile } = await import('@/lib/teacherProfile');
+      const newProfile = await upsertTeacherProfile('mock-teacher-id', {
+        name,
+        tagline,
+        bio,
+        philosophy,
+        photoUrl: null,
+        schedule,
+      });
+      if (newProfile) {
+        setProfileId(newProfile.id);
+        targetProfileId = newProfile.id;
+      }
     }
+
+    if (targetProfileId) {
+      const url = await uploadTeacherPhoto(targetProfileId, file);
+      if (url) {
+        setPhotoUrl(url);
+        // Persist the URL to the newly created or existing profile
+        const { updateTeacherProfileById } = await import('@/lib/teacherProfile');
+        await updateTeacherProfileById(targetProfileId, { photoUrl: url });
+      } else {
+        alert("Failed to upload photo. Please verify your Supabase storage bucket ('teacher-photos') exists and is public.");
+      }
+    }
+
     setSaving(false);
   };
 
@@ -105,7 +146,9 @@ export default function ProfileEditor() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Public Profile</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          {profileId ? 'Edit Public Profile' : 'Set Up Your Profile'}
+        </h2>
         <button
           onClick={handleSave}
           disabled={saving || !profileId}
@@ -121,30 +164,9 @@ export default function ProfileEditor() {
       </div>
 
       {!profileId && (
-        <div className="flex flex-col items-start gap-3 bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 px-4 py-4 rounded-lg text-sm">
-          <p className="font-medium">No profile found in the database.</p>
-          <button
-            onClick={async () => {
-              setSaving(true);
-              const { upsertTeacherProfile, DEFAULT_PROFILE } = await import('@/lib/teacherProfile');
-              const newProfile = await upsertTeacherProfile('shanie-default-id', DEFAULT_PROFILE);
-              if (newProfile) {
-                setProfileId(newProfile.id);
-                setName(newProfile.name);
-                setTagline(newProfile.tagline);
-                setBio(newProfile.bio);
-                setPhilosophy(newProfile.philosophy);
-                setPhotoUrl(newProfile.photoUrl);
-                setSchedule(newProfile.schedule);
-              }
-              setSaving(false);
-            }}
-            disabled={saving}
-            className="flex items-center gap-2 px-3 py-1.5 bg-amber-500 text-amber-950 rounded-md font-semibold hover:bg-amber-400 transition-colors"
-          >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-            Initialize Default Profile
-          </button>
+        <div className="flex flex-col items-start gap-2 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-indigo-800 dark:text-indigo-200 px-4 py-4 rounded-lg text-sm mb-6">
+          <p className="font-medium text-base">Welcome to TeachAssist!</p>
+          <p>Let&apos;s set up your public profile. This helps your students and Inner Council advisors know who you are and what you teach.</p>
         </div>
       )}
 

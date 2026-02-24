@@ -7,10 +7,10 @@ import { Shield, ExternalLink } from 'lucide-react'
 
 export function ComplianceNote() {
   return (
-    <div className="mt-8 p-4 rounded-lg bg-green-50 dark:bg-gray-900/50 border border-green-200 dark:border-gray-800">
-      <div className="flex items-start gap-3">
-        <div className="p-1.5 bg-green-500/10 rounded-lg shrink-0">
-          <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
+    <div className="mt-10 p-5 rounded-2xl bg-green-50 dark:bg-green-950/20 border border-green-200/50 dark:border-green-900/50 shadow-sm">
+      <div className="flex items-start gap-4">
+        <div className="p-2 bg-green-100 dark:bg-green-500/10 rounded-xl shrink-0">
+          <Shield className="w-5 h-5 text-green-600 dark:text-green-500" />
         </div>
         <div className="min-w-0">
           <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">

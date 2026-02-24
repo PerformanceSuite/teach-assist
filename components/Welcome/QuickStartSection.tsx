@@ -6,11 +6,9 @@
 import { useRouter } from 'next/navigation'
 import {
   Upload,
-  MessageSquare,
-  Users,
-  HelpCircle,
   Calendar,
-  UserPen,
+  GraduationCap,
+  FileText,
   ArrowRight
 } from 'lucide-react'
 
@@ -34,69 +32,47 @@ export function QuickStartSection({ onOpenHelp }: QuickStartSectionProps) {
 
   const quickActions: QuickAction[] = [
     {
-      id: 'upload-sources',
-      title: 'Upload Curriculum Sources',
-      description: 'Add standards, lesson plans, and teaching resources',
-      icon: Upload,
-      iconColor: 'text-emerald-400',
-      bgColor: 'bg-emerald-500/10 hover:bg-emerald-500/20',
-      href: '/sources',
-    },
-    {
-      id: 'ask-question',
-      title: 'Ask a Question',
-      description: 'Get grounded answers from your uploaded sources',
-      icon: MessageSquare,
-      iconColor: 'text-blue-400',
-      bgColor: 'bg-blue-500/10 hover:bg-blue-500/20',
-      href: '/chat',
-    },
-    {
-      id: 'consult-council',
-      title: 'Consult Inner Council',
-      description: 'Get expert feedback from AI teaching advisors',
-      icon: Users,
-      iconColor: 'text-purple-400',
-      bgColor: 'bg-purple-500/10 hover:bg-purple-500/20',
-      href: '/council',
-    },
-    {
       id: 'plan-studio',
-      title: 'Plan Studio',
-      description: 'Design lessons and units with AI-assisted planning',
+      title: 'Plan a Lesson',
+      description: 'Design comprehensive lesson plans and units aligned to your standards',
       icon: Calendar,
-      iconColor: 'text-orange-400',
-      bgColor: 'bg-orange-500/10 hover:bg-orange-500/20',
+      iconColor: 'text-orange-500 dark:text-orange-400',
+      bgColor: 'bg-orange-50 dark:bg-orange-500/10',
       href: '/app/plan',
     },
     {
-      id: 'edit-profile',
-      title: 'Edit Public Profile',
-      description: 'Update your teacher profile, photo, and schedule',
-      icon: UserPen,
-      iconColor: 'text-teal-400',
-      bgColor: 'bg-teal-500/10 hover:bg-teal-500/20',
-      href: '/profile',
+      id: 'grade-studio',
+      title: 'Grade Assignments',
+      description: 'Create rubrics and evaluate student submissions using AI assistance',
+      icon: GraduationCap,
+      iconColor: 'text-indigo-500 dark:text-indigo-400',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-500/10',
+      href: '/app/grade',
     },
     {
-      id: 'view-help',
-      title: 'View Help Documentation',
-      description: 'Learn how to use TeachAssist effectively',
-      icon: HelpCircle,
-      iconColor: 'text-pink-400',
-      bgColor: 'bg-pink-500/10 hover:bg-pink-500/20',
-      action: () => {
-        if (onOpenHelp) {
-          onOpenHelp()
-        }
-      },
+      id: 'write-narratives',
+      title: 'Write Narratives',
+      description: 'Draft personalized student progress reports and narrative feedback',
+      icon: FileText,
+      iconColor: 'text-purple-500 dark:text-purple-400',
+      bgColor: 'bg-purple-50 dark:bg-purple-500/10',
+      href: '/narratives',
+    },
+    {
+      id: 'upload-sources',
+      title: 'Upload Curriculum',
+      description: 'Add state standards, existing lesson plans, and teaching resources',
+      icon: Upload,
+      iconColor: 'text-emerald-500 dark:text-emerald-400',
+      bgColor: 'bg-emerald-50 dark:bg-emerald-500/10',
+      href: '/sources',
     },
   ]
 
   return (
-    <div className="mb-8">
-      <h2 className="text-lg font-medium text-white mb-4">Quick Start</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="mb-10">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Quick Start</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {quickActions.map((action) => (
           <button
             key={action.id}
@@ -107,18 +83,18 @@ export function QuickStartSection({ onOpenHelp }: QuickStartSectionProps) {
                 router.push(action.href)
               }
             }}
-            className={`group p-4 rounded-xl border border-gray-800 ${action.bgColor} transition-all duration-200 text-left`}
+            className={`group p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-cc-surface shadow-sm hover:shadow-md hover:scale-[1.02] hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-200 text-left`}
           >
-            <div className="flex items-start gap-3">
-              <div className={`p-2 rounded-lg bg-gray-900/50`}>
-                <action.icon className={`w-5 h-5 ${action.iconColor}`} />
+            <div className="flex items-start gap-4">
+              <div className={`p-3 rounded-xl ${action.bgColor}`}>
+                <action.icon className={`w-6 h-6 ${action.iconColor}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium text-white">{action.title}</h3>
-                  <ArrowRight className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{action.title}</h3>
+                  <ArrowRight className="w-4 h-4 text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
-                <p className="text-sm text-gray-400 mt-1">{action.description}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{action.description}</p>
               </div>
             </div>
           </button>
