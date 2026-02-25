@@ -39,6 +39,7 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "https://wildvine.net",
         "https://teach-assist-three.vercel.app",
+        "https://teach-assist-proactiva.vercel.app",
     ]
 
     # Personas

@@ -30,19 +30,20 @@ export function useRecentActivity(limit = 10) {
         
         // Fetch from multiple endpoints in parallel
         const [documentsRes, chatsRes] = await Promise.allSettled([
-          fetch(`${apiUrl}/api/v1/sources/list`).then(r => r.json()),
-          fetch(`${apiUrl}/api/v1/chat/history`).then(r => r.json()),
+          fetch(`${apiUrl}/api/v1/sources`).then(r => r.json()),
+          fetch(`${apiUrl}/api/v1/chat/conversations`).then(r => r.json()),
         ])
 
         const items: ActivityItem[] = []
 
-        // Process documents
-        if (documentsRes.status === 'fulfilled' && Array.isArray(documentsRes.value)) {
-          documentsRes.value.forEach((doc: any) => {
+        // Process documents (backend returns { sources: [...] })
+        if (documentsRes.status === 'fulfilled') {
+          const docs = Array.isArray(documentsRes.value) ? documentsRes.value : documentsRes.value?.sources || []
+          docs.forEach((doc: any) => {
             items.push({
-              id: doc.id,
+              id: doc.source_id || doc.id,
               type: 'document',
-              title: doc.title || doc.name || 'Untitled Document',
+              title: doc.filename || doc.title || doc.name || 'Untitled Document',
               description: doc.description || `Uploaded document`,
               createdAt: new Date(doc.created_at || doc.createdAt || Date.now()),
               updatedAt: doc.updated_at ? new Date(doc.updated_at) : undefined,
