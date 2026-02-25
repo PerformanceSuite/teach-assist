@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react';
-import { Save, Upload, Plus, Trash2, Loader2 } from 'lucide-react';
+import { Save, Upload, Plus, Trash2, Loader2, ExternalLink } from 'lucide-react';
 import {
   getTeacherProfile,
   updateTeacherProfileById,
@@ -149,18 +149,29 @@ export default function ProfileEditor() {
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           {profileId ? 'Edit Public Profile' : 'Set Up Your Profile'}
         </h2>
-        <button
-          onClick={handleSave}
-          disabled={saving || !profileId}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50"
-        >
-          {saving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
-          {saved ? 'Saved!' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-3">
+          <a
+            href="/shanieholman"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-cc-surface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            View Live Profile
+          </a>
+          <button
+            onClick={handleSave}
+            disabled={saving || !profileId}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50"
+          >
+            {saving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            {saved ? 'Saved!' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       {!profileId && (
