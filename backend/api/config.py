@@ -21,13 +21,16 @@ class Settings(BaseSettings):
     # Anthropic
     anthropic_api_key: str = ""
 
+    # Google Gemini (for LLM calls)
+    gemini_api_key: str = ""
+
     # OpenAI (for embeddings)
     openai_api_key: str = ""
 
     # Embedding (for knowledge service)
-    # Using OpenAI's text-embedding-3-small for serverless compatibility
-    kb_embedding_model: str = "text-embedding-3-small"
-    kb_embedding_dimension: int = 1536  # text-embedding-3-small produces 1536-dim embeddings
+    # Gemini embedding-001 produces 768-dim, OpenAI text-embedding-3-small produces 1536-dim
+    kb_embedding_model: str = "text-embedding-3-small"  # Used only for OpenAI fallback
+    kb_embedding_dimension: int = 768  # Gemini default; overridden if OpenAI is used
     kb_persist_directory: str = "./data/knowledge"  # Directory for knowledge artifacts
     kb_collection_prefix: str = "teachassist"  # Prefix for collections
     kb_cache_size: int = 1000  # LRU cache size for queries

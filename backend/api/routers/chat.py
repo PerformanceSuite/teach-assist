@@ -117,7 +117,7 @@ async def send_message(
     if not client:
         raise HTTPException(
             status_code=503,
-            detail="LLM service not available. Please configure ANTHROPIC_API_KEY.",
+            detail="LLM service not available. Please configure TA_GEMINI_API_KEY or TA_ANTHROPIC_API_KEY.",
         )
 
     # Retrieve relevant chunks from knowledge base
@@ -274,7 +274,7 @@ async def transform_sources(request: TransformRequest):
     if not client:
         raise HTTPException(
             status_code=503,
-            detail="LLM service not available. Please configure ANTHROPIC_API_KEY.",
+            detail="LLM service not available. Please configure TA_GEMINI_API_KEY or TA_ANTHROPIC_API_KEY.",
         )
 
     # Get content from knowledge base

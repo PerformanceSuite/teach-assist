@@ -319,7 +319,7 @@ async def create_unit(request: UnitCreate):
     if not client:
         raise HTTPException(
             status_code=503,
-            detail="LLM service not available. Please configure ANTHROPIC_API_KEY.",
+            detail="LLM service not available. Please configure TA_GEMINI_API_KEY or TA_ANTHROPIC_API_KEY.",
         )
 
     # Query knowledge base for relevant curriculum context
@@ -485,7 +485,7 @@ async def create_lesson(request: LessonCreate):
     if not client:
         raise HTTPException(
             status_code=503,
-            detail="LLM service not available. Please configure ANTHROPIC_API_KEY.",
+            detail="LLM service not available. Please configure TA_GEMINI_API_KEY or TA_ANTHROPIC_API_KEY.",
         )
 
     # Calculate section timings

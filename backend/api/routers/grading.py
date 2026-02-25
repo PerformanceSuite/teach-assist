@@ -225,7 +225,7 @@ async def create_grade_batch(request: GradeBatchRequest):
     if not client:
         raise HTTPException(
             status_code=503,
-            detail="LLM service not available. Please configure ANTHROPIC_API_KEY.",
+            detail="LLM service not available. Please configure TA_GEMINI_API_KEY or TA_ANTHROPIC_API_KEY.",
         )
 
     # Resolve rubric

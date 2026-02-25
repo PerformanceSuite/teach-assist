@@ -313,7 +313,7 @@ async def consult_advisors(request: ConsultRequest):
                     response=StructuredAdvice(
                         observations=["API key not configured - cannot provide advice"],
                         risks=[],
-                        suggestions=["Configure ANTHROPIC_API_KEY in .env"],
+                        suggestions=["Configure TA_GEMINI_API_KEY or TA_ANTHROPIC_API_KEY in .env"],
                         questions=[],
                         raw_text="API key not configured",
                     ),
@@ -410,7 +410,7 @@ async def chat_with_advisor(request: CouncilChatRequest):
     if client is None:
         return CouncilChatResponse(
             persona=persona.name,
-            response="API key not configured. Please set ANTHROPIC_API_KEY.",
+            response="API key not configured. Please set TA_GEMINI_API_KEY or TA_ANTHROPIC_API_KEY.",
             conversation_id=request.conversation_id or "conv_placeholder",
         )
 

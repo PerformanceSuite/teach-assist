@@ -2,7 +2,7 @@
 KnowledgeBeast Service for TeachAssist - Simplified Implementation
 
 Provides semantic search, RAG, and knowledge management capabilities.
-Uses OpenAI embeddings API for serverless compatibility.
+Supports Google Gemini embeddings (preferred) or OpenAI embeddings as fallback.
 
 Note: This is a simplified implementation that doesn't require chromadb.
 For production PostgreSQL+pgvector support, see the full KnowledgeBeast library.
@@ -11,7 +11,7 @@ Features:
 - Hybrid search (vector + keyword)
 - Document ingestion with embeddings
 - Per-project knowledge isolation
-- OpenAI embeddings (serverless-friendly, no local ML models)
+- Gemini/OpenAI embeddings (serverless-friendly, no local ML models)
 """
 
 import hashlib
@@ -21,7 +21,6 @@ from typing import Any, Dict, List, Literal, Optional
 from uuid import UUID
 
 import numpy as np
-from openai import OpenAI
 from pydantic import BaseModel
 
 from api.config import settings
@@ -189,14 +188,29 @@ class KnowledgeService:
         if hasattr(self, '_initialized') and self._initialized:
             return  # Already initialized
 
-        logger.info("Initializing KnowledgeService with OpenAI embeddings...")
-
         self._lock = threading.RLock()
+        self._embedding_provider = None
+        self._gemini_client = None
+        self._openai_client = None
 
-        # Initialize OpenAI client for embeddings
-        if not settings.openai_api_key:
-            logger.warning("OPENAI_API_KEY not set - embeddings will fail")
-        self._openai = OpenAI(api_key=settings.openai_api_key)
+        # Prefer Gemini for embeddings, fall back to OpenAI
+        if settings.gemini_api_key:
+            try:
+                from google import genai
+                self._gemini_client = genai.Client(api_key=settings.gemini_api_key)
+                self._embedding_provider = "gemini"
+                logger.info("Initializing KnowledgeService with Gemini embeddings...")
+            except Exception as e:
+                logger.warning(f"Failed to init Gemini embeddings: {e}")
+
+        if not self._embedding_provider and settings.openai_api_key:
+            from openai import OpenAI
+            self._openai_client = OpenAI(api_key=settings.openai_api_key)
+            self._embedding_provider = "openai"
+            logger.info("Initializing KnowledgeService with OpenAI embeddings...")
+
+        if not self._embedding_provider:
+            logger.warning("No embedding API key set (TA_GEMINI_API_KEY or TA_OPENAI_API_KEY) - embeddings will fail")
 
         # Initialize vector store
         self._vector_store = InMemoryVectorStore()
@@ -212,18 +226,29 @@ class KnowledgeService:
         }
 
         self._initialized = True
-        logger.info(f"KnowledgeService initialized (model: {settings.kb_embedding_model}, dim: {settings.kb_embedding_dimension})")
+        provider_info = self._embedding_provider or "none"
+        logger.info(f"KnowledgeService initialized (provider: {provider_info}, dim: {settings.kb_embedding_dimension})")
 
     def _embed(self, text: str) -> np.ndarray:
-        """Generate embedding for text using OpenAI API."""
+        """Generate embedding for text using Gemini or OpenAI API."""
         with self._lock:
             self._stats['embedding_calls'] += 1
 
-        response = self._openai.embeddings.create(
-            model=settings.kb_embedding_model,
-            input=text
-        )
-        embedding = np.array(response.data[0].embedding)
+        if self._embedding_provider == "gemini":
+            response = self._gemini_client.models.embed_content(
+                model="gemini-embedding-001",
+                contents=text,
+            )
+            embedding = np.array(response.embeddings[0].values)
+        elif self._embedding_provider == "openai":
+            response = self._openai_client.embeddings.create(
+                model=settings.kb_embedding_model,
+                input=text,
+            )
+            embedding = np.array(response.data[0].embedding)
+        else:
+            raise RuntimeError("No embedding provider configured. Set TA_GEMINI_API_KEY or TA_OPENAI_API_KEY.")
+
         # Normalize for cosine similarity
         return embedding / np.linalg.norm(embedding)
 
