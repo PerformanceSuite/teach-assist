@@ -46,18 +46,18 @@ export function ReviewStep() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white mb-1">Review Feedback</h2>
-          <p className="text-gray-400 text-sm">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Review Feedback</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             Review and approve AI-generated feedback for &ldquo;{assignmentName}&rdquo;
           </p>
         </div>
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           {counts.approved}/{counts.all} approved
         </div>
       </div>
 
       {/* Filter */}
-      <div className="flex gap-2 border-b border-gray-800 pb-2">
+      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-800 pb-2">
         {[
           { key: 'all' as const, label: 'All', count: counts.all },
           { key: 'ready' as const, label: 'Ready', count: counts.ready, icon: <Clock className="w-3.5 h-3.5" /> },
@@ -69,13 +69,13 @@ export function ReviewStep() {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filter === tab.key
                 ? 'bg-emerald-500/20 text-emerald-400'
-                : 'text-gray-400 hover:text-gray-300 hover:bg-gray-800'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
             }`}
           >
             {tab.icon}
             {tab.label}
             <span className={`ml-1 px-1.5 py-0.5 rounded text-xs ${
-              filter === tab.key ? 'bg-emerald-500/30' : 'bg-gray-700'
+              filter === tab.key ? 'bg-emerald-500/30' : 'bg-gray-200 dark:bg-gray-700'
             }`}>
               {tab.count}
             </span>
@@ -100,10 +100,10 @@ export function ReviewStep() {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between pt-4 border-t border-gray-800">
+      <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-800">
         <button
           onClick={prevStep}
-          className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -147,11 +147,11 @@ function FeedbackCard({
   }
 
   return (
-    <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
+    <div className="bg-gray-100 dark:bg-gray-800/50 rounded-lg border border-gray-300 dark:border-gray-700 p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
-          <span className="text-white font-bold text-lg bg-gray-700 px-3 py-1 rounded">
+          <span className="text-gray-900 dark:text-white font-bold text-lg bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded">
             {feedback.student_id}
           </span>
           <span
@@ -176,7 +176,7 @@ function FeedbackCard({
               <TrendingUp className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="text-emerald-400 text-xs uppercase font-semibold">Strengths</span>
-                <ul className="text-gray-200 text-sm mt-1 space-y-0.5">
+                <ul className="text-gray-700 dark:text-gray-200 text-sm mt-1 space-y-0.5">
                   {feedback.strengths.map((s, i) => <li key={i}>{s}</li>)}
                 </ul>
               </div>
@@ -188,7 +188,7 @@ function FeedbackCard({
               <TrendingDown className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="text-amber-400 text-xs uppercase font-semibold">Growth Areas</span>
-                <ul className="text-gray-200 text-sm mt-1 space-y-0.5">
+                <ul className="text-gray-700 dark:text-gray-200 text-sm mt-1 space-y-0.5">
                   {feedback.growth_areas.map((g, i) => <li key={i}>{g}</li>)}
                 </ul>
               </div>
@@ -200,7 +200,7 @@ function FeedbackCard({
               <Target className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="text-blue-400 text-xs uppercase font-semibold">Evidence</span>
-                <ul className="text-gray-200 text-sm mt-1 space-y-0.5">
+                <ul className="text-gray-700 dark:text-gray-200 text-sm mt-1 space-y-0.5">
                   {feedback.evidence.map((e, i) => <li key={i}>{e}</li>)}
                 </ul>
               </div>
@@ -212,7 +212,7 @@ function FeedbackCard({
               <Lightbulb className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="text-purple-400 text-xs uppercase font-semibold">Next Steps</span>
-                <ul className="text-gray-200 text-sm mt-1 space-y-0.5">
+                <ul className="text-gray-700 dark:text-gray-200 text-sm mt-1 space-y-0.5">
                   {feedback.next_steps.map((n, i) => <li key={i}>{n}</li>)}
                 </ul>
               </div>
@@ -220,9 +220,9 @@ function FeedbackCard({
           )}
 
           {/* Full Draft */}
-          <div className="mt-3 pt-3 border-t border-gray-700">
+          <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-700">
             <div className="text-gray-500 text-xs uppercase mb-1">Full Comment</div>
-            <p className="text-gray-200 text-sm leading-relaxed">{feedback.draft_comment}</p>
+            <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{feedback.draft_comment}</p>
           </div>
         </div>
       )}
@@ -234,12 +234,12 @@ function FeedbackCard({
             value={editedDraft}
             onChange={(e) => setEditedDraft(e.target.value)}
             rows={6}
-            className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+            className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
           />
           <div className="flex justify-end gap-2">
             <button
               onClick={() => { setEditedDraft(feedback.draft_comment); setIsEditing(false) }}
-              className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors"
             >
               <X className="w-4 h-4" />
               Cancel
@@ -261,7 +261,7 @@ function FeedbackCard({
         <div className="flex justify-end gap-2 mt-4">
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors"
             aria-label={`Edit feedback for ${feedback.student_id}`}
           >
             <Edit2 className="w-4 h-4" />

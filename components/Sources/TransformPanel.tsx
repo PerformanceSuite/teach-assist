@@ -184,32 +184,32 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
   }
 
   return (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+    <div className="bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-300 dark:border-gray-700 overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-gray-300 dark:border-gray-700 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-purple-500/10 rounded-lg">
             <Sparkles className="w-4 h-4 text-purple-400" />
           </div>
-          <h3 className="text-white font-medium">Transform Source</h3>
+          <h3 className="text-gray-900 dark:text-white font-medium">Transform Source</h3>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-700 rounded transition-colors"
+            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
           >
-            <X className="w-4 h-4 text-gray-400" />
+            <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           </button>
         )}
       </div>
 
       {/* Source indicator */}
       {sourceName && (
-        <div className="px-4 py-2 bg-gray-900/50 border-b border-gray-700">
+        <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-300 dark:border-gray-700">
           <div className="flex items-center gap-2 text-sm">
             <FileText className="w-3.5 h-3.5 text-gray-500" />
-            <span className="text-gray-400">Source:</span>
-            <span className="text-white truncate">{sourceName}</span>
+            <span className="text-gray-500 dark:text-gray-400">Source:</span>
+            <span className="text-gray-900 dark:text-white truncate">{sourceName}</span>
           </div>
         </div>
       )}
@@ -217,22 +217,22 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
       <div className="p-4 space-y-4">
         {/* Transform selector */}
         <div className="space-y-2">
-          <label className="block text-sm text-gray-400">Transform Type</label>
+          <label className="block text-sm text-gray-500 dark:text-gray-400">Transform Type</label>
           <div className="relative">
             <button
               onClick={() => setShowTransformDropdown(!showTransformDropdown)}
-              className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white text-left flex items-center justify-between hover:border-gray-600 transition-colors"
+              className="w-full px-3 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white text-left flex items-center justify-between hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
               disabled={loading}
             >
               <div className="flex items-center gap-2">
                 {currentTransform?.icon}
                 <span>{currentTransform?.name}</span>
               </div>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showTransformDropdown ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${showTransformDropdown ? 'rotate-180' : ''}`} />
             </button>
 
             {showTransformDropdown && (
-              <div className="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden">
+              <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden">
                 {TRANSFORMS.map((transform) => (
                   <button
                     key={transform.id}
@@ -242,18 +242,18 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
                       setResult(null)
                       setError(null)
                     }}
-                    className={`w-full px-3 py-2.5 text-left flex items-start gap-3 hover:bg-gray-800 transition-colors ${
-                      selectedTransform === transform.id ? 'bg-gray-800' : ''
+                    className={`w-full px-3 py-2.5 text-left flex items-start gap-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
+                      selectedTransform === transform.id ? 'bg-gray-100 dark:bg-gray-800' : ''
                     }`}
                   >
                     <div className={`p-1.5 rounded-lg ${
-                      selectedTransform === transform.id ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-700 text-gray-400'
+                      selectedTransform === transform.id ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                     }`}>
                       {transform.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-white font-medium">{transform.name}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{transform.description}</div>
+                      <div className="text-gray-900 dark:text-white font-medium">{transform.name}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">{transform.description}</div>
                     </div>
                   </button>
                 ))}
@@ -264,12 +264,12 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
 
         {/* Transform-specific options */}
         {currentTransform?.options && (
-          <div className="space-y-3 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+          <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-300/50 dark:border-gray-700/50">
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Options</div>
 
             {currentTransform.options.audience && (
               <div className="space-y-1.5">
-                <label className="block text-sm text-gray-400">Target Audience</label>
+                <label className="block text-sm text-gray-500 dark:text-gray-400">Target Audience</label>
                 <div className="flex gap-2">
                   {AUDIENCE_OPTIONS.map((opt) => (
                     <button
@@ -279,7 +279,7 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         options.audience === opt.value
                           ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50'
-                          : 'bg-gray-800 text-gray-400 border border-gray-700 hover:border-gray-600'
+                          : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
                       }`}
                     >
                       {opt.label}
@@ -291,12 +291,12 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
 
             {currentTransform.options.length && (
               <div className="space-y-1.5">
-                <label className="block text-sm text-gray-400">Summary Length</label>
+                <label className="block text-sm text-gray-500 dark:text-gray-400">Summary Length</label>
                 <select
                   value={options.length}
                   onChange={(e) => setOptions({ ...options, length: e.target.value as 'short' | 'medium' | 'long' })}
                   disabled={loading}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-purple-500 transition-colors"
                 >
                   {LENGTH_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -307,12 +307,12 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
 
             {currentTransform.options.count && (
               <div className="space-y-1.5">
-                <label className="block text-sm text-gray-400">Number of Questions</label>
+                <label className="block text-sm text-gray-500 dark:text-gray-400">Number of Questions</label>
                 <select
                   value={options.count}
                   onChange={(e) => setOptions({ ...options, count: parseInt(e.target.value) })}
                   disabled={loading}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-purple-500 transition-colors"
                 >
                   {QUESTION_COUNT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -323,12 +323,12 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
 
             {currentTransform.options.grade_level && (
               <div className="space-y-1.5">
-                <label className="block text-sm text-gray-400">Target Reading Level</label>
+                <label className="block text-sm text-gray-500 dark:text-gray-400">Target Reading Level</label>
                 <select
                   value={options.grade_level}
                   onChange={(e) => setOptions({ ...options, grade_level: e.target.value })}
                   disabled={loading}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-purple-500 transition-colors"
                 >
                   {GRADE_LEVEL_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -350,7 +350,7 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
         {result && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 Transform Result
                 {result.sources_used.length > 0 && (
                   <span className="ml-2 text-xs text-gray-500">
@@ -361,7 +361,7 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                  className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
                 >
                   {copied ? (
                     <>
@@ -377,16 +377,16 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
                 </button>
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                  className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>Clear</span>
                 </button>
               </div>
             </div>
-            <div className="max-h-80 overflow-y-auto rounded-lg bg-gray-900 border border-gray-700 p-4">
-              <div className="prose prose-invert prose-sm max-w-none">
-                <pre className="whitespace-pre-wrap text-gray-300 text-sm font-sans leading-relaxed">
+            <div className="max-h-80 overflow-y-auto rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 p-4">
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <pre className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 text-sm font-sans leading-relaxed">
                   {result.result}
                 </pre>
               </div>
@@ -399,7 +399,7 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
           <button
             onClick={handleTransform}
             disabled={loading}
-            className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 disabled:text-gray-500 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 dark:disabled:text-gray-500 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -420,7 +420,7 @@ export function TransformPanel({ sourceId, sourceName, onClose }: TransformPanel
           <button
             onClick={handleTransform}
             disabled={loading}
-            className="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500 text-gray-900 dark:text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

@@ -67,31 +67,31 @@ export function ExportStep() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-1">Export Feedback</h2>
-        <p className="text-gray-400 text-sm">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Export Feedback</h2>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">
           Export feedback for &ldquo;{assignmentName}&rdquo; in your preferred format.
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 text-center">
-          <div className="text-2xl font-bold text-white">{totalCount}</div>
-          <div className="text-gray-400 text-sm">Total</div>
+        <div className="bg-gray-100 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-300 dark:border-gray-700 text-center">
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalCount}</div>
+          <div className="text-gray-500 dark:text-gray-400 text-sm">Total</div>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 text-center">
+        <div className="bg-gray-100 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-300 dark:border-gray-700 text-center">
           <div className="text-2xl font-bold text-emerald-400">{approvedCount}</div>
-          <div className="text-gray-400 text-sm">Approved</div>
+          <div className="text-gray-500 dark:text-gray-400 text-sm">Approved</div>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 text-center">
+        <div className="bg-gray-100 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-300 dark:border-gray-700 text-center">
           <div className="text-2xl font-bold text-yellow-400">{totalCount - approvedCount}</div>
-          <div className="text-gray-400 text-sm">Pending</div>
+          <div className="text-gray-500 dark:text-gray-400 text-sm">Pending</div>
         </div>
       </div>
 
       {/* Format Selection */}
       <div className="space-y-3">
-        <h3 className="text-white font-medium">Export Format</h3>
+        <h3 className="text-gray-900 dark:text-white font-medium">Export Format</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {FORMAT_OPTIONS.map(opt => {
             const Icon = opt.icon
@@ -102,14 +102,14 @@ export function ExportStep() {
                 className={`text-left p-4 rounded-lg border-2 transition-colors ${
                   selectedFormat === opt.value
                     ? 'border-emerald-500 bg-emerald-500/10'
-                    : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                    : 'border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/50 hover:border-gray-400 dark:hover:border-gray-600'
                 }`}
               >
-                <div className="flex items-center gap-2 text-white font-medium">
+                <div className="flex items-center gap-2 text-gray-900 dark:text-white font-medium">
                   <Icon className="w-4 h-4" />
                   {opt.label}
                 </div>
-                <div className="text-gray-400 text-sm mt-1">{opt.description}</div>
+                <div className="text-gray-500 dark:text-gray-400 text-sm mt-1">{opt.description}</div>
               </button>
             )
           })}
@@ -123,9 +123,9 @@ export function ExportStep() {
           id="approvedOnly"
           checked={approvedOnly}
           onChange={(e) => { setApprovedOnly(e.target.checked); setExported(null) }}
-          className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-gray-900"
+          className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-white dark:focus:ring-offset-gray-900"
         />
-        <label htmlFor="approvedOnly" className="text-gray-300 text-sm cursor-pointer">
+        <label htmlFor="approvedOnly" className="text-gray-700 dark:text-gray-300 text-sm cursor-pointer">
           Export approved feedback only
         </label>
       </div>
@@ -143,11 +143,11 @@ export function ExportStep() {
       {exported && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-white font-medium">Preview</h3>
+            <h3 className="text-gray-900 dark:text-white font-medium">Preview</h3>
             <div className="flex gap-2">
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 {copied ? 'Copied!' : 'Copy'}
@@ -161,24 +161,24 @@ export function ExportStep() {
               </button>
             </div>
           </div>
-          <pre className="bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-300 text-sm overflow-x-auto max-h-64 overflow-y-auto font-mono">
+          <pre className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg p-4 text-gray-700 dark:text-gray-300 text-sm overflow-x-auto max-h-64 overflow-y-auto font-mono">
             {exported}
           </pre>
         </div>
       )}
 
       {/* Navigation */}
-      <div className="flex justify-between pt-4 border-t border-gray-800">
+      <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-800">
         <button
           onClick={prevStep}
-          className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
         </button>
         <button
           onClick={reset}
-          className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
           Start New Batch

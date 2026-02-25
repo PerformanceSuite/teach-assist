@@ -58,7 +58,7 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="h-full overflow-auto p-6 bg-gray-950">
+    <div className="h-full overflow-auto p-6 bg-gray-50 dark:bg-gray-950">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="space-y-2">
@@ -67,7 +67,7 @@ export default function StudentsPage() {
               <div className="p-2 bg-gradient-to-br from-violet-500/20 to-violet-600/10 rounded-xl">
                 <Users className="w-6 h-6 text-violet-400" />
               </div>
-              <h1 className="text-2xl font-semibold text-white">Student Roster</h1>
+              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Student Roster</h1>
             </div>
             <button
               onClick={handleAddClick}
@@ -77,7 +77,7 @@ export default function StudentsPage() {
               Add Student
             </button>
           </div>
-          <p className="text-gray-400 max-w-2xl">
+          <p className="text-gray-500 dark:text-gray-400 max-w-2xl">
             Manage your student profiles. Add interests and accommodations to personalize learning
             and ensure AI responses meet individual student needs.
           </p>
@@ -116,16 +116,16 @@ export default function StudentsPage() {
             />
 
             {/* Modal */}
-            <div className="relative bg-gray-900 rounded-xl border border-gray-700 p-6 w-full max-w-sm mx-4 shadow-2xl">
-              <h3 className="text-lg font-semibold text-white mb-2">Delete Student?</h3>
-              <p className="text-gray-400 text-sm mb-6">
-                Are you sure you want to delete <span className="text-white font-medium">{deleteConfirm.name}</span>?
+            <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-700 p-6 w-full max-w-sm mx-4 shadow-2xl">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete Student?</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+                Are you sure you want to delete <span className="text-gray-900 dark:text-white font-medium">{deleteConfirm.name}</span>?
                 This action cannot be undone.
               </p>
               <div className="flex justify-end gap-3">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors"
                 >
                   Cancel
                 </button>

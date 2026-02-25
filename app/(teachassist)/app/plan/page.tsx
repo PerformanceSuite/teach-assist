@@ -230,7 +230,7 @@ export default function PlanStudioPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold">Plan Studio</h1>
-        <p className="text-neutral-700">
+        <p className="text-gray-700 dark:text-gray-300">
           UbD-guided unit and lesson planning with AI assistance
         </p>
       </div>
@@ -250,12 +250,12 @@ export default function PlanStudioPage() {
         {/* Main Content */}
         <div className={`space-y-6 ${units.length > 0 ? 'lg:col-span-2' : ''}`}>
           {/* Tabs */}
-          <div className="flex border-b border-neutral-200">
+          <div className="flex border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={() => setActiveTab('unit')}
               className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'unit'
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-neutral-600 hover:border-neutral-300'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
             >
               <BookOpen className="h-4 w-4" />
@@ -265,7 +265,7 @@ export default function PlanStudioPage() {
               onClick={() => setActiveTab('lesson')}
               className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'lesson'
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-neutral-600 hover:border-neutral-300'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
             >
               <FileText className="h-4 w-4" />
@@ -276,12 +276,12 @@ export default function PlanStudioPage() {
           {/* Unit Planner Tab */}
           {activeTab === 'unit' && (
             <div className="space-y-4">
-              <div className="rounded-lg border bg-white p-4 shadow-sm space-y-4">
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm space-y-4">
                 <h2 className="font-semibold text-lg">Create Unit Plan</h2>
 
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Unit Title
                   </label>
                   <input
@@ -289,20 +289,20 @@ export default function PlanStudioPage() {
                     value={unitForm.title}
                     onChange={(e) => setUnitForm({ ...unitForm, title: e.target.value })}
                     placeholder="e.g., Forces and Motion"
-                    className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                   />
                 </div>
 
                 {/* Subject & Grade Row */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Subject
                     </label>
                     <select
                       value={unitForm.subject}
                       onChange={(e) => setUnitForm({ ...unitForm, subject: e.target.value })}
-                      className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     >
                       <option value="">Select subject...</option>
                       {SUBJECTS.map(subject => (
@@ -311,13 +311,13 @@ export default function PlanStudioPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Grade Level
                     </label>
                     <select
                       value={unitForm.grade}
                       onChange={(e) => setUnitForm({ ...unitForm, grade: parseInt(e.target.value) })}
-                      className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     >
                       {Array.from({ length: 12 }, (_, i) => i + 1).map(grade => (
                         <option key={grade} value={grade}>Grade {grade}</option>
@@ -329,13 +329,13 @@ export default function PlanStudioPage() {
                 {/* Duration Row */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Duration (weeks)
                     </label>
                     <select
                       value={unitForm.duration_weeks}
                       onChange={(e) => setUnitForm({ ...unitForm, duration_weeks: parseInt(e.target.value) })}
-                      className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     >
                       {Array.from({ length: 8 }, (_, i) => i + 1).map(weeks => (
                         <option key={weeks} value={weeks}>{weeks} week{weeks > 1 ? 's' : ''}</option>
@@ -346,7 +346,7 @@ export default function PlanStudioPage() {
 
                 {/* Standards */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Standards (one per line)
                   </label>
                   <textarea
@@ -354,7 +354,7 @@ export default function PlanStudioPage() {
                     onChange={(e) => setUnitForm({ ...unitForm, standards: e.target.value })}
                     placeholder="NGSS MS-PS2-1: Apply Newton's Third Law&#10;NGSS MS-PS2-2: Plan an investigation"
                     rows={4}
-                    className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none"
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none"
                   />
                 </div>
 
@@ -377,12 +377,12 @@ export default function PlanStudioPage() {
 
               {/* Unit Result */}
               {unitResult && (
-                <div className="rounded-lg border bg-white p-4 shadow-sm">
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-lg">Generated Unit Plan</h3>
                     <button
                       onClick={() => handleCopy(formatUnitAsMarkdown(unitResult))}
-                      className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900"
+                      className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                     >
                       {copied ? (
                         <>
@@ -397,7 +397,7 @@ export default function PlanStudioPage() {
                       )}
                     </button>
                   </div>
-                  <div className="prose prose-sm max-w-none">
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
                     <ReactMarkdown>{formatUnitAsMarkdown(unitResult)}</ReactMarkdown>
                   </div>
                 </div>
@@ -408,18 +408,18 @@ export default function PlanStudioPage() {
           {/* Lesson Planner Tab */}
           {activeTab === 'lesson' && (
             <div className="space-y-4">
-              <div className="rounded-lg border bg-white p-4 shadow-sm space-y-4">
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm space-y-4">
                 <h2 className="font-semibold text-lg">Create Lesson Plan</h2>
 
                 {/* Unit Selection (Optional) */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Unit (optional)
                   </label>
                   <select
                     value={lessonForm.unit_id}
                     onChange={(e) => setLessonForm({ ...lessonForm, unit_id: e.target.value })}
-                    className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                   >
                     <option value="">Standalone lesson...</option>
                     {units.map(unit => (
@@ -430,7 +430,7 @@ export default function PlanStudioPage() {
 
                 {/* Topic */}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Lesson Topic
                   </label>
                   <input
@@ -438,20 +438,20 @@ export default function PlanStudioPage() {
                     value={lessonForm.topic}
                     onChange={(e) => setLessonForm({ ...lessonForm, topic: e.target.value })}
                     placeholder="e.g., Introduction to Newton's First Law"
-                    className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                   />
                 </div>
 
                 {/* Duration & Format Row */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Duration
                     </label>
                     <select
                       value={lessonForm.duration_minutes}
                       onChange={(e) => setLessonForm({ ...lessonForm, duration_minutes: parseInt(e.target.value) })}
-                      className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     >
                       {DURATIONS.map(dur => (
                         <option key={dur} value={dur}>{dur} minutes</option>
@@ -459,13 +459,13 @@ export default function PlanStudioPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Format
                     </label>
                     <select
                       value={lessonForm.format}
                       onChange={(e) => setLessonForm({ ...lessonForm, format: e.target.value as any })}
-                      className="w-full rounded-md border border-neutral-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     >
                       {FORMATS.map(fmt => (
                         <option key={fmt.value} value={fmt.value}>{fmt.label}</option>
@@ -475,13 +475,13 @@ export default function PlanStudioPage() {
                 </div>
 
                 {/* Student Selector */}
-                <div className="border border-neutral-200 rounded-lg">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
                   <button
                     onClick={() => setIsStudentDropdownOpen(!isStudentDropdownOpen)}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 rounded-lg transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   >
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-neutral-500" />
+                      <Users className="w-4 h-4 text-gray-500" />
                       <span>Personalize for students</span>
                       {selectedStudentIds.length > 0 && (
                         <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
@@ -489,38 +489,38 @@ export default function PlanStudioPage() {
                         </span>
                       )}
                     </div>
-                    <ChevronDown className={`w-4 h-4 text-neutral-500 transition-transform ${isStudentDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isStudentDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {isStudentDropdownOpen && (
                     <div className="px-3 pb-3 space-y-2">
                       {students.length === 0 ? (
-                        <div className="text-sm text-neutral-500 py-2">
+                        <div className="text-sm text-gray-500 py-2">
                           <Link href="/students" className="text-blue-600 hover:underline">
                             Add students to personalize responses
                           </Link>
                         </div>
                       ) : (
                         <>
-                          <div className="max-h-48 overflow-y-auto border border-neutral-200 rounded-md">
+                          <div className="max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md">
                             {students.map((student) => {
                               const isSelected = selectedStudentIds.includes(student.id);
                               return (
                                 <button
                                   key={student.id}
                                   onClick={() => toggleStudentSelection(student.id)}
-                                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-neutral-100 transition-colors ${isSelected ? 'bg-blue-50' : ''
+                                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                                     }`}
                                 >
                                   <input
                                     type="checkbox"
                                     checked={isSelected}
                                     onChange={() => { }}
-                                    className="w-4 h-4 rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
+                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                                   />
-                                  <span className="text-neutral-700">{student.name}</span>
+                                  <span className="text-gray-700 dark:text-gray-300">{student.name}</span>
                                   {student.interests.length > 0 && (
-                                    <span className="text-xs text-neutral-400 truncate">
+                                    <span className="text-xs text-gray-400 dark:text-gray-500 truncate">
                                       ({student.interests.slice(0, 2).join(', ')})
                                     </span>
                                   )}
@@ -575,12 +575,12 @@ export default function PlanStudioPage() {
 
               {/* Lesson Result */}
               {lessonResult && (
-                <div className="rounded-lg border bg-white p-4 shadow-sm">
+                <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-lg">Generated Lesson Plan</h3>
                     <button
                       onClick={() => handleCopy(formatLessonAsMarkdown(lessonResult))}
-                      className="flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900"
+                      className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                     >
                       {copied ? (
                         <>
@@ -607,7 +607,7 @@ export default function PlanStudioPage() {
                     </div>
                   )}
 
-                  <div className="prose prose-sm max-w-none">
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
                     <ReactMarkdown>{formatLessonAsMarkdown(lessonResult)}</ReactMarkdown>
                   </div>
                 </div>
@@ -619,13 +619,13 @@ export default function PlanStudioPage() {
         {/* Sidebar */}
         {units.length > 0 && (
           <div className="space-y-4">
-            <div className="rounded-lg border bg-white p-4 shadow-sm">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm">
               <h3 className="font-semibold text-lg mb-3">Saved Unit Plans</h3>
               <div className="space-y-2">
                 {units.map((unit) => (
                   <div
                     key={unit.unit_id}
-                    className="group flex items-center justify-between p-3 rounded-md border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-colors"
+                    className="group flex items-center justify-between p-3 rounded-md border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     <button
                       onClick={() => {
@@ -634,16 +634,16 @@ export default function PlanStudioPage() {
                       }}
                       className="flex-1 text-left"
                     >
-                      <div className="font-medium text-sm text-neutral-900">
+                      <div className="font-medium text-sm text-gray-900 dark:text-gray-100">
                         {unit.title}
                       </div>
-                      <div className="text-xs text-neutral-500">
+                      <div className="text-xs text-gray-500">
                         {unit.lesson_sequence.length} lessons
                       </div>
                     </button>
                     <button
                       onClick={() => deleteUnit(unit.unit_id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-neutral-400 hover:text-red-600 transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 transition-all"
                       title="Delete unit"
                     >
                       <Trash2 className="h-4 w-4" />

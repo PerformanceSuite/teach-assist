@@ -182,16 +182,16 @@ export function StudentDataStep() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white mb-1">Student Data</h2>
-          <p className="text-gray-400 text-sm">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Student Data</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             Add students with their IB criteria scores and observations.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-gray-400 text-sm">{students.length} students</span>
+          <span className="text-gray-500 dark:text-gray-400 text-sm">{students.length} students</span>
           <button
             onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg text-sm transition-colors"
           >
             <Upload className="w-4 h-4" />
             Import CSV
@@ -200,8 +200,8 @@ export function StudentDataStep() {
       </div>
 
       {/* Quick Add Form */}
-      <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-        <h3 className="text-white font-medium mb-4 flex items-center gap-2">
+      <div className="bg-gray-100 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
+        <h3 className="text-gray-900 dark:text-white font-medium mb-4 flex items-center gap-2">
           <Plus className="w-4 h-4" />
           {editingInitials ? `Edit ${editingInitials}` : 'Add Student'}
         </h3>
@@ -209,21 +209,21 @@ export function StudentDataStep() {
         <div className={`grid grid-cols-1 gap-4`} style={{ gridTemplateColumns: `repeat(${Math.min(criteriaKeys.length + 2, 6)}, minmax(0, 1fr))` }}>
           {/* Initials */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Initials</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Initials</label>
             <input
               type="text"
               value={form.initials}
               onChange={(e) => handleFormChange('initials', e.target.value.slice(0, 5))}
               placeholder="AB"
               disabled={!!editingInitials}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             />
           </div>
 
           {/* Dynamic Criteria Scores */}
           {criteriaKeys.map((key) => (
             <div key={key}>
-              <label className="block text-xs font-medium text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                 {criteriaLabels[key]}
               </label>
               <input
@@ -232,18 +232,18 @@ export function StudentDataStep() {
                 max="8"
                 value={form.criteriaScores[key] || 5}
                 onChange={(e) => handleScoreChange(key, parseInt(e.target.value) || 1)}
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           ))}
 
           {/* Trend */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1">Trend</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Trend</label>
             <select
               value={form.formative_trend}
               onChange={(e) => handleFormChange('formative_trend', e.target.value)}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {TREND_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -256,7 +256,7 @@ export function StudentDataStep() {
 
         {/* Observations */}
         <div className="mt-4">
-          <label className="block text-xs font-medium text-gray-400 mb-1">
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Observations (one per line)
           </label>
           <textarea
@@ -264,13 +264,13 @@ export function StudentDataStep() {
             onChange={(e) => handleFormChange('observations', e.target.value)}
             placeholder="Strong understanding of lab procedures&#10;Struggles with written explanations&#10;Excellent collaboration skills"
             rows={3}
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           />
         </div>
 
         {/* Notable Work */}
         <div className="mt-4">
-          <label className="block text-xs font-medium text-gray-400 mb-1">
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Notable Work (optional)
           </label>
           <input
@@ -278,7 +278,7 @@ export function StudentDataStep() {
             value={form.notable_work}
             onChange={(e) => handleFormChange('notable_work', e.target.value)}
             placeholder="e.g., Science Fair soil erosion project"
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -304,7 +304,7 @@ export function StudentDataStep() {
           {editingInitials && (
             <button
               onClick={handleCancelEdit}
-              className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             >
               <X className="w-4 h-4" />
               Cancel
@@ -317,49 +317,49 @@ export function StudentDataStep() {
       {students.length > 0 ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-white font-medium flex items-center gap-2">
+            <h3 className="text-gray-900 dark:text-white font-medium flex items-center gap-2">
               <Users className="w-4 h-4" />
               Students ({students.length})
             </h3>
             <button
               onClick={clearStudents}
-              className="text-red-400 hover:text-red-300 text-sm"
+              className="text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 text-sm"
             >
               Clear All
             </button>
           </div>
 
-          <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-x-auto">
+          <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg border border-gray-300 dark:border-gray-700 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-800">
-                  <th className="text-left py-2 px-3 text-gray-400 font-medium">Initials</th>
+                <tr className="bg-gray-100 dark:bg-gray-800">
+                  <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Initials</th>
                   {criteriaKeys.map(key => (
-                    <th key={key} className="text-center py-2 px-2 text-gray-400 font-medium">
+                    <th key={key} className="text-center py-2 px-2 text-gray-500 dark:text-gray-400 font-medium">
                       {key.split('_')[0].toUpperCase()}
                     </th>
                   ))}
-                  <th className="text-left py-2 px-3 text-gray-400 font-medium">Trend</th>
-                  <th className="text-left py-2 px-3 text-gray-400 font-medium">Observations</th>
-                  <th className="text-right py-2 px-3 text-gray-400 font-medium">Actions</th>
+                  <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Trend</th>
+                  <th className="text-left py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Observations</th>
+                  <th className="text-right py-2 px-3 text-gray-500 dark:text-gray-400 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {students.map((student) => (
                   <tr
                     key={student.initials}
-                    className="border-t border-gray-700 hover:bg-gray-800/50"
+                    className="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800/50"
                   >
-                    <td className="py-2 px-3 text-white font-medium">{student.initials}</td>
+                    <td className="py-2 px-3 text-gray-900 dark:text-white font-medium">{student.initials}</td>
                     {criteriaKeys.map(key => (
-                      <td key={key} className="text-center py-2 px-2 text-gray-300">
+                      <td key={key} className="text-center py-2 px-2 text-gray-700 dark:text-gray-300">
                         {(student.criteria_scores as Record<string, number | undefined>)[key] || '-'}
                       </td>
                     ))}
-                    <td className="py-2 px-3 text-gray-300 capitalize">
+                    <td className="py-2 px-3 text-gray-700 dark:text-gray-300 capitalize">
                       {student.formative_trend || '-'}
                     </td>
-                    <td className="py-2 px-3 text-gray-400 text-xs truncate max-w-[200px]">
+                    <td className="py-2 px-3 text-gray-500 dark:text-gray-400 text-xs truncate max-w-[200px]">
                       {student.observations.length > 0
                         ? `${student.observations.length} observation${student.observations.length > 1 ? 's' : ''}`
                         : '-'}
@@ -368,14 +368,14 @@ export function StudentDataStep() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleEditStudent(student)}
-                          className="p-1 text-gray-400 hover:text-white transition-colors"
+                          className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                           aria-label={`Edit student ${student.initials}`}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => removeStudent(student.initials)}
-                          className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                          className="p-1 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                           aria-label={`Remove student ${student.initials}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -397,10 +397,10 @@ export function StudentDataStep() {
       )}
 
       {/* Navigation */}
-      <div className="flex justify-between pt-4 border-t border-gray-800">
+      <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-800">
         <button
           onClick={prevStep}
-          className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -448,41 +448,41 @@ function CSVImportModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-gray-900 rounded-xl border border-gray-700 p-6 max-w-2xl w-full mx-4">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-700 p-6 max-w-2xl w-full mx-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white">Import Students from CSV</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Import Students from CSV</h3>
+          <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="space-y-4">
-          <div className="bg-gray-800 rounded-lg p-4 text-sm text-gray-300">
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300">
             <p className="font-medium mb-2">Expected CSV format:</p>
-            <code className="text-xs text-gray-400 block">
+            <code className="text-xs text-gray-500 dark:text-gray-400 block">
               initials,A,B,C,D,trend,notable,observations
               <br />
               JK,6,5,7,5,improving,Science Fair,Strong lab partner|Good at data analysis
             </code>
-            <p className="mt-2 text-gray-400 text-xs">
+            <p className="mt-2 text-gray-500 dark:text-gray-400 text-xs">
               Use | to separate multiple observations. Columns are flexible.
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Upload CSV File
             </label>
             <input
               type="file"
               accept=".csv,.txt"
               onChange={handleFileUpload}
-              className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-800 file:text-gray-300 hover:file:bg-gray-700"
+              className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-100 dark:file:bg-gray-800 file:text-gray-700 dark:file:text-gray-300 hover:file:bg-gray-200 dark:hover:file:bg-gray-700"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Or paste CSV content
             </label>
             <textarea
@@ -490,14 +490,14 @@ function CSVImportModal({
               onChange={(e) => setCsvText(e.target.value)}
               rows={8}
               placeholder="initials,A,B,C,D,trend,notable,observations&#10;JK,6,5,7,5,improving,Science Fair,Strong lab partner"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono"
+              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono"
             />
           </div>
 
           <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors"
+              className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors"
             >
               Cancel
             </button>

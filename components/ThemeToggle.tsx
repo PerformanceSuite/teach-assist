@@ -26,7 +26,7 @@ export function ThemeToggle() {
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm text-gray-400 hover:bg-gray-800/50 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300 light:text-gray-600 light:hover:bg-gray-200 light:hover:text-gray-800 transition-colors border border-transparent"
+        className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm text-gray-600 hover:bg-gray-200 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-300 transition-colors border border-transparent"
         title="Theme"
       >
         <CurrentIcon className="w-4 h-4" />

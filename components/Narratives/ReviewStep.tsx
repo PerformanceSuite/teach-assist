@@ -56,18 +56,18 @@ export function ReviewStep() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white mb-1">Review Narratives</h2>
-          <p className="text-gray-400 text-sm">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Review Narratives</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             Review, edit, and approve generated narratives for {className}.
           </p>
         </div>
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           {counts.approved}/{counts.all} approved
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 border-b border-gray-800 pb-2">
+      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-800 pb-2">
         <FilterButton
           label="All"
           count={counts.all}
@@ -120,29 +120,29 @@ export function ReviewStep() {
         {/* Patterns Sidebar */}
         {(patterns.length > 0 || clusters.length > 0) && (
           <div className="w-72 flex-shrink-0">
-            <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4 sticky top-4">
-              <h3 className="text-white font-medium mb-4 flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-yellow-400" />
+            <div className="bg-gray-100 dark:bg-gray-800/50 rounded-lg border border-gray-300 dark:border-gray-700 p-4 sticky top-4">
+              <h3 className="text-gray-900 dark:text-white font-medium mb-4 flex items-center gap-2">
+                <Lightbulb className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
                 Insights
               </h3>
 
               {/* Patterns */}
               {patterns.length > 0 && (
                 <div className="space-y-3 mb-4">
-                  <h4 className="text-gray-400 text-xs uppercase tracking-wider">Patterns</h4>
+                  <h4 className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Patterns</h4>
                   {patterns.map((pattern, idx) => (
                     <div
                       key={idx}
-                      className="bg-gray-900 rounded-lg p-3 border border-gray-700"
+                      className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-300 dark:border-gray-700"
                     >
-                      <div className="text-white text-sm font-medium mb-1">
+                      <div className="text-gray-900 dark:text-white text-sm font-medium mb-1">
                         {pattern.description}
                       </div>
-                      <div className="text-gray-400 text-xs mb-2">
+                      <div className="text-gray-500 dark:text-gray-400 text-xs mb-2">
                         {pattern.affected_students.length} students:{' '}
                         {pattern.affected_students.join(', ')}
                       </div>
-                      <div className="text-blue-400 text-xs">
+                      <div className="text-blue-600 dark:text-blue-400 text-xs">
                         💡 {pattern.suggestion}
                       </div>
                     </div>
@@ -153,19 +153,19 @@ export function ReviewStep() {
               {/* Clusters */}
               {clusters.length > 0 && (
                 <div className="space-y-3">
-                  <h4 className="text-gray-400 text-xs uppercase tracking-wider flex items-center gap-1">
+                  <h4 className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider flex items-center gap-1">
                     <Users className="w-3 h-3" />
                     Student Groups
                   </h4>
                   {clusters.map((cluster) => (
                     <div
                       key={cluster.cluster_id}
-                      className="bg-gray-900 rounded-lg p-3 border border-gray-700"
+                      className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-300 dark:border-gray-700"
                     >
-                      <div className="text-white text-sm font-medium mb-1">
+                      <div className="text-gray-900 dark:text-white text-sm font-medium mb-1">
                         {cluster.shared_growth_area.replace('_', ': ')}
                       </div>
-                      <div className="text-gray-400 text-xs">
+                      <div className="text-gray-500 dark:text-gray-400 text-xs">
                         {cluster.student_initials.join(', ')}
                       </div>
                       <div className="text-gray-500 text-xs mt-1">
@@ -181,10 +181,10 @@ export function ReviewStep() {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between pt-4 border-t border-gray-800">
+      <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-800">
         <button
           onClick={prevStep}
-          className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-lg font-medium transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -219,15 +219,15 @@ function FilterButton({
       onClick={onClick}
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
         active
-          ? 'bg-blue-500/20 text-blue-400'
-          : 'text-gray-400 hover:text-gray-300 hover:bg-gray-800'
+          ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400'
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
       }`}
     >
       {icon}
       {label}
       <span
         className={`ml-1 px-1.5 py-0.5 rounded text-xs ${
-          active ? 'bg-blue-500/30' : 'bg-gray-700'
+          active ? 'bg-blue-500/30' : 'bg-gray-200 dark:bg-gray-700'
         }`}
       >
         {count}

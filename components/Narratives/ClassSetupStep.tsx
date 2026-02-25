@@ -51,8 +51,8 @@ export function ClassSetupStep() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-1">Class Setup</h2>
-        <p className="text-gray-400 text-sm">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Class Setup</h2>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">
           Enter your class information and select a rubric template.
         </p>
       </div>
@@ -60,7 +60,7 @@ export function ClassSetupStep() {
       {/* Class Info Form */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="className" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="className" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Class Name
           </label>
           <input
@@ -69,12 +69,12 @@ export function ClassSetupStep() {
             value={localClassName}
             onChange={(e) => setLocalClassName(e.target.value)}
             placeholder="e.g., Science 6A"
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="semester" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="semester" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Semester
           </label>
           <input
@@ -83,25 +83,25 @@ export function ClassSetupStep() {
             value={localSemester}
             onChange={(e) => setLocalSemester(e.target.value)}
             placeholder="e.g., Fall 2025"
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
 
       {/* Rubric Template Selector */}
-      <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+      <div className="bg-gray-100 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-300 dark:border-gray-700">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-indigo-500/10 rounded-lg">
             <BookOpen className="w-5 h-5 text-indigo-400" />
           </div>
           <div>
-            <h3 className="text-white font-medium">Rubric Template</h3>
-            <p className="text-gray-400 text-sm">
+            <h3 className="text-gray-900 dark:text-white font-medium">Rubric Template</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               Select a subject rubric for criteria scoring
             </p>
           </div>
           {rubricLoaded && (
-            <div className="ml-auto flex items-center gap-2 text-green-400">
+            <div className="ml-auto flex items-center gap-2 text-green-600 dark:text-green-400">
               <Check className="w-5 h-5" />
               <span className="text-sm font-medium">Loaded</span>
             </div>
@@ -109,7 +109,7 @@ export function ClassSetupStep() {
         </div>
 
         {isLoadingTemplates ? (
-          <div className="flex items-center gap-2 text-gray-400 py-2">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 py-2">
             <Loader2 className="w-4 h-4 animate-spin" />
             <span className="text-sm">Loading rubric templates...</span>
           </div>
@@ -119,7 +119,7 @@ export function ClassSetupStep() {
               <select
                 value={selectedRubricTemplateId || ''}
                 onChange={(e) => handleTemplateSelect(e.target.value)}
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+                className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
               >
                 <option value="" disabled>Select a rubric template...</option>
                 {rubricTemplates.map((template) => (
@@ -128,12 +128,12 @@ export function ClassSetupStep() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
             </div>
 
             {/* Selected template description */}
             {selectedRubricTemplateId && rubricTemplates.find(t => t.template_id === selectedRubricTemplateId) && (
-              <p className="text-gray-400 text-xs px-1">
+              <p className="text-gray-500 dark:text-gray-400 text-xs px-1">
                 {rubricTemplates.find(t => t.template_id === selectedRubricTemplateId)?.description}
               </p>
             )}
@@ -171,12 +171,12 @@ export function ClassSetupStep() {
             {rubricCriteria.map((criterion) => (
               <div
                 key={criterion.id}
-                className="bg-gray-900 rounded-lg p-3 border border-gray-700"
+                className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-300 dark:border-gray-700"
               >
                 <div className="text-indigo-400 font-medium text-sm">
                   {criterion.id.split('_')[0].toUpperCase()}
                 </div>
-                <div className="text-gray-300 text-xs mt-1 line-clamp-2">
+                <div className="text-gray-700 dark:text-gray-300 text-xs mt-1 line-clamp-2">
                   {criterion.name}
                 </div>
               </div>
@@ -186,7 +186,7 @@ export function ClassSetupStep() {
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-end pt-4 border-t border-gray-800">
+      <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-800">
         <button
           onClick={handleNext}
           disabled={!canProceed}

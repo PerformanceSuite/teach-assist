@@ -63,8 +63,8 @@ export function GradeWizard() {
                         : isComplete || isPast
                           ? 'border-emerald-500 bg-emerald-500 text-white'
                           : isAccessible
-                            ? 'border-gray-600 bg-gray-800 text-gray-400 group-hover:border-gray-500'
-                            : 'border-gray-700 bg-gray-900 text-gray-600'
+                            ? 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 group-hover:border-gray-400 dark:group-hover:border-gray-500'
+                            : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-600'
                       }`}
                   >
                     {(isComplete || isPast) && !isActive ? (
@@ -77,8 +77,8 @@ export function GradeWizard() {
                     className={`mt-2 text-xs font-medium whitespace-nowrap ${isActive
                         ? 'text-emerald-400'
                         : isAccessible
-                          ? 'text-gray-400'
-                          : 'text-gray-600'
+                          ? 'text-gray-500 dark:text-gray-400'
+                          : 'text-gray-400 dark:text-gray-600'
                       }`}
                   >
                     {step.name}
@@ -87,7 +87,7 @@ export function GradeWizard() {
 
                 {stepIdx < steps.length - 1 && (
                   <div
-                    className={`flex-1 h-0.5 mx-2 mt-[-1.25rem] ${isPast || isComplete ? 'bg-emerald-500' : 'bg-gray-700'
+                    className={`flex-1 h-0.5 mx-2 mt-[-1.25rem] ${isPast || isComplete ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-700'
                       }`}
                   />
                 )}
@@ -98,7 +98,7 @@ export function GradeWizard() {
       </nav>
 
       {/* Step Content */}
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
         {currentStep === 1 && <PreparationStep />}
         {currentStep === 2 && <ReviewStep />}
         {currentStep === 3 && <ExportStep />}
