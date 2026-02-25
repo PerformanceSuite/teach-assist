@@ -25,7 +25,7 @@ export default function LoginPage() {
     }
 
     // Redirect to home — middleware will handle session validation
-    window.location.href = '/'
+    window.location.href = '/teach/'
   }
 
   return (

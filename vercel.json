@@ -3,6 +3,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/teach/"
+    }
+  ],
   "headers": [
     {
       "source": "/sw.js",
